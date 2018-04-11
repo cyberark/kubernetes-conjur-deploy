@@ -12,6 +12,11 @@ spec:
     app: test-app
   type: LoadBalancer
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: test-app
+---
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
@@ -28,6 +33,7 @@ spec:
       labels:
         app: test-app
     spec:
+      serviceAccountName: test-app
       containers:
       - image: {{ TEST_APP_DOCKER_IMAGE }}
         imagePullPolicy: Always
@@ -69,7 +75,7 @@ spec:
           - name: CONJUR_ACCOUNT
             value: {{ CONJUR_ACCOUNT }}
           - name: CONJUR_AUTHN_LOGIN
-            value: {{ TEST_APP_PROJECT_NAME }}/*/*
+            value: {{ TEST_APP_PROJECT_NAME }}/service_account/test-app
           - name: CONJUR_SSL_CERTIFICATE
             valueFrom:
               configMapKeyRef:
