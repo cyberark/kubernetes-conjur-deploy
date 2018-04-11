@@ -1,0 +1,26 @@
+#!/bin/bash 
+set -eou pipefail
+
+. utils.sh
+
+set_project default
+
+if has_project $TEST_APP_PROJECT_NAME; then
+  kubectl delete namespace $TEST_APP_PROJECT_NAME
+
+  printf "Waiting for $TEST_APP_PROJECT_NAME project deletion to complete"
+
+  while : ; do
+    printf "..."
+    
+    if has_project "$TEST_APP_PROJECT_NAME"; then
+      sleep 5
+    else
+      break
+    fi
+  done
+
+  echo ""
+fi
+
+echo "Test app environment purged."

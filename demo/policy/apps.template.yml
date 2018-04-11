@@ -1,0 +1,17 @@
+- !policy
+  id: test-app
+  owner: !group developers
+  body:
+  - !layer
+
+- !policy
+  id: test-app-db
+  owner: !group operations
+  body:
+  - &variables
+    - !variable password
+
+  - !permit
+    resources: *variables
+    privilege: [ read, execute ]
+    role: !layer /test-app

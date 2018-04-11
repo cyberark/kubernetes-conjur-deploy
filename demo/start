@@ -1,0 +1,15 @@
+#!/bin/bash
+set -eou pipefail
+
+0_check_dependencies.sh
+
+stop
+
+1_initialize_conjur.sh
+2_load_conjur_policies.sh
+3_init_conjur_cert_authority.sh
+4_create_test_app_project.sh
+5_store_conjur_cert.sh
+6_build_and_push_containers.sh
+7_deploy_test_app.sh
+8_retrieve_secret.sh
