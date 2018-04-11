@@ -15,7 +15,13 @@ if [ "$CONJUR_PROJECT_NAME" = "" ]; then
   exit 1
 fi
 
-# Confirm docker registry is configured.
+# Confirm docker registry url is configured.
+if [ "$DOCKER_REGISTRY_URL" = "" ]; then
+  echo "You must set DOCKER_REGISTRY_URL before running this script."
+  exit 1
+fi
+
+# Confirm docker registry path is configured.
 if [ "$DOCKER_REGISTRY_PATH" = "" ]; then
   echo "You must set DOCKER_REGISTRY_PATH before running this script."
   exit 1
