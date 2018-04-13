@@ -40,12 +40,12 @@
 
     - &hosts
       - !host
-        id: {{ TEST_APP_CONTEXT_NAME }}/*/*
+        id: {{ TEST_APP_NAMESPACE_NAME }}/*/*
         annotations:
           kubernetes/authentication-container-name: authenticator
           kubernetes: "true"
       - !host
-        id: {{ TEST_APP_CONTEXT_NAME }}/service_account/test-app
+        id: {{ TEST_APP_NAMESPACE_NAME }}/service_account/test-app
         annotations:
           kubernetes/authentication-container-name: authenticator
           kubernetes: "true"
@@ -53,8 +53,8 @@
     - !grant
       role: !layer /test-app
       members:
-      - !host {{ TEST_APP_CONTEXT_NAME }}/*/*
-      - !host {{ TEST_APP_CONTEXT_NAME }}/service_account/test-app
+      - !host {{ TEST_APP_NAMESPACE_NAME }}/*/*
+      - !host {{ TEST_APP_NAMESPACE_NAME }}/service_account/test-app
 
     - !grant
       role: !layer      

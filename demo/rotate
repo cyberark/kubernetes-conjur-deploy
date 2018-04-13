@@ -5,7 +5,7 @@ set -eou pipefail
 
 announce "Rotating password."
 
-set_context $CONJUR_CONTEXT_NAME
+set_namespace $CONJUR_NAMESPACE_NAME
 
 conjur_master=$(get_master_pod_name)
 new_pwd=$(openssl rand -hex 12)

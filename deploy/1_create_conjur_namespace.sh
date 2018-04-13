@@ -3,17 +3,17 @@ set -eou pipefail
 
 . utils.sh
 
-announce "Creating Conjur context."
+announce "Creating Conjur namespace."
 
-set_context default
+set_namespace default
 
-if has_context "$CONJUR_CONTEXT_NAME"; then
-  echo "Context '$CONJUR_CONTEXT_NAME' exists, not going to create it."
-  set_context $CONJUR_CONTEXT_NAME
+if has_namespace "$CONJUR_NAMESPACE_NAME"; then
+  echo "Namespace '$CONJUR_NAMESPACE_NAME' exists, not going to create it."
+  set_namespace $CONJUR_NAMESPACE_NAME
 else
-  echo "Creating '$CONJUR_CONTEXT_NAME' context."
-  kubectl create namespace "$CONJUR_CONTEXT_NAME"
-  set_context $CONJUR_CONTEXT_NAME
+  echo "Creating '$CONJUR_NAMESPACE_NAME' namespace."
+  kubectl create namespace "$CONJUR_NAMESPACE_NAME"
+  set_namespace $CONJUR_NAMESPACE_NAME
 fi
 
 # Must run as root to unpack Conjur seed files on standbys for high availability.

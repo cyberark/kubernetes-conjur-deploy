@@ -3,17 +3,17 @@ set -eou pipefail
 
 . utils.sh
 
-set_context default
+set_namespace default
 
-if has_context $TEST_APP_CONTEXT_NAME; then
-  kubectl delete namespace $TEST_APP_CONTEXT_NAME
+if has_namespace $TEST_APP_NAMESPACE_NAME; then
+  kubectl delete namespace $TEST_APP_NAMESPACE_NAME
 
-  printf "Waiting for $TEST_APP_CONTEXT_NAME context deletion to complete"
+  printf "Waiting for $TEST_APP_NAMESPACE_NAME namespace deletion to complete"
 
   while : ; do
     printf "..."
     
-    if has_context "$TEST_APP_CONTEXT_NAME"; then
+    if has_namespace "$TEST_APP_NAMESPACE_NAME"; then
       sleep 5
     else
       break

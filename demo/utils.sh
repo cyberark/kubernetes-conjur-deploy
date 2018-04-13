@@ -17,7 +17,7 @@ announce() {
   echo "++++++++++++++++++++++++++++++++++++++"
 }
 
-has_context() {
+has_namespace() {
   if kubectl get namespace  "$1" 2> /dev/null; then
     true
   else
@@ -26,8 +26,8 @@ has_context() {
 }
 
 docker_tag_and_push() {
-  docker_tag="${DOCKER_REGISTRY_PATH}/$1:$CONJUR_CONTEXT_NAME"
-  docker tag $1:$CONJUR_CONTEXT_NAME $docker_tag
+  docker_tag="${DOCKER_REGISTRY_PATH}/$1:$CONJUR_NAMESPACE_NAME"
+  docker tag $1:$CONJUR_NAMESPACE_NAME $docker_tag
   docker push $docker_tag
 }
 
@@ -48,9 +48,9 @@ run_conjur_cmd_as_admin() {
   echo "$output"
 }
 
-set_context() {
-  # general utility for switching contexts in kubernetes
-  # expects exactly 1 argument, a context name.
+set_namespace() {
+  # general utility for switching namespaces in kubernetes
+  # expects exactly 1 argument, a namespace name.
   if [[ $# != 1 ]]; then
     printf "Error in %s/%s - expecting 1 arg.\n" $(pwd) $0
     exit -1

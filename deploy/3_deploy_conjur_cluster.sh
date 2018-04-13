@@ -5,7 +5,7 @@ set -eou pipefail
 
 announce "Creating Conjur cluster."
 
-set_context $CONJUR_CONTEXT_NAME
+set_namespace $CONJUR_NAMESPACE_NAME
 
 kubectl delete --ignore-not-found secrets conjurregcred
 # Set credentials for Docker registry.

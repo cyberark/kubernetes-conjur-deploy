@@ -5,7 +5,7 @@ set -eou pipefail
 
 announce "Configuring followers."
 
-set_context $CONJUR_CONTEXT_NAME
+set_namespace $CONJUR_NAMESPACE_NAME
 
 master_pod_name=$(get_master_pod_name)
 

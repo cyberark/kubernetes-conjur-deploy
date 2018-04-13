@@ -14,17 +14,17 @@ variables need to be set before deploying.
 
 To deploy Conjur, you will first need access to a Kubernetes
 deployment and must be conneceted to it using `kubectl`,
-with a user that has sufficient privileges to create Kubernetes contexts:
+with a user that has sufficient privileges to create Kubernetes namespaces:
 
 ```
 oc login https://<your-routing-domain>:<port> -u <privileged-user>
 ```
 
-Finally, you must specify a name for the Kubernetes context in which you'd like
+Finally, you must specify a name for the Kubernetes namespace in which you'd like
 to deploy the Conjur cluster:
 
 ```
-export CONJUR_CONTEXT_NAME=conjur
+export CONJUR_NAMESPACE_NAME=conjur
 ```
 
 ### Docker
@@ -79,7 +79,7 @@ sequence to create and configure a Conjur cluster comprised of one Master, two
 Standbys, and two read-only Followers.
 
 Please note that the deploy scripts grant the `anyuid` SCC to the `default`
-service account in the context that contains Conjur as configuring standbys and
+service account in the namespace that contains Conjur as configuring standbys and
 followers requires root access.
 
 When the deploy scripts finish, they will print out the URL and credentials that
