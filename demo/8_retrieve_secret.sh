@@ -5,7 +5,7 @@ set -eou pipefail
 
 announce "Retrieving secret using Conjur access token."
 
-set_project $TEST_APP_PROJECT_NAME
+set_context $TEST_APP_CONTEXT_NAME
 
 test_app_pod=$(kubectl get pods --no-headers | awk '{ print $1 }')
 

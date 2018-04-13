@@ -16,11 +16,11 @@ policy that you would not want to be present in your production environment.
 
 ### Script Configuration
 
-You will need to provide a name for the kubernetes project in which your test app
+You will need to provide a name for the kubernetes context in which your test app
 will be deployed:
 
 ```
-export TEST_APP_PROJECT_NAME=test-app
+export TEST_APP_CONTEXT_NAME=test-app
 ```
 
 You will also need to set several environment variables to match the values used
@@ -28,7 +28,7 @@ when configuring your Conjur deployment. Note that if you may already have these
 variables set if you're using the same shell to run the demo:
 
 ```
-export CONJUR_PROJECT_NAME=<conjur-project-name>
+export CONJUR_CONTEXT_NAME=<conjur-context-name>
 export DOCKER_REGISTRY_PATH=docker-registry-<registry-namespace>.<routing-domain>
 export CONJUR_ACCOUNT=<account-name>
 export CONJUR_ADMIN_PASSWORD=<admin-password>

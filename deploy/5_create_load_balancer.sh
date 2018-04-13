@@ -5,9 +5,9 @@ set -eou pipefail
 
 announce "Creating load balancer for master and standbys."
 
-set_project $CONJUR_PROJECT_NAME
+set_context $CONJUR_CONTEXT_NAME
 
-docker_image=${DOCKER_REGISTRY_PATH}/haproxy:$CONJUR_PROJECT_NAME
+docker_image=${DOCKER_REGISTRY_PATH}/haproxy:$CONJUR_CONTEXT_NAME
 
 sed -e "s#{{ DOCKER_IMAGE }}#$docker_image#g" ./manifests/haproxy-conjur-master.yaml |
   kubectl create -f -

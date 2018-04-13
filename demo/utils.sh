@@ -1,5 +1,14 @@
 #!/bin/bash
 
+check_env_var() {
+  var_name=$1
+
+  if [ "${!var_name}" = "" ]; then
+    echo "You must set $1 before running these scripts."
+    exit 1
+  fi
+}
+
 announce() {
   echo "++++++++++++++++++++++++++++++++++++++"
   echo ""
@@ -8,7 +17,7 @@ announce() {
   echo "++++++++++++++++++++++++++++++++++++++"
 }
 
-has_project() {
+has_context() {
   if kubectl get namespace  "$1" 2> /dev/null; then
     true
   else
@@ -17,8 +26,8 @@ has_project() {
 }
 
 docker_tag_and_push() {
-  docker_tag="${DOCKER_REGISTRY_PATH}/$1:$CONJUR_PROJECT_NAME"
-  docker tag $1:$CONJUR_PROJECT_NAME $docker_tag
+  docker_tag="${DOCKER_REGISTRY_PATH}/$1:$CONJUR_CONTEXT_NAME"
+  docker tag $1:$CONJUR_CONTEXT_NAME $docker_tag
   docker push $docker_tag
 }
 
@@ -39,9 +48,9 @@ run_conjur_cmd_as_admin() {
   echo "$output"
 }
 
-set_project() {
-  # general utility for switching projects/namespaces/contexts in kubernetes
-  # expects exactly 1 argument, a project name.
+set_context() {
+  # general utility for switching contexts in kubernetes
+  # expects exactly 1 argument, a context name.
   if [[ $# != 1 ]]; then
     printf "Error in %s/%s - expecting 1 arg.\n" $(pwd) $0
     exit -1

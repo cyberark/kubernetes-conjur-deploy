@@ -40,7 +40,7 @@ spec:
         name: test-app
         env:
           - name: CONJUR_APPLIANCE_URL
-            value: https://conjur-follower.{{ CONJUR_PROJECT_NAME }}.svc.cluster.local/api
+            value: https://conjur-follower.{{ CONJUR_CONTEXT_NAME }}.svc.cluster.local/api
           - name: CONJUR_ACCOUNT
             value: {{ CONJUR_ACCOUNT }}
           - name: CONJUR_SSL_CERTIFICATE
@@ -69,13 +69,13 @@ spec:
               fieldRef:
                 fieldPath: status.podIP
           - name: CONJUR_APPLIANCE_URL
-            value: https://conjur-follower.{{ CONJUR_PROJECT_NAME }}.svc.cluster.local/api
+            value: https://conjur-follower.{{ CONJUR_CONTEXT_NAME }}.svc.cluster.local/api
           - name: CONJUR_AUTHN_URL
-            value: https://conjur-follower.{{ CONJUR_PROJECT_NAME }}.svc.cluster.local/api/authn-k8s/{{ SERVICE_ID }}
+            value: https://conjur-follower.{{ CONJUR_CONTEXT_NAME }}.svc.cluster.local/api/authn-k8s/{{ SERVICE_ID }}
           - name: CONJUR_ACCOUNT
             value: {{ CONJUR_ACCOUNT }}
           - name: CONJUR_AUTHN_LOGIN
-            value: {{ TEST_APP_PROJECT_NAME }}/service_account/test-app
+            value: {{ TEST_APP_CONTEXT_NAME }}/service_account/test-app
           - name: CONJUR_SSL_CERTIFICATE
             valueFrom:
               configMapKeyRef:

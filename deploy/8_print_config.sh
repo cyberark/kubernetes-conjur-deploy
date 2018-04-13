@@ -3,7 +3,7 @@ set -eou pipefail
 
 . utils.sh
 
-set_project $CONJUR_PROJECT_NAME
+set_context $CONJUR_CONTEXT_NAME
 
 api_key=$(rotate_api_key)
 
@@ -13,7 +13,7 @@ Conjur cluster is ready.
 Addresses for the Conjur Master service:
 
   Inside the cluster:
-    conjur-master.$CONJUR_PROJECT_NAME.svc.cluster.local
+    conjur-master.$CONJUR_CONTEXT_NAME.svc.cluster.local
 
   Outside the cluster:
     kubectl port-forward svc/test-app 1234:80

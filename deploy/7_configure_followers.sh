@@ -5,7 +5,7 @@ set -eou pipefail
 
 announce "Configuring followers."
 
-set_project $CONJUR_PROJECT_NAME
+set_context $CONJUR_CONTEXT_NAME
 
 master_pod_name=$(get_master_pod_name)
 

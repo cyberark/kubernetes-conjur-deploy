@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 set -eou pipefail
 
-docker build -t test-app:$CONJUR_PROJECT_NAME .
+docker build -t test-app:$CONJUR_CONTEXT_NAME .

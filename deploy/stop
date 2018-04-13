@@ -3,17 +3,17 @@ set -eou pipefail
 
 . utils.sh
 
-set_project default
+set_context default
 
-if has_project $CONJUR_PROJECT_NAME; then
-  kubectl delete namespace $CONJUR_PROJECT_NAME
+if has_context $CONJUR_CONTEXT_NAME; then
+  kubectl delete namespace $CONJUR_CONTEXT_NAME
 
-  printf "Waiting for $CONJUR_PROJECT_NAME project deletion to complete"
+  printf "Waiting for $CONJUR_CONTEXT_NAME context deletion to complete"
 
   while : ; do
     printf "..."
     
-    if has_project "$CONJUR_PROJECT_NAME"; then
+    if has_context "$CONJUR_CONTEXT_NAME"; then
       sleep 5
     else
       break

@@ -11,7 +11,7 @@ case "$choice" in
   * ) echo "You must login to a Kubernetes cluster before running this demo." && exit 1;;
 esac
 
-check_env_var "CONJUR_PROJECT_NAME"
+check_env_var "CONJUR_CONTEXT_NAME"
 check_env_var "DOCKER_REGISTRY_URL"
 check_env_var "DOCKER_REGISTRY_PATH"
 check_env_var "CONJUR_ACCOUNT"

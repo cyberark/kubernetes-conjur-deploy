@@ -1,4 +1,4 @@
 #!/bin/bash
 set -eou pipefail
 
-docker build -t haproxy:$CONJUR_PROJECT_NAME .
+docker build -t haproxy:$CONJUR_CONTEXT_NAME .

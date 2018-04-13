@@ -3,17 +3,17 @@ set -eou pipefail
 
 . utils.sh
 
-announce "Creating Conjur project."
+announce "Creating Conjur context."
 
-set_project default
+set_context default
 
-if has_project "$CONJUR_PROJECT_NAME"; then
-  echo "Project '$CONJUR_PROJECT_NAME' exists, not going to create it."
-  set_project $CONJUR_PROJECT_NAME
+if has_context "$CONJUR_CONTEXT_NAME"; then
+  echo "Context '$CONJUR_CONTEXT_NAME' exists, not going to create it."
+  set_context $CONJUR_CONTEXT_NAME
 else
-  echo "Creating '$CONJUR_PROJECT_NAME' project."
-  kubectl create namespace "$CONJUR_PROJECT_NAME"
-  set_project $CONJUR_PROJECT_NAME
+  echo "Creating '$CONJUR_CONTEXT_NAME' context."
+  kubectl create namespace "$CONJUR_CONTEXT_NAME"
+  set_context $CONJUR_CONTEXT_NAME
 fi
 
 # Must run as root to unpack Conjur seed files on standbys for high availability.

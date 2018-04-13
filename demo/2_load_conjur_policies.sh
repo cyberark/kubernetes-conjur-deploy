@@ -1,11 +1,11 @@
 #!/bin/bash
-set -xeou pipefail
+set -eou pipefail
 
 . utils.sh
 
 announce "Loading Conjur policy."
 
-set_project $CONJUR_PROJECT_NAME
+set_context $CONJUR_CONTEXT_NAME
 
 conjur_master=$(get_master_pod_name)
 
@@ -16,9 +16,9 @@ kubectl exec $conjur_master -- conjur plugin install policy
 
 pushd policy
   sed -e "s#{{ SERVICE_ID }}#$AUTHENTICATOR_SERVICE_ID#g" ./authn-k8s.template.yml |
-    sed -e "s#{{ TEST_APP_PROJECT_NAME }}#$TEST_APP_PROJECT_NAME#g" > ./authn-k8s.yml
+    sed -e "s#{{ TEST_APP_CONTEXT_NAME }}#$TEST_APP_CONTEXT_NAME#g" > ./authn-k8s.yml
 
-  sed -e "s#{{ TEST_APP_PROJECT_NAME }}#$TEST_APP_PROJECT_NAME#g" ./apps.template.yml > ./apps.yml
+  sed -e "s#{{ TEST_APP_CONTEXT_NAME }}#$TEST_APP_CONTEXT_NAME#g" ./apps.template.yml > ./apps.yml
 popd
 
 kubectl cp ./policy conjur-cluster-1396572337-c7265:/policy

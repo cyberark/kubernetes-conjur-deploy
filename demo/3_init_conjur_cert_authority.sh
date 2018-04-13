@@ -5,7 +5,7 @@ set -eou pipefail
 
 announce "Initializing Conjur certificate authority."
 
-set_project $CONJUR_PROJECT_NAME
+set_context $CONJUR_CONTEXT_NAME
 
 conjur_master=$(get_master_pod_name)
 
