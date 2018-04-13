@@ -12,16 +12,12 @@ variables need to be set before deploying.
 
 ### Kubernetes
 
-To deploy Conjur, you will first need access to a Kubernetes
-deployment and must be conneceted to it using `kubectl`,
-with a user that has sufficient privileges to create Kubernetes namespaces:
+To deploy Conjur, you will first need access to a Kubernetes deployment and must
+connect to it using `kubectl` with a user that has sufficient privileges to
+create namespaces.
 
-```
-oc login https://<your-routing-domain>:<port> -u <privileged-user>
-```
-
-Finally, you must specify a name for the Kubernetes namespace in which you'd like
-to deploy the Conjur cluster:
+Finally, you must specify a name for the namespace in which you'd like to deploy
+the Conjur cluster:
 
 ```
 export CONJUR_NAMESPACE_NAME=conjur
