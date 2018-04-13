@@ -7,11 +7,7 @@ announce "Creating Conjur cluster."
 
 set_namespace $CONJUR_NAMESPACE_NAME
 
-kubectl delete --ignore-not-found secrets conjurregcred
-# Set credentials for Docker registry.
-kubectl create secret docker-registry conjurregcred --docker-server="registry2.itci.conjur.net" --docker-username="kumbirai.tanekha" --docker-password=$(conjur user rotate_api_key) --docker-email="kumbirai.tanekha@gmail.com"
-
-conjur_appliance_image=registry2.itci.conjur.net/conjur-appliance:4.9-stable
+conjur_appliance_image=$DOCKER_REGISTRY_PATH/conjur-appliance:$CONJUR_NAMESPACE_NAME
 
 echo "deploying main cluster"
 sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" ./manifests/conjur-cluster.yaml |
