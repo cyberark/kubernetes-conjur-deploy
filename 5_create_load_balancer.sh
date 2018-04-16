@@ -12,7 +12,7 @@ docker_image=${DOCKER_REGISTRY_PATH}/haproxy:$CONJUR_NAMESPACE_NAME
 sed -e "s#{{ DOCKER_IMAGE }}#$docker_image#g" ./manifests/haproxy-conjur-master.yaml |
   kubectl create -f -
 
-sleep 5
+wait_for_node 'haproxy-conjur-master'
 
 echo "Configuring load balancer..."
 

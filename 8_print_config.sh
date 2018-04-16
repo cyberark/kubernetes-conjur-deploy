@@ -7,7 +7,7 @@ set_namespace $CONJUR_NAMESPACE_NAME
 
 api_key=$(rotate_api_key)
 
-conjur_master_ip=$(kubectl get services | grep conjur-master | awk '{ print $4 }')
+conjur_master_ip=$(kubectl get services | grep conjur-master | awk '{ print $3 }')
 
 announce "
 Conjur cluster is ready.
