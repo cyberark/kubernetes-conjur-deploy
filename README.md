@@ -28,14 +28,38 @@ export CONJUR_NAMESPACE_NAME=conjur
 You will need to [install Docker](https://www.docker.com/get-docker) on your
 local machine if you do not already have it.
 
+You will also need access to a Docker registry to which you are able to push.
+Provide the URL and full path you wish to use for this registry:
+
+```
+export DOCKER_REGISTRY_URL=us.gcr.io
+export DOCKER_REGISTRY_PATH=us.gcr.io/gke-dev
+```
+
+Please login to the registry before running the deploy scripts.
+
 ### Conjur
 
 #### Appliance Image
 
-You will need to obtain a Docker image of the Conjur v4 appliance and tag it in
-your local registry as `conjur-appliance:4.9-stable`. The deploy scripts will
-look for this tag when pushing the applance image to your Kubernetes Docker
-registry.
+You will need to obtain a Docker image of the Conjur v4 appliance and push it
+to your Docker registry with the tag:
+
+```
+$DOCKER_REGISTRY_PATH/conjur-appliance:$CONJUR_NAMESPACE_NAME
+```
+
+Finally, you will need to create an image pull secret called `conjurregcred`
+in your Kubernetes environment to allow the deploy scripts to retrieve the
+Conjur image from your registry:
+
+```
+kubectl create secret docker-registry conjurregcred \
+  --docker-server=$DOCKER_REGISTRY_URL \
+  --docker-username=<my-username> \
+  --docker-password=<my-password> \
+  --docker-email=<my-email>
+```
 
 #### Appliance Configuration
 

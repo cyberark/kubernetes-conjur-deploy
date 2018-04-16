@@ -30,3 +30,5 @@ spec:
           name: pg-main
         - containerPort: 5433
           name: pg-audit
+      imagePullSecrets:
+        - name: conjurregcred
