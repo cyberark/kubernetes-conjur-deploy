@@ -6,30 +6,17 @@ Kubernetes environment.
 # Setup
 
 The Conjur deployment scripts pick up configuration details from local
-environment variables. The setup instructions below will walk you through the
+environment variables. The setup instructions below walk you through the
 necessary steps for configuring your Kubernetes environment and show you which
 variables need to be set before deploying.
 
-### Kubernetes
-
-To deploy Conjur, you will first need access to a Kubernetes deployment and must
-connect to it using `kubectl` with a user that has sufficient privileges to
-create namespaces.
-
-Finally, you must specify a name for the namespace in which you'd like to deploy
-the Conjur cluster:
-
-```
-export CONJUR_NAMESPACE_NAME=conjur
-```
-
 ### Docker
 
-You will need to [install Docker](https://www.docker.com/get-docker) on your
-local machine if you do not already have it.
+[Install Docker](https://www.docker.com/get-docker) on your local machine if you
+do not already have it.
 
-You will also need access to a Docker registry to which you are able to push.
-Provide the URL and full path you wish to use for this registry:
+You need access to a Docker registry to which you are able to push. Provide the
+URL and full path you wish to use for this registry:
 
 ```
 export DOCKER_REGISTRY_URL=<registry-domain>
@@ -38,20 +25,30 @@ export DOCKER_REGISTRY_PATH=<registry-domain>/<additional-pathing>
 
 Please login to the registry before running the deploy scripts.
 
-### Conjur
+### Kubernetes
 
-#### Appliance Image
+To deploy Conjur, you need access to a Kubernetes deployment and must connect to
+it using `kubectl` with a user that has sufficient privileges to create
+namespaces.
 
-You will need to obtain a Docker image of the Conjur v4 appliance and push it
-to your Docker registry with the tag:
+#### Conjur Namespace
+
+First, create a namespace in which to deploy your Conjur cluster:
 
 ```
-$DOCKER_REGISTRY_PATH/conjur-appliance:$CONJUR_NAMESPACE_NAME
+kubectl create namespace <my-namespace>
 ```
 
-Finally, you will need to create an image pull secret called `conjurregcred`
-in your Kubernetes environment to allow the deploy scripts to retrieve the
-Conjur image from your registry:
+Provide this namespace to the deploy scripts as follows:
+
+```
+export CONJUR_NAMESPACE_NAME=<my-namespace>
+```
+
+#### Image Pull Secret
+
+Create an image pull secret called `conjurregcred` in your Conjur namespace to
+allow the deploy scripts to retrieve the Conjur image from your Docker registry:
 
 ```
 kubectl create secret docker-registry conjurregcred \
@@ -59,6 +56,17 @@ kubectl create secret docker-registry conjurregcred \
   --docker-username=<my-username> \
   --docker-password=<my-password> \
   --docker-email=<my-email>
+```
+
+### Conjur
+
+#### Appliance Image
+
+You need to obtain a Docker image of the Conjur v4 appliance and push it to your
+Docker registry with the tag:
+
+```
+$DOCKER_REGISTRY_PATH/conjur-appliance:$CONJUR_NAMESPACE_NAME
 ```
 
 #### Appliance Configuration
@@ -72,7 +80,7 @@ export CONJUR_ADMIN_PASSWORD=<my_admin_password>
 ```
 
 Conjur uses [declarative policy](https://developer.conjur.net/policy) to control
-access to secrets. After deploying Conjur, you will need to load a policy that
+access to secrets. After deploying Conjur, you need to load a policy that
 defines a `webservice` to represent the Kubernetes authenticator:
 
 ```
@@ -82,7 +90,7 @@ id: conjur/authn-k8s/{{ SERVICE_ID }}
 
 The `SERVICE_ID` should describe the Kubernetes node in which your Conjur cluster
 resides. For example, it might be something like `kubernetes/prod`. For Conjur
-configuration purposes, you will need to provide this value to the Conjur deploy
+configuration purposes, you need to provide this value to the Conjur deploy
 scripts like so:
 
 ```
@@ -94,9 +102,9 @@ that it matches the value that you intend to use in Conjur Policy.
 
 # Usage
 
-Run `./start` to deploy Conjur. This will execute the numbered scripts in
-sequence to create and configure a Conjur cluster comprised of one Master, two
-Standbys, and two read-only Followers.
+Run `./start` to deploy Conjur. This executes the numbered scripts in sequence
+to create and configure a Conjur cluster comprised of one Master, two Standbys,
+and two read-only Followers.
 
 Please note that the deploy scripts grant the `anyuid` SCC to the `default`
 service account in the namespace that contains Conjur as configuring standbys and
