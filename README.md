@@ -32,8 +32,8 @@ You will also need access to a Docker registry to which you are able to push.
 Provide the URL and full path you wish to use for this registry:
 
 ```
-export DOCKER_REGISTRY_URL=us.gcr.io
-export DOCKER_REGISTRY_PATH=us.gcr.io/gke-dev
+export DOCKER_REGISTRY_URL=<registry-domain>
+export DOCKER_REGISTRY_PATH=<registry-domain>/<additional-pathing>
 ```
 
 Please login to the registry before running the deploy scripts.
