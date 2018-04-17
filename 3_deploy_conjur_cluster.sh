@@ -1,5 +1,5 @@
 #!/bin/bash 
-set -eox pipefail
+set -euo pipefail
 
 . utils.sh
 

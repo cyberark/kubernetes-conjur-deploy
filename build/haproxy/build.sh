@@ -1,4 +1,4 @@
 #!/bin/bash
-set -eou pipefail
+set -euo pipefail
 
 docker build -t haproxy:$CONJUR_NAMESPACE_NAME .
