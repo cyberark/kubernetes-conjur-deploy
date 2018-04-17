@@ -27,9 +27,9 @@ Please login to the registry before running the deploy scripts.
 
 ### Kubernetes
 
-To deploy Conjur, you need access to a Kubernetes deployment and must connect to
-it using `kubectl` with a user that has sufficient privileges to create
-namespaces.
+Before deploying Conjur, you must first use `kubectl` to connect to your
+Kubernetes environment with a user that has the `cluster-admin` role. The user
+must be able to create namespaces and cluster roles.
 
 #### Conjur Namespace
 
@@ -56,6 +56,21 @@ kubectl create secret docker-registry conjurregcred \
   --docker-username=<my-username> \
   --docker-password=<my-password> \
   --docker-email=<my-email>
+```
+
+#### The `conjur-authenticator` Cluster Role
+
+Conjur's Kubernetes authenticator requires the following privileges:
+
+- [`"get"`, `"list"`] on `"pods"` for confirming a pod's namespace membership
+- [`"create"`, `"get"`] on "pods/exec" for injecting a certificate into a pod
+
+The deploy scripts include a manifest that defines the `conjur-authenticator`
+cluster role, which grants these privileges. Create the role now (note that
+your user will need to have the `cluster-admin` role to do so):
+
+```
+kubectl create -f ./manifests/conjur-authenticator-role.yaml
 ```
 
 ### Conjur
@@ -88,10 +103,10 @@ defines a `webservice` to represent the Kubernetes authenticator:
 id: conjur/authn-k8s/{{ SERVICE_ID }}
 ```
 
-The `SERVICE_ID` should describe the Kubernetes node in which your Conjur cluster
-resides. For example, it might be something like `kubernetes/prod`. For Conjur
-configuration purposes, you need to provide this value to the Conjur deploy
-scripts like so:
+The `SERVICE_ID` should describe the Kubernetes cluster in which your Conjur
+deployment resides. For example, it might be something like `kubernetes/prod`.
+For Conjur configuration purposes, you need to provide this value to the Conjur
+deploy scripts like so:
 
 ```
 export AUTHENTICATOR_SERVICE_ID=<service_id>
