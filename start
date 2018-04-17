@@ -2,9 +2,6 @@
 set -eou pipefail
 
 ./0_check_dependencies.sh
-
-./stop
-
 ./1_build_and_push_containers.sh
 ./2_deploy_conjur_cluster.sh
 ./3_configure_master.sh

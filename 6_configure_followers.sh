@@ -20,11 +20,10 @@ pod_list=$(kubectl get pods -l role=follower --no-headers | awk '{ print $1 }')
 for pod_name in $pod_list; do
   printf "Configuring follower %s...\n" $pod_name
 
-  copy_file_to_container "build/conjur_server/conjur.json" "/etc/conjur.json" "$pod_name"
   copy_file_to_container "./tmp/follower-seed.tar" "/tmp/follower-seed.tar" "$pod_name"
 
   kubectl exec $pod_name evoke unpack seed /tmp/follower-seed.tar
-  kubectl exec $pod_name -- evoke configure follower -j /etc/conjur.json
+  kubectl exec $pod_name -- evoke configure follower
 done
 
 rm -rf tmp

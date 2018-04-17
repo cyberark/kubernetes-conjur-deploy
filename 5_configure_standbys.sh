@@ -23,10 +23,9 @@ for pod_name in $pod_list; do
   kubectl label --overwrite pod $pod_name role=standby
     
   copy_file_to_container "./tmp/standby-seed.tar" "/tmp/standby-seed.tar" "$pod_name"
-  copy_file_to_container "build/conjur_server/conjur.json" "/etc/conjur.json" "$pod_name"
 
   kubectl exec $pod_name evoke unpack seed /tmp/standby-seed.tar
-  kubectl exec $pod_name -- evoke configure standby -j /etc/conjur.json -i $master_pod_ip
+  kubectl exec $pod_name -- evoke configure standby -i $master_pod_ip
 done
 
 rm -rf tmp

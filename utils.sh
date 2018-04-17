@@ -50,6 +50,10 @@ get_master_pod_name() {
   echo $pod_list | awk '{print $1}'
 }
 
+get_master_service_ip() {
+  echo $(kubectl get service conjur-master -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+}
+
 mastercmd() {
   local master_pod=$(kubectl get pod -l role=master --no-headers | awk '{ print $1 }')
   local interactive=$1
