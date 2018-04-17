@@ -15,15 +15,25 @@ variables need to be set before deploying.
 [Install Docker](https://www.docker.com/get-docker) on your local machine if you
 do not already have it.
 
-You need access to a Docker registry to which you are able to push. Provide the
-URL and full path you wish to use for this registry:
+You must have push access to a Docker registry in order to run these deploy
+scripts. Provide the URL and full path of your registry:
 
 ```
 export DOCKER_REGISTRY_URL=<registry-domain>
 export DOCKER_REGISTRY_PATH=<registry-domain>/<additional-pathing>
 ```
 
-Please login to the registry before running the deploy scripts.
+If you are using a private registry, you will also need to provide login 
+credentials that are used by the deployment scripts to create a [secret for
+pulling images](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#create-a-secret-in-the-cluster-that-holds-your-authorization-token):
+
+```
+export DOCKER_USERNAME=<your-username>
+export DOCKER_PASSWORD=<your-password>
+export DOCKER_EMAIL=<your-email>
+```
+
+Please make sure that you are logged in to the registry before deploying.
 
 ### Kubernetes
 
@@ -33,29 +43,10 @@ must be able to create namespaces and cluster roles.
 
 #### Conjur Namespace
 
-First, create a namespace in which to deploy your Conjur cluster:
-
-```
-kubectl create namespace <my-namespace>
-```
-
-Provide this namespace to the deploy scripts as follows:
+Provide the name of a namespace in which to deploy Conjur:
 
 ```
 export CONJUR_NAMESPACE_NAME=<my-namespace>
-```
-
-#### Image Pull Secret
-
-Create an image pull secret called `conjurregcred` in your Conjur namespace to
-allow the deploy scripts to retrieve the Conjur image from your Docker registry:
-
-```
-kubectl create secret docker-registry conjurregcred \
-  --docker-server=$DOCKER_REGISTRY_URL \
-  --docker-username=<my-username> \
-  --docker-password=<my-password> \
-  --docker-email=<my-email>
 ```
 
 #### The `conjur-authenticator` Cluster Role

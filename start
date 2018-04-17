@@ -2,10 +2,15 @@
 set -eou pipefail
 
 ./0_check_dependencies.sh
-./1_build_and_push_containers.sh
-./2_deploy_conjur_cluster.sh
-./3_configure_master.sh
-./4_create_load_balancer.sh
-./5_configure_standbys.sh
-./6_configure_followers.sh
-./7_print_config.sh
+
+./stop
+
+./1_create_conjur_namespace.sh
+./2_build_and_push_containers.sh
+./3_deploy_conjur_cluster.sh
+./4_configure_master.sh
+./5_create_load_balancer.sh
+./6_configure_standbys.sh
+./7_configure_followers.sh
+./8_print_config.sh
+
