@@ -117,22 +117,35 @@ that it matches the value that you intend to use in Conjur Policy.
 
 # Usage
 
+### Deploying Conjur
+
 Run `./start` to deploy Conjur. This executes the numbered scripts in sequence
 to create and configure a Conjur cluster comprised of one Master, two Standbys,
-and two read-only Followers.
+and two read-only Followers. The final step will print out the necessary info
+for interacting with Conjur through the CLI or UI.
 
-Please note that the deploy scripts grant the `anyuid` SCC to the `default`
-service account in the namespace that contains Conjur as configuring standbys and
-followers requires root access.
+### Conjur CLI
 
-When the deploy scripts finish, they will print out the URL and credentials that
-you need to access Conjur from outside the Kubernetes environment. You can access
-the Conjur UI by visiting this URL in a browser or use it to interact with Conjur
-through the [Conjur CLI](https://developer.conjur.net/cli).
+The deploy scripts include a manifest for creating a Conjur CLI container within
+the Kubernetes environment that can then be used to interact with Conjur. Deploy
+the CLI pod and SSH into it:
+
+```
+kubectl create -f ./manifests/conjur-cli.yaml
+kubectl exec -it [cli-pod-name] bash
+```
+
+Follow our [CLI instructions](https://developer.conjur.net/cli#quickstart)
+to get started with the Conjur CLI. The hostname is `conjur-master`, which is a
+service that can be used to access the Conjur Master.
+
+### Conjur UI
+
+Visit the Conjur UI URL in your browser and login with the admin credentials to
+access the Conjur UI.
 
 # Test App Demo
 
 The [kubernetes-conjur-demo repo](https://github.com/conjurdemos/kubernetes-conjur-demo)
-can be used to set up a test application that retrieves secrets from Conjur
-using our Ruby API. It can be used as a reference when setting up your own
-applications to integrate with Conjur.
+sets up test applications that retrieve secrets from Conjur and serves as a
+useful reference when setting up your own applications to integrate with Conjur.
