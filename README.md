@@ -126,9 +126,14 @@ kubectl create -f ./manifests/conjur-cli.yaml
 kubectl exec -it [cli-pod-name] bash
 ```
 
-Follow our [CLI instructions](https://developer.conjur.net/cli#quickstart)
-to get started with the Conjur CLI. The hostname is `conjur-master`, which is a
-service that can be used to access the Conjur Master.
+Once inside the CLI container, use the admin credentials to connect to Conjur:
+
+```
+conjur init -h conjur-master
+```
+
+Follow our [CLI usage instructions](https://developer.conjur.net/cli#quickstart)
+to get started with the Conjur CLI.
 
 ### Conjur UI
 
