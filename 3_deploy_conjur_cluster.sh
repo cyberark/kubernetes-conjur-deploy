@@ -3,6 +3,10 @@ set -eox pipefail
 
 . utils.sh
 
+announce "Creating Conjur cluster."
+
+set_namespace $CONJUR_NAMESPACE_NAME
+
 if ! [ "${DOCKER_EMAIL}" = "" ]; then
   announce "Creating image pull secret."
     
@@ -14,10 +18,6 @@ if ! [ "${DOCKER_EMAIL}" = "" ]; then
     --docker-password=$DOCKER_PASSWORD \
     --docker-email=$DOCKER_EMAIL
 fi
-
-announce "Creating Conjur cluster."
-
-set_namespace $CONJUR_NAMESPACE_NAME
 
 conjur_appliance_image=$DOCKER_REGISTRY_PATH/conjur-appliance:$CONJUR_NAMESPACE_NAME
 
