@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cli=kubectl
+
 check_env_var() {
   var_name=$1
 
@@ -24,7 +26,7 @@ environment_domain() {
 }
 
 has_namespace() {
-  if kubectl get namespace "$1" > /dev/null; then
+  if $cli get namespace "$1" &> /dev/null; then
     true
   else
     false
@@ -42,27 +44,27 @@ copy_file_to_container() {
   local to=$2
   local pod_name=$3
 
-  kubectl cp "$from" $pod_name:"$to"
+  $cli cp "$from" $pod_name:"$to"
 }
 
 get_master_pod_name() {
-  pod_list=$(kubectl get pods -l app=conjur-node --no-headers | awk '{ print $1 }')
+  pod_list=$($cli get pods -l app=conjur-node --no-headers | awk '{ print $1 }')
   echo $pod_list | awk '{print $1}'
 }
 
 get_master_service_ip() {
-  echo $(kubectl get service conjur-master -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+  echo $($cli get service conjur-master -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 }
 
 mastercmd() {
-  local master_pod=$(kubectl get pod -l role=master --no-headers | awk '{ print $1 }')
+  local master_pod=$($cli get pod -l role=master --no-headers | awk '{ print $1 }')
   local interactive=$1
 
   if [ $interactive = '-i' ]; then
     shift
-    kubectl exec -i $master_pod -- $@
+    $cli exec -i $master_pod -- $@
   else
-    kubectl exec $master_pod -- $@
+    $cli exec $master_pod -- $@
   fi
 }
 
@@ -74,11 +76,11 @@ set_namespace() {
     exit -1
   fi
 
-  kubectl config set-context $(kubectl config current-context) --namespace="$1" > /dev/null
+  $cli config set-context $($cli config current-context) --namespace="$1" > /dev/null
 }
 
 wait_for_node() {
-  wait_for_it -1 "kubectl describe pod $1 | grep Status: | grep -q Running"
+  wait_for_it -1 "$cli describe pod $1 | grep Status: | grep -q Running"
 }
 
 function wait_for_it() {
@@ -113,9 +115,9 @@ rotate_api_key() {
 
   master_pod_name=$(get_master_pod_name)
     
-  kubectl exec $master_pod_name -- conjur authn login -u admin -p $CONJUR_ADMIN_PASSWORD > /dev/null
-  api_key=$(kubectl exec $master_pod_name -- conjur user rotate_api_key)
-  kubectl exec $master_pod_name -- conjur authn logout > /dev/null
+  $cli exec $master_pod_name -- conjur authn login -u admin -p $CONJUR_ADMIN_PASSWORD > /dev/null
+  api_key=$($cli exec $master_pod_name -- conjur user rotate_api_key)
+  $cli exec $master_pod_name -- conjur authn logout > /dev/null
 
   echo $api_key
 }
