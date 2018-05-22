@@ -15,8 +15,8 @@ spec:
     app: conjur-follower
 
 ---
-apiVersion: apps/v1beta1
-kind: Deployment
+apiVersion: v1
+kind: DeploymentConfig
 metadata:
   name: conjur-follower
 spec:
@@ -44,5 +44,3 @@ spec:
           name: pg-main
         - containerPort: 5433
           name: pg-audit
-      imagePullSecrets:
-        - name: conjurregcred

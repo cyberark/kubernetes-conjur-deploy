@@ -1,6 +1,7 @@
 #!/bin/bash
 
-cli=kubectl
+platform=openshift
+cli=oc
 
 check_env_var() {
   var_name=$1
@@ -19,6 +20,14 @@ announce() {
   echo "++++++++++++++++++++++++++++++++++++++"
 }
 
+appliance_image() {
+  if [ $platform = "openshift" ]; then
+    echo "$DOCKER_REGISTRY_PATH/$CONJUR_NAMESPACE_NAME/conjur-appliance:$CONJUR_NAMESPACE_NAME"
+  else
+    echo "$DOCKER_REGISTRY_PATH/conjur-appliance:$CONJUR_NAMESPACE_NAME"
+  fi
+}
+
 environment_domain() {
   env_url=$(environment_url)
   protocol="$(echo $env_url | grep :// | sed -e's,^\(.*://\).*,\1,g')"
@@ -34,7 +43,12 @@ has_namespace() {
 }
 
 docker_tag_and_push() {
-  docker_tag="${DOCKER_REGISTRY_PATH}/$1:$CONJUR_NAMESPACE_NAME"
+  if [ $platform = "kubernetes" ]; then
+    docker_tag="$DOCKER_REGISTRY_PATH/$1:$CONJUR_NAMESPACE_NAME"
+  else
+    docker_tag="$DOCKER_REGISTRY_PATH/$CONJUR_NAMESPACE_NAME/$1:$CONJUR_NAMESPACE_NAME"
+  fi
+    
   docker tag $1:$CONJUR_NAMESPACE_NAME $docker_tag
   docker push $docker_tag
 }

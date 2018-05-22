@@ -7,26 +7,40 @@ announce "Creating Conjur cluster."
 
 set_namespace $CONJUR_NAMESPACE_NAME
 
-if ! [ "${DOCKER_EMAIL}" = "" ]; then
+if [ $cli = 'kubectl' ]; then
+  if ! [ "${DOCKER_EMAIL}" = "" ]; then
+    announce "Creating image pull secret."
+
+    $cli delete --ignore-not-found secret dockerpullsecret
+
+    $cli create secret docker-registry dockerpullsecret \
+      --docker-server=$DOCKER_REGISTRY_URL \
+      --docker-username=$DOCKER_USERNAME \
+      --docker-password=$DOCKER_PASSWORD \
+      --docker-email=$DOCKER_EMAIL
+  fi
+elif [ $cli = 'oc' ]; then
   announce "Creating image pull secret."
     
-  $cli delete --ignore-not-found secret conjurregcred
-
-  $cli create secret docker-registry conjurregcred \
-    --docker-server=$DOCKER_REGISTRY_URL \
-    --docker-username=$DOCKER_USERNAME \
-    --docker-password=$DOCKER_PASSWORD \
-    --docker-email=$DOCKER_EMAIL
+  $cli delete --ignore-not-found secrets dockerpullsecret
+  
+  $cli secrets new-dockercfg dockerpullsecret \
+    --docker-server=${DOCKER_REGISTRY_PATH} \
+    --docker-username=_ \
+    --docker-password=$($cli whoami -t) \
+    --docker-email=_
+  
+  $cli secrets add serviceaccount/default secrets/dockerpullsecret --for=pull    
 fi
 
-conjur_appliance_image=$DOCKER_REGISTRY_PATH/conjur-appliance:$CONJUR_NAMESPACE_NAME
+conjur_appliance_image=$(appliance_image)
 
 echo "deploying main cluster"
-sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" ./manifests/conjur-cluster.yaml |
+sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$platform/conjur-cluster.yaml" |
   $cli create -f -
 
 echo "deploying followers"
-sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" ./manifests/conjur-follower.yaml |
+sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$platform/conjur-follower.yaml" |
   sed -e "s#{{ AUTHENTICATOR_SERVICE_ID }}#$AUTHENTICATOR_SERVICE_ID#g" |
   $cli create -f -
 

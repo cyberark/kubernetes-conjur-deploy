@@ -13,4 +13,3 @@ set -euo pipefail
 ./6_configure_standbys.sh
 ./7_configure_followers.sh
 ./8_print_config.sh
-
