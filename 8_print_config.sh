@@ -5,11 +5,18 @@ set -euo pipefail
 
 set_namespace $CONJUR_NAMESPACE_NAME
 
+if [ $platform = 'kubernetes' ]; then
+    ui_url="https://$(get_master_service_ip):443"
+elif [ $platform = 'openshift' ]; then
+    conjur_master_route=$($cli get routes | grep conjur-master | awk '{ print $2 }')
+    ui_url="https://$conjur_master_route"
+fi
+
 announce "
 Conjur cluster is ready.
 
 Conjur UI address:
-  https://$(get_master_service_ip):443
+  $ui_url
 
 Conjur admin credentials:
   admin / $(rotate_api_key)

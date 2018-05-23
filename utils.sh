@@ -1,7 +1,12 @@
 #!/bin/bash
 
 platform=openshift
-cli=oc
+
+if [ $platform = 'kubernetes' ]; then
+    cli=kubectl
+elif [ $platform = 'openshift' ]; then
+    cli=oc
+fi
 
 check_env_var() {
   var_name=$1
@@ -20,11 +25,11 @@ announce() {
   echo "++++++++++++++++++++++++++++++++++++++"
 }
 
-appliance_image() {
+platform_image() {
   if [ $platform = "openshift" ]; then
-    echo "$DOCKER_REGISTRY_PATH/$CONJUR_NAMESPACE_NAME/conjur-appliance:$CONJUR_NAMESPACE_NAME"
+    echo "$DOCKER_REGISTRY_PATH/$CONJUR_NAMESPACE_NAME/$1:$CONJUR_NAMESPACE_NAME"
   else
-    echo "$DOCKER_REGISTRY_PATH/conjur-appliance:$CONJUR_NAMESPACE_NAME"
+    echo "$DOCKER_REGISTRY_PATH/$1:$CONJUR_NAMESPACE_NAME"
   fi
 }
 
@@ -58,7 +63,20 @@ copy_file_to_container() {
   local to=$2
   local pod_name=$3
 
-  $cli cp "$from" $pod_name:"$to"
+  if [ $platform = "kubernetes" ]; then
+    $cli cp "$from" $pod_name:"$to"
+  elif [ $platform = "openshift" ]; then
+    local source_file_path=$from
+    local source_file_name="$(basename "$source_file_path")"
+    local parent_path="$(dirname "$source_file_path")"
+    local parent_name="$(basename "$parent_path")"
+
+    local container_temp_path="/tmp"
+      
+    oc rsync "$parent_path" "$pod_name:$container_temp_path"
+    oc exec "$pod_name" mv "$container_temp_path/$parent_name/$source_file_name" "$to"
+    oc exec "$pod_name" rm -- -rf "$container_temp_path/$parent_name"
+  fi
 }
 
 get_master_pod_name() {

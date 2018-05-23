@@ -7,7 +7,7 @@ announce "Creating Conjur cluster."
 
 set_namespace $CONJUR_NAMESPACE_NAME
 
-if [ $cli = 'kubectl' ]; then
+if [ $platform = 'kubernetes' ]; then
   if ! [ "${DOCKER_EMAIL}" = "" ]; then
     announce "Creating image pull secret."
 
@@ -19,7 +19,7 @@ if [ $cli = 'kubectl' ]; then
       --docker-password=$DOCKER_PASSWORD \
       --docker-email=$DOCKER_EMAIL
   fi
-elif [ $cli = 'oc' ]; then
+elif [ $platform = 'openshift' ]; then
   announce "Creating image pull secret."
     
   $cli delete --ignore-not-found secrets dockerpullsecret
@@ -33,7 +33,7 @@ elif [ $cli = 'oc' ]; then
   $cli secrets add serviceaccount/default secrets/dockerpullsecret --for=pull    
 fi
 
-conjur_appliance_image=$(appliance_image)
+conjur_appliance_image=$(platform_image "conjur-appliance")
 
 echo "deploying main cluster"
 sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$platform/conjur-cluster.yaml" |
