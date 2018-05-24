@@ -1,10 +1,12 @@
 #!/bin/bash
 
-platform=openshift
+if [ $PLATFORM = '' ]; then
+    PLATFORM=kubernetes
+fi
 
-if [ $platform = 'kubernetes' ]; then
+if [ $PLATFORM = 'kubernetes' ]; then
     cli=kubectl
-elif [ $platform = 'openshift' ]; then
+elif [ $PLATFORM = 'openshift' ]; then
     cli=oc
 fi
 
@@ -26,7 +28,7 @@ announce() {
 }
 
 platform_image() {
-  if [ $platform = "openshift" ]; then
+  if [ $PLATFORM = "openshift" ]; then
     echo "$DOCKER_REGISTRY_PATH/$CONJUR_NAMESPACE_NAME/$1:$CONJUR_NAMESPACE_NAME"
   else
     echo "$DOCKER_REGISTRY_PATH/$1:$CONJUR_NAMESPACE_NAME"
@@ -48,7 +50,7 @@ has_namespace() {
 }
 
 docker_tag_and_push() {
-  if [ $platform = "kubernetes" ]; then
+  if [ $PLATFORM = "kubernetes" ]; then
     docker_tag="$DOCKER_REGISTRY_PATH/$1:$CONJUR_NAMESPACE_NAME"
   else
     docker_tag="$DOCKER_REGISTRY_PATH/$CONJUR_NAMESPACE_NAME/$1:$CONJUR_NAMESPACE_NAME"
@@ -63,9 +65,9 @@ copy_file_to_container() {
   local to=$2
   local pod_name=$3
 
-  if [ $platform = "kubernetes" ]; then
+  if [ $PLATFORM = "kubernetes" ]; then
     $cli cp "$from" $pod_name:"$to"
-  elif [ $platform = "openshift" ]; then
+  elif [ $PLATFORM = "openshift" ]; then
     local source_file_path=$from
     local source_file_name="$(basename "$source_file_path")"
     local parent_path="$(dirname "$source_file_path")"

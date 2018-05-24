@@ -13,7 +13,7 @@ if has_namespace "$CONJUR_NAMESPACE_NAME"; then
 else
   echo "Creating '$CONJUR_NAMESPACE_NAME' namespace."
 
-  if [ $platform = "kubernetes" ]; then
+  if [ $PLATFORM = 'kubernetes' ]; then
     $cli create namespace "$CONJUR_NAMESPACE_NAME"
   else
     $cli new-project "$CONJUR_NAMESPACE_NAME"

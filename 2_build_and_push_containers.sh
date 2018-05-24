@@ -3,7 +3,7 @@ set -euo pipefail
 
 . utils.sh
 
-if [ $platform = 'openshift' ]; then
+if [ $PLATFORM = 'openshift' ]; then
     docker login -u _ -p $(oc whoami -t) $DOCKER_REGISTRY_PATH
 fi
 

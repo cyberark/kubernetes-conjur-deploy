@@ -10,6 +10,16 @@ environment variables. The setup instructions below walk you through the
 necessary steps for configuring your environment and show you which variables
 need to be set before deploying.
 
+### Platform
+
+If you are working with OpenShift, you will need to begin by setting:
+
+```
+export PLATFORM=openshift
+```
+
+Otherwise, this variable will default to `kubernetes`.
+
 ### Docker Configuration
 
 [Install Docker](https://www.docker.com/get-docker) on your local machine if you
