@@ -97,8 +97,6 @@ mastercmd() {
 }
 
 set_namespace() {
-  # general utility for switching namespaces in kubernetes
-  # expects exactly 1 argument, a namespace name.
   if [[ $# != 1 ]]; then
     printf "Error in %s/%s - expecting 1 arg.\n" $(pwd) $0
     exit -1
