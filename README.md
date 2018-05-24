@@ -1,27 +1,32 @@
 # kubernetes-conjur-deploy
 
 This repository contains scripts for deploying a Conjur v4 cluster to a
-Kubernetes environment.
+Kubernetes or OpenShift environment.
 
 # Setup
 
 The Conjur deployment scripts pick up configuration details from local
 environment variables. The setup instructions below walk you through the
-necessary steps for configuring your Kubernetes environment and show you which
-variables need to be set before deploying.
+necessary steps for configuring your environment and show you which variables
+need to be set before deploying.
 
-### Docker
+### Docker Configuration
 
 [Install Docker](https://www.docker.com/get-docker) on your local machine if you
 do not already have it.
 
-You must have push access to a Docker registry in order to run these deploy
-scripts. Provide the URL and full path of your registry:
+#### Kubernetes
+
+You will need to provide the domain and any additional pathing for the Docker
+registry from which your Kubernetes cluster pulls images: 
 
 ```
 export DOCKER_REGISTRY_URL=<registry-domain>
 export DOCKER_REGISTRY_PATH=<registry-domain>/<additional-pathing>
 ```
+
+Note that the deploy scripts will be pushing images to this registry so you will
+need to have push access.
 
 If you are using a private registry, you will also need to provide login 
 credentials that are used by the deployment scripts to create a [secret for
@@ -35,11 +40,24 @@ export DOCKER_EMAIL=<your-email>
 
 Please make sure that you are logged in to the registry before deploying.
 
-### Kubernetes
+#### OpenShift
 
-Before deploying Conjur, you must first use `kubectl` to connect to your
-Kubernetes environment with a user that has the `cluster-admin` role. The user
-must be able to create namespaces and cluster roles.
+OpenShift users should make sure the [integrated Docker registry](https://docs.openshift.com/container-platform/3.3/install_config/registry/deploy_registry_existing_clusters.html)
+in your OpenShift environment is available and that you've added it as an
+[insecure registry](https://docs.docker.com/registry/insecure/) in your local
+Docker engine. You must then specify the path to the OpenShift registry like so:
+
+```
+export DOCKER_REGISTRY_PATH=docker-registry-<registry-namespace>.<routing-domain>
+```
+
+Please make sure that you are logged in to the registry before deploying.
+
+### Kubernetes / OpenShift Configuration
+
+Before deploying Conjur, you must first make sure that you are connected to your
+chosen platform with a user that has the `cluster-admin` role. The user must be
+able to create namespaces and cluster roles.
 
 #### Conjur Namespace
 
@@ -61,18 +79,22 @@ cluster role, which grants these privileges. Create the role now (note that
 your user will need to have the `cluster-admin` role to do so):
 
 ```
+# Kubernetes
 kubectl create -f ./manifests/conjur-authenticator-role.yaml
+
+# OpenShift
+oc create -f ./manifests/conjur-authenticator-role.yaml
 ```
 
-### Conjur
+### Conjur Configuration
 
 #### Appliance Image
 
-You need to obtain a Docker image of the Conjur v4 appliance and push it to your
-Docker registry with the tag:
+You need to obtain a Docker image of the Conjur v4 appliance and push it to an
+accessible Docker registry. Provide the image and tag like so:
 
 ```
-$DOCKER_REGISTRY_PATH/conjur-appliance:$CONJUR_NAMESPACE_NAME
+export CONJUR_APPLIANCE_IMAGE=<tagged-docker-appliance-image>
 ```
 
 #### Appliance Configuration
@@ -85,26 +107,16 @@ export CONJUR_ACCOUNT=<my_account_name>
 export CONJUR_ADMIN_PASSWORD=<my_admin_password>
 ```
 
-Conjur uses [declarative policy](https://developer.conjur.net/policy) to control
-access to secrets. After deploying Conjur, you need to load a policy that
-defines a `webservice` to represent the Kubernetes authenticator:
+You will also need to provide an ID for the Conjur authenticator that will later
+be used in [Conjur policy](https://developer.conjur.net/policy) to provide your
+apps with access to secrets through Conjur:
 
 ```
-- !policy
-id: conjur/authn-k8s/{{ SERVICE_ID }}
+export AUTHENTICATOR_ID=<authenticator-id>
 ```
 
-The `SERVICE_ID` should describe the Kubernetes cluster in which your Conjur
-deployment resides. For example, it might be something like `kubernetes/prod`.
-For Conjur configuration purposes, you need to provide this value to the Conjur
-deploy scripts like so:
-
-```
-export AUTHENTICATOR_SERVICE_ID=<service_id>
-```
-
-This `service_id` can be anything you like, but it's important to make sure
-that it matches the value that you intend to use in Conjur Policy.
+This ID should describe the cluster in which Conjur resides. For example, if
+you're hosting your dev environment on GKE you might use `gke/dev`.
 
 # Usage
 
@@ -122,8 +134,13 @@ the Kubernetes environment that can then be used to interact with Conjur. Deploy
 the CLI pod and SSH into it:
 
 ```
+# Kubernetes
 kubectl create -f ./manifests/conjur-cli.yaml
 kubectl exec -it [cli-pod-name] bash
+
+# OpenShift
+oc create -f ./manifests/conjur-cli.yaml
+oc exec -it <cli-pod-name> bash
 ```
 
 Once inside the CLI container, use the admin credentials to connect to Conjur:
@@ -143,5 +160,5 @@ access the Conjur UI.
 # Test App Demo
 
 The [kubernetes-conjur-demo repo](https://github.com/conjurdemos/kubernetes-conjur-demo)
-sets up test applications that retrieve secrets from Conjur and serves as a
+deploys test applications that retrieve secrets from Conjur and serves as a
 useful reference when setting up your own applications to integrate with Conjur.
