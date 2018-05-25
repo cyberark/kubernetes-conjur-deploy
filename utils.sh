@@ -43,17 +43,6 @@ has_namespace() {
   fi
 }
 
-docker_tag_and_push() {
-  if [ $PLATFORM = "kubernetes" ]; then
-    docker_tag="$DOCKER_REGISTRY_PATH/$1:$CONJUR_NAMESPACE_NAME"
-  else
-    docker_tag="$DOCKER_REGISTRY_PATH/$CONJUR_NAMESPACE_NAME/$1:$CONJUR_NAMESPACE_NAME"
-  fi
-    
-  docker tag $1:$CONJUR_NAMESPACE_NAME $docker_tag
-  docker push $docker_tag
-}
-
 copy_file_to_container() {
   local from=$1
   local to=$2
