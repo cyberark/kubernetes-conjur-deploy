@@ -1,13 +1,14 @@
 #!/bin/bash
 
-if [ $PLATFORM = '' ]; then
-    PLATFORM=kubernetes
-fi
+PLATFORM="${PLATFORM:-kubernetes}"  # default to kubernetes if env var not set
 
 if [ $PLATFORM = 'kubernetes' ]; then
     cli=kubectl
 elif [ $PLATFORM = 'openshift' ]; then
     cli=oc
+else
+  echo "$PLATFORM is not a supported platform"
+  exit 1
 fi
 
 check_env_var() {
