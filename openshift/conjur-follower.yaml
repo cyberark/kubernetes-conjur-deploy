@@ -28,10 +28,7 @@ spec:
         name: conjur-follower
         role: follower
     spec:
-<<<<<<< HEAD
       serviceAccountName: conjur-cluster
-=======
->>>>>>> master
       containers:
       - name: conjur-appliance
         image: {{ CONJUR_APPLIANCE_IMAGE }}

@@ -44,6 +44,10 @@ has_namespace() {
   fi
 }
 
+has_serviceaccount() {
+  $cli get serviceaccount "$1" &> /dev/null;
+}
+
 copy_file_to_container() {
   local from=$1
   local to=$2
