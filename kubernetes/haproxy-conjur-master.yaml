@@ -25,6 +25,7 @@ metadata:
   labels:
     app: haproxy-conjur-master
 spec:
+  serviceAccountName: conjur-cluster
   containers:
   - name: haproxy
     image: {{ DOCKER_IMAGE }}
