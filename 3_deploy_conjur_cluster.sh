@@ -7,28 +7,42 @@ announce "Creating Conjur cluster."
 
 set_namespace $CONJUR_NAMESPACE_NAME
 
-if ! [ "${DOCKER_EMAIL}" = "" ]; then
+if [ $PLATFORM = 'kubernetes' ]; then
+  if ! [ "${DOCKER_EMAIL}" = "" ]; then
+    announce "Creating image pull secret."
+
+    $cli delete --ignore-not-found secret dockerpullsecret
+
+    $cli create secret docker-registry dockerpullsecret \
+      --docker-server=$DOCKER_REGISTRY_URL \
+      --docker-username=$DOCKER_USERNAME \
+      --docker-password=$DOCKER_PASSWORD \
+      --docker-email=$DOCKER_EMAIL
+  fi
+elif [ $PLATFORM = 'openshift' ]; then
   announce "Creating image pull secret."
     
-  kubectl delete --ignore-not-found secret conjurregcred
-
-  kubectl create secret docker-registry conjurregcred \
-    --docker-server=$DOCKER_REGISTRY_URL \
-    --docker-username=$DOCKER_USERNAME \
-    --docker-password=$DOCKER_PASSWORD \
-    --docker-email=$DOCKER_EMAIL
+  $cli delete --ignore-not-found secrets dockerpullsecret
+  
+  $cli secrets new-dockercfg dockerpullsecret \
+    --docker-server=${DOCKER_REGISTRY_PATH} \
+    --docker-username=_ \
+    --docker-password=$($cli whoami -t) \
+    --docker-email=_
+  
+  $cli secrets add serviceaccount/default secrets/dockerpullsecret --for=pull
 fi
 
-conjur_appliance_image=$DOCKER_REGISTRY_PATH/conjur-appliance:$CONJUR_NAMESPACE_NAME
+conjur_appliance_image=$(platform_image "conjur-appliance")
 
 echo "deploying main cluster"
-sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" ./manifests/conjur-cluster.yaml |
-  kubectl create -f -
+sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/conjur-cluster.yaml" |
+  $cli create -f -
 
 echo "deploying followers"
-sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" ./manifests/conjur-follower.yaml |
-  sed -e "s#{{ AUTHENTICATOR_SERVICE_ID }}#$AUTHENTICATOR_SERVICE_ID#g" |
-  kubectl create -f -
+sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/conjur-follower.yaml" |
+  sed -e "s#{{ AUTHENTICATOR_ID }}#$AUTHENTICATOR_ID#g" |
+  $cli create -f -
 
 sleep 10
 

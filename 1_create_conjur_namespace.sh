@@ -12,6 +12,12 @@ if has_namespace "$CONJUR_NAMESPACE_NAME"; then
   set_namespace $CONJUR_NAMESPACE_NAME
 else
   echo "Creating '$CONJUR_NAMESPACE_NAME' namespace."
-  kubectl create namespace "$CONJUR_NAMESPACE_NAME"
+
+  if [ $PLATFORM = 'kubernetes' ]; then
+    $cli create namespace $CONJUR_NAMESPACE_NAME
+  elif [ $PLATFORM = 'openshift' ]; then
+    $cli new-project $CONJUR_NAMESPACE_NAME
+  fi
+  
   set_namespace $CONJUR_NAMESPACE_NAME
 fi

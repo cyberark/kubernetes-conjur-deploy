@@ -20,7 +20,7 @@ main() {
   update_ldap_servers
 
   copy_file_to_container "$destination_file" "/usr/local/etc/haproxy/haproxy.cfg" "$haproxy_pod_name"
-  kubectl exec $haproxy_pod_name /start.sh
+  $cli exec $haproxy_pod_name /start.sh
 }
 
 # Appends Conjur HTTP server info in HAProxy format to haproxy.cfg.
@@ -38,10 +38,10 @@ backend b_conjur_master_http
 	external-check command "/root/conjur-health-check.sh"
 CONFIG
 
-  pod_list=$(kubectl get pods -l app=conjur-node --no-headers | awk '{print $1}')
+  pod_list=$($cli get pods -l app=conjur-node --no-headers | awk '{print $1}')
   
   for pname in $pod_list; do
-    pod_ip=$(kubectl describe pod $pname | grep "IP:" | awk '{print $2}')
+    pod_ip=$($cli describe pod $pname | grep "IP:" | awk '{print $2}')
     echo -e '\t' server $pname $pod_ip:443 check >> $destination_file
   done
 }
@@ -61,10 +61,10 @@ backend b_conjur_master_pg
 	external-check command "/root/conjur-health-check.sh"
 CONFIG
 
-  pod_list=$(kubectl get pods -l app=conjur-node --no-headers | awk '{print $1}')
+  pod_list=$($cli get pods -l app=conjur-node --no-headers | awk '{print $1}')
   
   for pname in $pod_list; do
-    pod_ip=$(kubectl describe pod $pname | grep "IP:" | awk '{print $2}')
+    pod_ip=$($cli describe pod $pname | grep "IP:" | awk '{print $2}')
     echo -e '\t' server $pname $pod_ip:5432 check >> $destination_file
   done
 }
@@ -84,10 +84,10 @@ backend b_conjur_master_ldap
 	external-check command "/root/conjur-health-check.sh"
 CONFIG
 
-  pod_list=$(kubectl get pods -l app=conjur-node --no-headers | awk '{print $1}')
+  pod_list=$($cli get pods -l app=conjur-node --no-headers | awk '{print $1}')
   
   for pname in $pod_list; do
-    pod_ip=$(kubectl describe pod $pname | grep "IP:" | awk '{print $2}')
+    pod_ip=$($cli describe pod $pname | grep "IP:" | awk '{print $2}')
     echo -e '\t' server $pname $pod_ip:636 check >> $destination_file
   done
 }

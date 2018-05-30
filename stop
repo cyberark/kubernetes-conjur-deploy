@@ -6,7 +6,7 @@ set -euo pipefail
 set_namespace default
 
 if has_namespace $CONJUR_NAMESPACE_NAME; then
-  kubectl delete namespace $CONJUR_NAMESPACE_NAME
+  $cli delete namespace $CONJUR_NAMESPACE_NAME
 
   printf "Waiting for $CONJUR_NAMESPACE_NAME namespace deletion to complete"
 

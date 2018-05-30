@@ -31,4 +31,4 @@ spec:
         - containerPort: 5433
           name: pg-audit
       imagePullSecrets:
-        - name: conjurregcred
+        - name: dockerpullsecret

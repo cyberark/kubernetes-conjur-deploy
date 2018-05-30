@@ -34,7 +34,7 @@ spec:
         imagePullPolicy: Always
         env:
           - name: CONJUR_AUTHENTICATORS
-            value: authn-k8s/{{ AUTHENTICATOR_SERVICE_ID }}
+            value: authn-k8s/{{ AUTHENTICATOR_ID }}
         ports:
         - containerPort: 443
           name: https
@@ -45,4 +45,4 @@ spec:
         - containerPort: 5433
           name: pg-audit
       imagePullSecrets:
-        - name: conjurregcred
+        - name: dockerpullsecret

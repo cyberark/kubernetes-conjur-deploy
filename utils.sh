@@ -1,5 +1,16 @@
 #!/bin/bash
 
+PLATFORM="${PLATFORM:-kubernetes}"  # default to kubernetes if env var not set
+
+if [ $PLATFORM = 'kubernetes' ]; then
+    cli=kubectl
+elif [ $PLATFORM = 'openshift' ]; then
+    cli=oc
+else
+  echo "$PLATFORM is not a supported platform"
+  exit 1
+fi
+
 check_env_var() {
   var_name=$1
 
@@ -17,24 +28,20 @@ announce() {
   echo "++++++++++++++++++++++++++++++++++++++"
 }
 
-environment_domain() {
-  env_url=$(environment_url)
-  protocol="$(echo $env_url | grep :// | sed -e's,^\(.*://\).*,\1,g')"
-  echo ${env_url/$protocol/}
+platform_image() {
+  if [ $PLATFORM = "openshift" ]; then
+    echo "$DOCKER_REGISTRY_PATH/$CONJUR_NAMESPACE_NAME/$1:$CONJUR_NAMESPACE_NAME"
+  else
+    echo "$DOCKER_REGISTRY_PATH/$1:$CONJUR_NAMESPACE_NAME"
+  fi
 }
 
 has_namespace() {
-  if kubectl get namespace "$1" > /dev/null; then
+  if $cli get namespace "$1" &> /dev/null; then
     true
   else
     false
   fi
-}
-
-docker_tag_and_push() {
-  docker_tag="${DOCKER_REGISTRY_PATH}/$1:$CONJUR_NAMESPACE_NAME"
-  docker tag $1:$CONJUR_NAMESPACE_NAME $docker_tag
-  docker push $docker_tag
 }
 
 copy_file_to_container() {
@@ -42,43 +49,54 @@ copy_file_to_container() {
   local to=$2
   local pod_name=$3
 
-  kubectl cp "$from" $pod_name:"$to"
+  if [ $PLATFORM = "kubernetes" ]; then
+    $cli cp "$from" $pod_name:"$to"
+  elif [ $PLATFORM = "openshift" ]; then
+    local source_file_path=$from
+    local source_file_name="$(basename "$source_file_path")"
+    local parent_path="$(dirname "$source_file_path")"
+    local parent_name="$(basename "$parent_path")"
+
+    local container_temp_path="/tmp"
+      
+    oc rsync "$parent_path" "$pod_name:$container_temp_path"
+    oc exec "$pod_name" mv "$container_temp_path/$parent_name/$source_file_name" "$to"
+    oc exec "$pod_name" rm -- -rf "$container_temp_path/$parent_name"
+  fi
 }
 
 get_master_pod_name() {
-  pod_list=$(kubectl get pods -l app=conjur-node --no-headers | awk '{ print $1 }')
+  pod_list=$($cli get pods -l app=conjur-node --no-headers | awk '{ print $1 }')
   echo $pod_list | awk '{print $1}'
 }
 
 get_master_service_ip() {
-  echo $(kubectl get service conjur-master -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+  echo $($cli get service conjur-master -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 }
 
 mastercmd() {
-  local master_pod=$(kubectl get pod -l role=master --no-headers | awk '{ print $1 }')
+  local master_pod=$($cli get pod -l role=master --no-headers | awk '{ print $1 }')
   local interactive=$1
 
   if [ $interactive = '-i' ]; then
     shift
-    kubectl exec -i $master_pod -- $@
+    $cli exec -i $master_pod -- $@
   else
-    kubectl exec $master_pod -- $@
+    $cli exec $master_pod -- $@
   fi
 }
 
 set_namespace() {
-  # general utility for switching namespaces in kubernetes
-  # expects exactly 1 argument, a namespace name.
   if [[ $# != 1 ]]; then
     printf "Error in %s/%s - expecting 1 arg.\n" $(pwd) $0
     exit -1
   fi
 
-  kubectl config set-context $(kubectl config current-context) --namespace="$1" > /dev/null
+  $cli config set-context $($cli config current-context) --namespace="$1" > /dev/null
 }
 
 wait_for_node() {
-  wait_for_it -1 "kubectl describe pod $1 | grep Status: | grep -q Running"
+  wait_for_it -1 "$cli describe pod $1 | grep Status: | grep -q Running"
 }
 
 function wait_for_it() {
@@ -113,9 +131,9 @@ rotate_api_key() {
 
   master_pod_name=$(get_master_pod_name)
     
-  kubectl exec $master_pod_name -- conjur authn login -u admin -p $CONJUR_ADMIN_PASSWORD > /dev/null
-  api_key=$(kubectl exec $master_pod_name -- conjur user rotate_api_key)
-  kubectl exec $master_pod_name -- conjur authn logout > /dev/null
+  $cli exec $master_pod_name -- conjur authn login -u admin -p $CONJUR_ADMIN_PASSWORD > /dev/null
+  api_key=$($cli exec $master_pod_name -- conjur user rotate_api_key)
+  $cli exec $master_pod_name -- conjur authn logout > /dev/null
 
   echo $api_key
 }
