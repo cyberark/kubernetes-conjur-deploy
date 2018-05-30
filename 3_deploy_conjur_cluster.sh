@@ -30,7 +30,7 @@ elif [ $PLATFORM = 'openshift' ]; then
     --docker-password=$($cli whoami -t) \
     --docker-email=_
   
-  $cli secrets add serviceaccount/default secrets/dockerpullsecret --for=pull
+  $cli secrets add serviceaccount/conjur-cluster secrets/dockerpullsecret --for=pull
 fi
 
 conjur_appliance_image=$(platform_image "conjur-appliance")
