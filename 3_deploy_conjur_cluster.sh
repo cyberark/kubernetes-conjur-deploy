@@ -36,7 +36,7 @@ fi
 conjur_appliance_image=$(platform_image "conjur-appliance")
 
 echo "deploying main cluster"
-sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/conjur-cluster.yaml" |
+sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/conjur-cluster-stateful.yml" |
   $cli create -f -
 
 echo "deploying followers"
