@@ -1,0 +1,38 @@
+#!/bin/bash 
+set -euo pipefail
+
+. utils.sh
+
+set_namespace $CONJUR_NAMESPACE_NAME
+
+master_pod_name=$(get_master_pod_name)
+
+$cli delete pod $master_pod_name
+
+echo "Master pod deleted."
+
+wait_for_node $master_pod_name
+
+$cli exec $master_pod_name -- rm -rf /var/lib/postgresql/9.3/main
+$cli exec $master_pod_name -- ln -s /opt/conjur/dbdata/main /var/lib/postgresql/9.3/main
+$cli exec $master_pod_name -- chown -h postgres:postgres /var/lib/postgresql/9.3/main
+
+echo "Master database recovered."
+
+$cli exec $master_pod_name -- cp /opt/conjur/data/standby-seed.tar /opt/conjur/data/standby-seed.tar-bkup
+$cli exec $master_pod_name -- evoke unpack seed /opt/conjur/data/standby-seed.tar
+$cli exec $master_pod_name -- cp /opt/conjur/data/standby-seed.tar-bkup /opt/conjur/data/standby-seed.tar
+$cli exec $master_pod_name -- rm /etc/chef/solo.json
+
+echo "Master configuration recovered."
+
+$cli label --overwrite pod $master_pod_name role=master
+
+$cli exec $master_pod_name -- evoke configure master \
+   -h conjur-master \
+   --master-altnames localhost,conjur-master.$CONJUR_NAMESPACE_NAME.svc.cluster.local \
+   --follower-altnames conjur-follower,conjur-follower.$CONJUR_NAMESPACE_NAME.svc.cluster.local \
+   -p $CONJUR_ADMIN_PASSWORD \
+   $CONJUR_ACCOUNT
+
+echo "Master pod configured."
