@@ -36,3 +36,7 @@ $cli exec $master_pod_name -- evoke configure master \
    $CONJUR_ACCOUNT
 
 echo "Master pod configured."
+
+haproxy/update_haproxy.sh haproxy-conjur-master
+
+echo "HAProxy reconfigured."
