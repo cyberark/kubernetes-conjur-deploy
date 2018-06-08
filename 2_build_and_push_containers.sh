@@ -3,6 +3,8 @@ set -euo pipefail
 
 . utils.sh
 
+announce "Building and pushing HAProxy image."
+
 if [ $PLATFORM = 'openshift' ]; then
     docker login -u _ -p $(oc whoami -t) $DOCKER_REGISTRY_PATH
 fi
