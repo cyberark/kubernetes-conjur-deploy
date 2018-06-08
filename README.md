@@ -90,10 +90,10 @@ your user will need to have the `cluster-admin` role to do so):
 
 ```
 # Kubernetes
-kubectl create -f ./kubernetes/conjur-authenticator-role.yaml
+kubectl create -f ./kubernetes/conjur-authenticator-role.yml
 
 # OpenShift
-oc create -f ./openshift/conjur-authenticator-role.yaml
+oc create -f ./openshift/conjur-authenticator-role.yml
 ```
 
 ### Conjur Configuration
@@ -145,11 +145,11 @@ the CLI pod and SSH into it:
 
 ```
 # Kubernetes
-kubectl create -f ./manifests/conjur-cli.yaml
+kubectl create -f ./manifests/conjur-cli.yml
 kubectl exec -it [cli-pod-name] bash
 
 # OpenShift
-oc create -f ./manifests/conjur-cli.yaml
+oc create -f ./manifests/conjur-cli.yml
 oc exec -it <cli-pod-name> bash
 ```
 

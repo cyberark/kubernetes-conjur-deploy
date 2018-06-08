@@ -9,7 +9,7 @@ set_namespace $CONJUR_NAMESPACE_NAME
 
 docker_image=$(platform_image haproxy)
 
-sed -e "s#{{ DOCKER_IMAGE }}#$docker_image#g" "./$PLATFORM/haproxy-conjur-master.yaml" |
+sed -e "s#{{ DOCKER_IMAGE }}#$docker_image#g" "./$PLATFORM/haproxy-conjur-master.yml" |
   $cli create -f -
 
 wait_for_node 'haproxy-conjur-master'
