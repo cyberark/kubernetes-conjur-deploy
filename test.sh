@@ -6,8 +6,8 @@
 #!/bin/bash -euf
 set -o pipefail
 
-PLATFORM="$1"
-export PLATFORM
+TEST_PLATFORM="$1"
+export TEST_PLATFORM
 
 function main() {
   setupTestEnvironment
@@ -24,7 +24,7 @@ function setupTestEnvironment() {
   export CONJUR_ADMIN_PASSWORD=\$uper\$ecret
   export AUTHENTICATOR_ID=conjur/k8s-test
     
-  case "$PLATFORM" in
+  case "$TEST_PLATFORM" in
     gke)
       export DOCKER_REGISTRY_URL="gcr.io"
       export DOCKER_REGISTRY_PATH="gcr.io/$GCLOUD_PROJECT_NAME"
@@ -43,7 +43,7 @@ function setupTestEnvironment() {
       docker login -u _ -p $(oc whoami -t) $DOCKER_REGISTRY_PATH
       ;;
     *)
-      echo "'$PLATFORM' is not a supported test platform"
+      echo "'$TEST_PLATFORM' is not a supported test platform"
       exit 1
   esac
 }
