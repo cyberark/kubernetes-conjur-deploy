@@ -1,16 +1,6 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: conjur-cluster-service
-  labels:
-    app: conjur-cluster-service
-spec:
-  clusterIP: None
-  selector:
-    app: conjur-node
 ---
-apiVersion: apps/v1beta2
-kind: StatefulSet
+apiVersion: apps/v1beta1
+kind: Deployment
 metadata:
   labels:
     app: conjur-cluster
@@ -20,7 +10,6 @@ spec:
   selector:
     matchLabels:
       app: conjur-node
-  serviceName: conjur-cluster-service
   template:
     metadata:
       labels:
@@ -28,9 +17,10 @@ spec:
         name: conjur-node
         role: unset # set to master or standby when configured
     spec:
+      serviceAccountName: conjur-cluster
       containers:
       - name: conjur-appliance
-        image: us.gcr.io/conjur-gke-dev/conjur-appliance:stateful
+        image: {{ CONJUR_APPLIANCE_IMAGE }}
         imagePullPolicy: Always
         ports:
         - containerPort: 443
@@ -41,23 +31,5 @@ spec:
           name: pg-main
         - containerPort: 5433
           name: pg-audit
-        volumeMounts:
-        - name: conjur-dbdata
-          mountPath: /opt/conjur/dbdata
-        - name: conjur-data
-          mountPath: /opt/conjur/data
-  volumeClaimTemplates:
-  - metadata:
-      name: conjur-dbdata
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: 2Gi
-  - metadata:
-      name: conjur-data
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: 1Gi
+      imagePullSecrets:
+        - name: dockerpullsecret
