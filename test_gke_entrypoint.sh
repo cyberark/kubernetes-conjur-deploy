@@ -31,6 +31,9 @@ export TEMPLATE_TAG=gke.
 
 function main() {
   initialize
+
+  docker login $DOCKER_REGISTRY_URL -u oauth2accesstoken -p $(gcloud auth print-access-token)
+    
   runScripts
 }
 
