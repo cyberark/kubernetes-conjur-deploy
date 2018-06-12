@@ -38,7 +38,7 @@ function initialize() {
 }
 
 function pushDockerImages() {
-  docker push $CONJUR_APPLIANCE_IMAGE
+#  docker push $CONJUR_APPLIANCE_IMAGE
 }
 
 function runScripts() {

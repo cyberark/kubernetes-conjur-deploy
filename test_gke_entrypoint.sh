@@ -41,7 +41,7 @@ function initialize() {
 }
 
 function pushDockerImages() {
-  gcloud docker -- push $CONJUR_APPLIANCE_IMAGE
+#  gcloud docker -- push $CONJUR_APPLIANCE_IMAGE
 }
 
 function runScripts() {
