@@ -62,11 +62,13 @@ function test_gke() {
     -e GCLOUD_PROJECT_NAME \
     -e GCLOUD_SERVICE_KEY=/tmp$GCLOUD_SERVICE_KEY \
     -e GCLOUD_ZONE \
+    -e CONJUR_APPLIANCE_IMAGE \
     -e CONJUR_NAMESPACE_NAME \
+    -e DOCKER_REGISTRY_URL \
+    -e DOCKER_REGISTRY_PATH \
     -e CONJUR_ACCOUNT \
     -e CONJUR_ADMIN_PASSWORD \
     -e AUTHENTICATOR_ID \
-    -e CONJUR_APPLIANCE_IMAGE \
     -v $GCLOUD_SERVICE_KEY:/tmp$GCLOUD_SERVICE_KEY \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$PWD":/src \
@@ -81,11 +83,12 @@ function test_openshift() {
     -e OPENSHIFT_USERNAME \
     -e OPENSHIFT_PASSWORD \
     -e K8S_VERSION \
+    -e CONJUR_APPLIANCE_IMAGE \
     -e CONJUR_NAMESPACE_NAME \
+    -e DOCKER_REGISTRY_URL
     -e CONJUR_ACCOUNT \
     -e CONJUR_ADMIN_PASSWORD \
     -e AUTHENTICATOR_ID \
-    -e CONJUR_APPLIANCE_IMAGE \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$PWD":/src \
     $K8S_CONJUR_DEPLOY_TESTER_IMAGE bash -c "./test_oc_entrypoint.sh"
