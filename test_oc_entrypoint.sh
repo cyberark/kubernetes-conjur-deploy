@@ -16,7 +16,7 @@ function finish {
   echo 'Finishing'
   echo '-----'
   
-  echo 'Removing namespace $CONJUR_NAMESPACE_NAME'
+  echo "Removing namespace $CONJUR_NAMESPACE_NAME"
   echo '-----'
 
   ./stop
