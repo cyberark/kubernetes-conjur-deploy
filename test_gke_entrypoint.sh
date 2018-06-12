@@ -31,17 +31,12 @@ export TEMPLATE_TAG=gke.
 
 function main() {
   initialize
-  pushDockerImages
   runScripts
 }
 
 function initialize() {
   gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY
   gcloud container clusters get-credentials $GCLOUD_CLUSTER_NAME --zone $GCLOUD_ZONE --project $GCLOUD_PROJECT_NAME
-}
-
-function pushDockerImages() {
-#  gcloud docker -- push $CONJUR_APPLIANCE_IMAGE
 }
 
 function runScripts() {

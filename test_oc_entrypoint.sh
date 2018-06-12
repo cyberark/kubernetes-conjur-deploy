@@ -28,17 +28,12 @@ export TEMPLATE_TAG="$TEST_PLATFORM."
 
 function main() {
   initialize
-  pushDockerImages
   runScripts
 }
 
 function initialize() {
   oc login $OPENSHIFT_URL --username=$OPENSHIFT_USERNAME --password=$OPENSHIFT_PASSWORD --insecure-skip-tls-verify=true
   docker login -u _ -p $(oc whoami -t) $OPENSHIFT_REGISTRY_URL
-}
-
-function pushDockerImages() {
-#  docker push $CONJUR_APPLIANCE_IMAGE
 }
 
 function runScripts() {
