@@ -11,15 +11,24 @@ export TEST_PLATFORM
 
 function main() {
   setupTestEnvironment
-  pushApplianceImage
-  createRole
+  buildDockerImages
+#  createRole
 
-  ./start
+  case "$TEST_PLATFORM" in
+    gke)
+      test_gke
+      ;;
+    openshift*)
+      test_openshift
+      ;;
+    *)
+      echo "'$PLATFORM' is not a supported test platform"
+      exit 1
+  esac
 }
 
 function setupTestEnvironment() {
   export CONJUR_NAMESPACE_NAME="conjur-deploy-test-$(uuidgen | tr "[:upper:]" "[:lower:]")"
-  export CONJUR_APPLIANCE_IMAGE=registry2.itci.conjur.net/conjur-appliance:4.9-stable
   export CONJUR_ACCOUNT=my-account
   export CONJUR_ADMIN_PASSWORD=\$uper\$ecret
   export AUTHENTICATOR_ID=conjur/k8s-test
@@ -28,43 +37,59 @@ function setupTestEnvironment() {
     gke)
       export DOCKER_REGISTRY_URL="gcr.io"
       export DOCKER_REGISTRY_PATH="gcr.io/$GCLOUD_PROJECT_NAME"
-      export PLATFORM=kubernetes
-
-      gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY
-      gcloud container clusters get-credentials $GCLOUD_CLUSTER_NAME --zone $GCLOUD_ZONE --project $GCLOUD_PROJECT_NAME
       ;;
     openshift*)
       export DOCKER_REGISTRY_PATH="$OPENSHIFT_REGISTRY_URL/$CONJUR_NAMESPACE_NAME"
-      export PLATFORM=openshift
-
-      oc login $OPENSHIFT_URL \
-        --username=$OPENSHIFT_USERNAME --password=$OPENSHIFT_PASSWORD \
-        --insecure-skip-tls-verify=true
-      docker login -u _ -p $(oc whoami -t) $DOCKER_REGISTRY_PATH
       ;;
-    *)
-      echo "'$TEST_PLATFORM' is not a supported test platform"
-      exit 1
   esac
 }
 
-function pushApplianceImage() {
-  local platform_tag="$DOCKER_REGISTRY_PATH/conjur-appliance:$CONJUR_NAMESPACE_NAME"
-    
-  docker pull registry2.itci.conjur.net/conjur-appliance-cuke-master:4.9-stable
-  docker tag registry2.itci.conjur.net/conjur-appliance-cuke-master:4.9-stable $platform_tag
-  docker push $platform_tag
+function buildDockerImages() {
+  # Conjur appliance retagged for K8s / OpenShift registry.
+  local appliance_image="registry2.itci.conjur.net/conjur-appliance-cuke-master:4.9-stable"
+  export CONJUR_APPLIANCE_IMAGE="$DOCKER_REGISTRY_PATH/conjur-appliance:$CONJUR_NAMESPACE_NAME"
+  docker pull $appliance_image
+  docker tag $appliance_image $CONJUR_APPLIANCE_IMAGE
+
+  # Test image w/ kubectl and oc CLIs installed to drive scripts.
+  export K8S_CONJUR_DEPLOY_TESTER_IMAGE="${DOCKER_REGISTRY_PATH}/k8s-conjur-deploy-tester:$CONJUR_NAMESPACE_NAME"    
+  docker build --build-arg OPENSHIFT_CLI_URL=$OPENSHIFT_CLI_URL \
+    -t $K8S_CONJUR_DEPLOY_TESTER_IMAGE -f dev/Dockerfile.test .
 }
 
-function createRole() {
-  case "$PLATFORM" in
-    kubernetes)
-      kubectl create -f ./kubernetes/conjur-authenticator-role.yaml
-      ;;
-    openshift)
-      oc create -f ./openshift/conjur-authenticator-role.yaml
-      ;;
-  esac
+function test_gke() {
+  docker run --rm \
+    -e GCLOUD_CLUSTER_NAME \
+    -e GCLOUD_PROJECT_NAME \
+    -e GCLOUD_SERVICE_KEY=/tmp$GCLOUD_SERVICE_KEY \
+    -e GCLOUD_ZONE \
+    -e CONJUR_NAMESPACE_NAME \
+    -e CONJUR_ACCOUNT \
+    -e CONJUR_ADMIN_PASSWORD \
+    -e AUTHENTICATOR_ID \
+    -e CONJUR_APPLIANCE_IMAGE \
+    -v $GCLOUD_SERVICE_KEY:/tmp$GCLOUD_SERVICE_KEY \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v "$PWD":/src \
+    $K8S_CONJUR_DEPLOY_TESTER_TAG bash -c "./test_gke_entrypoint.sh"
+}
+
+function test_openshift() {
+  docker run --rm \
+    -e TEST_PLATFORM \
+    -e OPENSHIFT_URL \
+    -e OPENSHIFT_REGISTRY_URL \
+    -e OPENSHIFT_USERNAME \
+    -e OPENSHIFT_PASSWORD \
+    -e K8S_VERSION \
+    -e CONJUR_NAMESPACE_NAME \
+    -e CONJUR_ACCOUNT \
+    -e CONJUR_ADMIN_PASSWORD \
+    -e AUTHENTICATOR_ID \
+    -e CONJUR_APPLIANCE_IMAGE \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v "$PWD":/src \
+    $K8S_CONJUR_DEPLOY_TESTER_TAG bash -c "./test_oc_entrypoint.sh"
 }
 
 main
