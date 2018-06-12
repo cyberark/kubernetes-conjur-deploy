@@ -15,14 +15,12 @@ ENDOFLINE
 function finish {
   echo 'Finishing'
   echo '-----'
-  
-  echo "Removing namespace $CONJUR_NAMESPACE_NAME"
-  echo '-----'
 
   ./stop
-
+  
   gcloud container images delete --force-delete-tags -q \
-    $CONJUR_APPLIANCE_IMAGE $K8S_CONJUR_DEPLOY_TESTER_IMAGE
+    "$DOCKER_REGISTRY_PATH/conjur-appliance:$CONJUR_NAMESPACE_NAME" \
+    "$DOCKER_REGISTRY_PATH/haproxy:$CONJUR_NAMESPACE_NAME"
 }
 trap finish EXIT
 
