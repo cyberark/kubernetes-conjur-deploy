@@ -45,7 +45,7 @@ function setupTestEnvironment() {
 
 function buildDockerImages() {
   # Conjur appliance retagged for K8s / OpenShift registry.
-  local appliance_image="registry2.itci.conjur.net/conjur-appliance-cuke-master:4.9-stable"
+  local appliance_image="registry2.itci.conjur.net/conjur-appliance:4.9-stable"
   export CONJUR_APPLIANCE_IMAGE="$DOCKER_REGISTRY_PATH/conjur-appliance:$CONJUR_NAMESPACE_NAME"
   docker pull $appliance_image
   docker tag $appliance_image $CONJUR_APPLIANCE_IMAGE
