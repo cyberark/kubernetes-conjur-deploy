@@ -70,7 +70,7 @@ function test_gke() {
     -v $GCLOUD_SERVICE_KEY:/tmp$GCLOUD_SERVICE_KEY \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$PWD":/src \
-    $K8S_CONJUR_DEPLOY_TESTER_TAG bash -c "./test_gke_entrypoint.sh"
+    $K8S_CONJUR_DEPLOY_TESTER_TAG bash -c "ls"
 }
 
 function test_openshift() {
