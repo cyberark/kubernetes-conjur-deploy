@@ -6,6 +6,8 @@ set -o pipefail
 # TEST_PLATFORM GCLOUD_CLUSTER_NAME GCLOUD_ZONE GCLOUD_PROJECT_NAME GCLOUD_SERVICE_KEY
 # CONJUR_NAMESPACE_NAME CONJUR_APPLIANCE_IMAGE
 # to exist
+export PLATFORM=kubernetes
+export TEMPLATE_TAG=gke.
 
 export LOCAL_DEV_VOLUME=$(cat <<- ENDOFLINE
 emptyDir: {}
@@ -16,6 +18,8 @@ function finish {
   echo 'Finishing'
   echo '-----'
 
+  kubectl logs "$(kubectl get pods -l role=master --no-headers | awk '{print $1}')" > "output/$TEST_PLATFORM-authn-k8s-logs.txt"
+
   ./stop
   
   gcloud container images delete --force-delete-tags -q \
@@ -23,9 +27,6 @@ function finish {
     "$DOCKER_REGISTRY_PATH/haproxy:$CONJUR_NAMESPACE_NAME"
 }
 trap finish EXIT
-
-export PLATFORM=kubernetes
-export TEMPLATE_TAG=gke.
 
 function main() {
   initialize

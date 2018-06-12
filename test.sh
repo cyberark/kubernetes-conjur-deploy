@@ -41,6 +41,8 @@ function setupTestEnvironment() {
       export DOCKER_REGISTRY_PATH="$OPENSHIFT_REGISTRY_URL"
       ;;
   esac
+
+  mkdir -p output  # for pod logs
 }
 
 function buildDockerImages() {

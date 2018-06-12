@@ -9,7 +9,7 @@ pipeline {
   }
 
   stages {
-     stage('Run Scripts') {
+    stage('Run Scripts') {
       parallel {
         stage('Test on K8S 1.7 in GKE') {
           steps {
@@ -27,6 +27,9 @@ pipeline {
           }
         }
       }
+      post { always {
+        archiveArtifacts artifacts: 'output/*-authn-k8s-logs.txt'
+      }}
     }
   }
 
