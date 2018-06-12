@@ -29,15 +29,13 @@ export TEMPLATE_TAG=gke.
 
 function main() {
   initialize
-
-  docker login $DOCKER_REGISTRY_URL -u oauth2accesstoken -p $(gcloud auth print-access-token)
-    
   runScripts
 }
 
 function initialize() {
   gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY
   gcloud container clusters get-credentials $GCLOUD_CLUSTER_NAME --zone $GCLOUD_ZONE --project $GCLOUD_PROJECT_NAME
+  docker login $DOCKER_REGISTRY_URL -u oauth2accesstoken -p $(gcloud auth print-access-token)
 }
 
 function runScripts() {
