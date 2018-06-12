@@ -85,7 +85,7 @@ function test_openshift() {
     -e K8S_VERSION \
     -e CONJUR_APPLIANCE_IMAGE \
     -e CONJUR_NAMESPACE_NAME \
-    -e DOCKER_REGISTRY_URL
+    -e DOCKER_REGISTRY_URL \
     -e CONJUR_ACCOUNT \
     -e CONJUR_ADMIN_PASSWORD \
     -e AUTHENTICATOR_ID \
