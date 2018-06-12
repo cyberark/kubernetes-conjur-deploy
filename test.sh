@@ -51,6 +51,7 @@ function buildDockerImages() {
     #  docker tag $appliance_image $CONJUR_APPLIANCE_IMAGE
 
   export CONJUR_APPLIANCE_IMAGE="registry2.itci.conjur.net/conjur-appliance:4.9-stable"
+  docker pull $CONJUR_APPLIANCE_IMAGE
 
   # Test image w/ kubectl and oc CLIs installed to drive scripts.
 #  export K8S_CONJUR_DEPLOY_TESTER_IMAGE="${DOCKER_REGISTRY_PATH}/k8s-conjur-deploy-tester:$CONJUR_NAMESPACE_NAME"
