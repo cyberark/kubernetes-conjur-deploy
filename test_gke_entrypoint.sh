@@ -45,6 +45,9 @@ function pushDockerImages() {
 function runScripts() {
   echo 'Running Scripts'
 
+  ls
+  pwd
+  
   cd /src/kubernetes-conjur-deploy
   
   mkdir -p output
