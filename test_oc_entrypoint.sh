@@ -23,7 +23,9 @@ function finish {
 }
 trap finish EXIT
 
+export PLATFORM=openshift
 export TEMPLATE_TAG="$TEST_PLATFORM."
+
 function main() {
   initialize
   pushDockerImages
@@ -42,10 +44,7 @@ function pushDockerImages() {
 function runScripts() {
   echo 'Running tests'
 
-  cd /src/kubernetes-conjur-deploy
-  
-  mkdir -p output
-  ./start > "output/$TEST_PLATFORM-kubernetes-conjur-deploy-logs.txt"
+  ./start
 }
 
 main

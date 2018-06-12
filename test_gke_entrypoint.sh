@@ -26,7 +26,9 @@ function finish {
 }
 trap finish EXIT
 
+export PLATFORM=kubernetes
 export TEMPLATE_TAG=gke.
+
 function main() {
   initialize
   pushDockerImages
@@ -45,13 +47,7 @@ function pushDockerImages() {
 function runScripts() {
   echo 'Running Scripts'
 
-  ls
-  pwd
-  
-  cd /src/kubernetes-conjur-deploy
-  
-  mkdir -p output
-  ./start > "output/$TEST_PLATFORM-kubernetes-conjur-deploy-logs.txt"
+  ./start
 }
 
 main
