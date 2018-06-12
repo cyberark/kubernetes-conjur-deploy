@@ -70,7 +70,7 @@ function test_gke() {
     -v $GCLOUD_SERVICE_KEY:/tmp$GCLOUD_SERVICE_KEY \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$PWD":/src \
-    $K8S_CONJUR_DEPLOY_TESTER_TAG bash -c "ls"
+    $K8S_CONJUR_DEPLOY_TESTER_IMAGE bash -c "./test_gke_entrypoint.sh"
 }
 
 function test_openshift() {
@@ -88,7 +88,7 @@ function test_openshift() {
     -e CONJUR_APPLIANCE_IMAGE \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$PWD":/src \
-    $K8S_CONJUR_DEPLOY_TESTER_TAG bash -c "./test_oc_entrypoint.sh"
+    $K8S_CONJUR_DEPLOY_TESTER_IMAGE bash -c "./test_oc_entrypoint.sh"
 }
 
 main
