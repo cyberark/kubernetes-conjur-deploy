@@ -3,7 +3,7 @@
 set -o pipefail
 
 # expects
-# GCLOUD_CLUSTER_NAME GCLOUD_ZONE GCLOUD_PROJECT_NAME GCLOUD_SERVICE_KEY
+# TEST_PLATFORM GCLOUD_CLUSTER_NAME GCLOUD_ZONE GCLOUD_PROJECT_NAME GCLOUD_SERVICE_KEY
 # CONJUR_NAMESPACE_NAME CONJUR_APPLIANCE_IMAGE
 # to exist
 
@@ -46,9 +46,9 @@ function runScripts() {
   echo 'Running Scripts'
 
   cd /src/kubernetes-conjur-deploy
-
-  mkdir -p /src/kubernetes-conjur-deploy/output
-  ./start > output.txt
+  
+  mkdir -p output
+  ./start > "output/$TEST_PLATFORM-kubernetes-conjur-deploy-logs.txt"
 }
 
 main

@@ -12,7 +12,6 @@ export TEST_PLATFORM
 function main() {
   setupTestEnvironment
   buildDockerImages
-#  createRole
 
   case "$TEST_PLATFORM" in
     gke)
@@ -54,7 +53,7 @@ function buildDockerImages() {
   # Test image w/ kubectl and oc CLIs installed to drive scripts.
   export K8S_CONJUR_DEPLOY_TESTER_IMAGE="${DOCKER_REGISTRY_PATH}/k8s-conjur-deploy-tester:$CONJUR_NAMESPACE_NAME"    
   docker build --build-arg OPENSHIFT_CLI_URL=$OPENSHIFT_CLI_URL \
-    -t $K8S_CONJUR_DEPLOY_TESTER_IMAGE -f dev/Dockerfile.test .
+    -t $K8S_CONJUR_DEPLOY_TESTER_IMAGE -f Dockerfile.test .
 }
 
 function test_gke() {

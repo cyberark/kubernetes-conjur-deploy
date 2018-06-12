@@ -43,9 +43,9 @@ function runScripts() {
   echo 'Running tests'
 
   cd /src/kubernetes-conjur-deploy
-
-  mkdir -p /src/kubernetes-conjur-deploy/output
-  ./start > output.txt
+  
+  mkdir -p output
+  ./start > "output/$TEST_PLATFORM-kubernetes-conjur-deploy-logs.txt"
 }
 
 main
