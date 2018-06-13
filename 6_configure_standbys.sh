@@ -12,6 +12,9 @@ master_pod_name=$(get_master_pod_name)
 echo "Preparing standby seed files..."
 
 mkdir -p tmp
+
+ls
+
 $cli exec $master_pod_name evoke seed standby conjur-standby > ./tmp/standby-seed.tar
 
 master_pod_ip=$($cli describe pod $master_pod_name | awk '/IP:/ { print $2 }')
