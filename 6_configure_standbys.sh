@@ -24,7 +24,9 @@ for pod_name in $pod_list; do
   printf "Configuring standby %s...\n" $pod_name
 
   $cli label --overwrite pod $pod_name role=standby
-    
+
+  $cli exec $pod_name -- mkdir /seed-tmp
+  
   copy_file_to_container "./seed-tmp/standby-seed.tar" "/seed-tmp/standby-seed.tar" "$pod_name"
 
   $cli exec $pod_name evoke unpack seed /seed-tmp/standby-seed.tar
