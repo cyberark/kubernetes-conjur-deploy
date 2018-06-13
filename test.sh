@@ -41,6 +41,8 @@ function setupTestEnvironment() {
       export DOCKER_REGISTRY_PATH="$OPENSHIFT_REGISTRY_URL"
       ;;
   esac
+
+  mkdir -p output  # for pod logs
 }
 
 function buildDockerImages() {
@@ -62,6 +64,7 @@ function buildDockerImages() {
 
 function test_gke() {
   docker run --rm \
+    -e TEST_PLATFORM \
     -e GCLOUD_CLUSTER_NAME \
     -e GCLOUD_PROJECT_NAME \
     -e GCLOUD_SERVICE_KEY=/tmp$GCLOUD_SERVICE_KEY \
