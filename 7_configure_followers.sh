@@ -20,6 +20,8 @@ pod_list=$($cli get pods -l role=follower --no-headers | awk '{ print $1 }')
 for pod_name in $pod_list; do
   printf "Configuring follower %s...\n" $pod_name
 
+  $cli exec $pod_name -- mkdir /seed-tmp
+  
   copy_file_to_container "./seed-tmp/follower-seed.tar" "/seed-tmp/follower-seed.tar" "$pod_name"
 
   $cli exec $pod_name evoke unpack seed /seed-tmp/follower-seed.tar
