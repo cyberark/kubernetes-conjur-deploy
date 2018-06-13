@@ -11,11 +11,7 @@ master_pod_name=$(get_master_pod_name)
 
 echo "Preparing standby seed files..."
 
-mkdir -p seed-tmp
-
-ls
-
-$cli exec $master_pod_name evoke seed standby conjur-standby > ./seed-tmp/standby-seed.tar
+mkdir -p tmp
 
 master_pod_ip=$($cli describe pod $master_pod_name | awk '/IP:/ { print $2 }')
 pod_list=$($cli get pods -l role=unset --no-headers | awk '{ print $1 }')
@@ -25,15 +21,14 @@ for pod_name in $pod_list; do
 
   $cli label --overwrite pod $pod_name role=standby
 
-  $cli exec $pod_name -- mkdir /seed-tmp
-  
-  copy_file_to_container "./seed-tmp/standby-seed.tar" "/seed-tmp/standby-seed.tar" "$pod_name"
+  $cli exec $master_pod_name evoke seed standby conjur-standby > ./tmp/standby-seed.tar
+  copy_file_to_container "./tmp/standby-seed.tar" "/tmp/standby-seed.tar" "$pod_name"
 
-  $cli exec $pod_name evoke unpack seed /seed-tmp/standby-seed.tar
+  $cli exec $pod_name evoke unpack seed /tmp/standby-seed.tar
   $cli exec $pod_name -- evoke configure standby -i $master_pod_ip
 done
 
-rm -rf seed-tmp
+rm -rf tmp
 
 echo "Standbys configured."
 echo "Starting synchronous replication..."
