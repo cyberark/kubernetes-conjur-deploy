@@ -21,7 +21,7 @@ function finish {
 
   oc logs "$(oc get pods -l role=master --no-headers | awk '{print $1}')" > "output/$TEST_PLATFORM-authn-k8s-logs.txt"
 
-  ./stop
+#  ./stop
 }
 trap finish EXIT
 

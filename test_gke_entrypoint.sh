@@ -20,7 +20,7 @@ function finish {
 
   kubectl logs "$(kubectl get pods -l role=master --no-headers | awk '{print $1}')" > "output/$TEST_PLATFORM-authn-k8s-logs.txt"
 
-  ./stop
+#  ./stop
   
   gcloud container images delete --force-delete-tags -q \
     "$DOCKER_REGISTRY_PATH/conjur-appliance:$CONJUR_NAMESPACE_NAME" \
