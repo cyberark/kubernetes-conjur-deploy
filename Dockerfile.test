@@ -13,14 +13,14 @@ RUN apt-get update -y && \
     rm -rf /var/lib/apt/lists/*
 
 # Install kubectl CLI
-ARG KUBECTL_CLI_URL=https://storage.googleapis.com/kubernetes-release/release/v1.7.6/bin/linux/amd64/kubectl
-RUN wget -O /usr/local/bin/kubectl $KUBECTL_CLI_URL && \
+ARG KUBECTL_CLI_URL
+RUN wget -O /usr/local/bin/kubectl ${KUBECTL_CLI_URL:-https://storage.googleapis.com/kubernetes-release/release/v1.7.6/bin/linux/amd64/kubectl} && \
     chmod +x /usr/local/bin/kubectl
 
 # Install OpenShift oc CLI
-ARG OPENSHIFT_CLI_URL=https://github.com/openshift/origin/releases/download/v1.3.3/openshift-origin-client-tools-v1.3.3-bc17c1527938fa03b719e1a117d584442e3727b8-linux-64bit.tar.gz
+ARG OPENSHIFT_CLI_URL
 RUN mkdir -p ocbin && \
-    wget -O oc.tar.gz $OPENSHIFT_CLI_URL && \
+    wget -O oc.tar.gz ${OPENSHIFT_CLI_URL:-https://github.com/openshift/origin/releases/download/v1.3.3/openshift-origin-client-tools-v1.3.3-bc17c1527938fa03b719e1a117d584442e3727b8-linux-64bit.tar.gz} && \
     tar xvf oc.tar.gz --strip-components=1 -C ocbin && \
     mv ocbin/oc /usr/local/bin/oc && \
     rm -rf ocbin oc.tar.gz
