@@ -55,15 +55,6 @@ copy_file_to_container() {
 
   if [ $PLATFORM = "kubernetes" ]; then
     $cli cp "$from" $pod_name:"$to"
-
-    # 'kubectl cp' does not rename file so we rename it manually.
-    local from_file_name=$(basename "$from")
-    local to_file_name=$(basename "$to")
-    local to_dir_name=$(dirname "$to")
-
-    if ! [ $from_file_name = $to_file_name ]; then
-        $cli exec $pod_name -- mv "$to_dir_name/$from_file_name" $to
-    fi
   elif [ $PLATFORM = "openshift" ]; then
     local source_file_path=$from
     local source_file_name="$(basename "$source_file_path")"
