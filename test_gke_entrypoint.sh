@@ -22,7 +22,7 @@ function finish {
 
   ./stop
   
-  gcloud container images delete -q \
+  gcloud container images delete --force-delete-tags -q \
     "$DOCKER_REGISTRY_PATH/conjur-appliance:$CONJUR_NAMESPACE_NAME" \
     "$DOCKER_REGISTRY_PATH/haproxy:$CONJUR_NAMESPACE_NAME"
 }
