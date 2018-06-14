@@ -7,7 +7,7 @@ set -eo pipefail
 . ./utils.sh
 
 declare template_file="./haproxy/haproxy.template.cfg"
-declare destination_file="./haproxy/haproxy.cfg"
+declare destination_file="./haproxy/haproxy-$CONJUR_NAMESPACE_NAME.cfg"
 
 # takes one argument: the name of the HAProxy container to update
 main() {
@@ -21,6 +21,8 @@ main() {
 
   copy_file_to_container "$destination_file" "/usr/local/etc/haproxy/haproxy.cfg" "$haproxy_pod_name"
   $cli exec $haproxy_pod_name /start.sh
+
+  rm $destination_file
 }
 
 # Appends Conjur HTTP server info in HAProxy format to haproxy.cfg.
