@@ -21,10 +21,9 @@ function finish {
   kubectl logs "$(kubectl get pods -l role=master --no-headers | awk '{print $1}')" > "output/$TEST_PLATFORM-authn-k8s-logs.txt"
 
   ./stop
-  
-  gcloud container images delete --force-delete-tags -q \
-    "$DOCKER_REGISTRY_PATH/conjur-appliance:$CONJUR_NAMESPACE_NAME" \
-    "$DOCKER_REGISTRY_PATH/haproxy:$CONJUR_NAMESPACE_NAME"
+
+  deleteRegistryImage "$DOCKER_REGISTRY_PATH/haproxy:$CONJUR_NAMESPACE_NAME"
+  deleteRegistryImage "$DOCKER_REGISTRY_PATH/conjur-appliance:$CONJUR_NAMESPACE_NAME"
 }
 trap finish EXIT
 
@@ -43,6 +42,15 @@ function runScripts() {
   echo 'Running Scripts'
 
   ./start
+}
+
+# Delete an image from GCR, unless it is has multiple tags pointing to it
+# This means another parallel build is using the image and we should
+# just untag it to be deleted by the later job
+function deleteRegistryImage() {
+  local image=$1
+
+  gcloud container images delete -q "$image" || gcloud container images untag -q "$image"
 }
 
 main
