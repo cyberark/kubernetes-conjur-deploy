@@ -20,7 +20,9 @@ $cli exec $master_pod_name evoke seed standby conjur-standby > "./$seed_dir/stan
 master_pod_ip=$($cli describe pod $master_pod_name | awk '/IP:/ { print $2 }')
 pod_list=$($cli get pods -l role=unset --no-headers | awk '{ print $1 }')
 
-for pod_name in $pod_list; do
+function configure_standby() {
+  local pod_name=$1
+
   printf "Configuring standby %s...\n" $pod_name
 
   $cli label --overwrite pod $pod_name role=standby
@@ -29,7 +31,13 @@ for pod_name in $pod_list; do
 
   $cli exec $pod_name -- evoke unpack seed /tmp/standby-seed.tar
   $cli exec $pod_name -- evoke configure standby -i $master_pod_ip
+}
+
+for pod_name in $pod_list; do
+  configure_standby $pod_name &
 done
+
+wait  # for parallel configuration of standbys
 
 rm -rf $seed_dir
 

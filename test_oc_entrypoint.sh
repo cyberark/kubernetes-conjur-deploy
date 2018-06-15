@@ -28,6 +28,9 @@ trap finish EXIT
 function main() {
   initialize
   runScripts
+  if [[ "$K8S_VERSION" != "1.3" ]]; then  # 1.3 does not support stateful sets
+    relaunchMaster
+  fi
 }
 
 function initialize() {
@@ -39,6 +42,12 @@ function runScripts() {
   echo 'Running tests'
 
   ./start
+}
+
+function relaunchMaster() {
+  echo 'Relaunching master to test persistent volume restore'
+
+  ./relaunch_master.sh
 }
 
 main

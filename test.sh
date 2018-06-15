@@ -27,11 +27,12 @@ function main() {
 }
 
 function setupTestEnvironment() {
-  export CONJUR_NAMESPACE_NAME="conjur-deploy-test-$(uuidgen | tr "[:upper:]" "[:lower:]")"
-  export CONJUR_ACCOUNT=my-account
-  export CONJUR_ADMIN_PASSWORD=\$uper\$ecret
+  local suffix="$(uuidgen | tr "[:upper:]" "[:lower:]" | head -c 10)"
+  export CONJUR_NAMESPACE_NAME="conjur-deploy-test-$suffix"
+  export CONJUR_ACCOUNT=admin
+  export CONJUR_ADMIN_PASSWORD=secret
   export AUTHENTICATOR_ID=conjur/k8s-test
-    
+
   case "$TEST_PLATFORM" in
     gke)
       export DOCKER_REGISTRY_URL="gcr.io"
