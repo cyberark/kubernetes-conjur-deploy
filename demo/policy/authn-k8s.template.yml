@@ -1,0 +1,65 @@
+- !policy
+  id: conjur/authn-k8s/{{ SERVICE_ID }}
+  body:
+  - !webservice
+    annotations:
+      description: Authentication service for the Conjur OpenShift demo.
+
+  - !policy
+    id: ca
+    body:
+    - !variable
+      id: cert
+      annotations:
+        description: CA cert for Kubernetes Pods.
+
+    - !variable
+      id: key
+      annotations:
+        description: CA key for Kubernetes Pods.
+
+  - !group
+    id: clients
+    annotations:
+      description: > 
+        Members of this group can use the authn-k8s service. This group 
+        typically has one member, which is a layer containing the enrolled 
+        applications.
+
+  - !permit
+    resource: !webservice
+    privilege: [ read, authenticate ]
+    role: !group clients
+
+  - !policy
+    id: apps
+    annotations:
+      description: Apps and services in the OpenShift cluster.
+    body:
+    - !layer
+
+    - &hosts
+      - !host
+        id: {{ TEST_APP_NAMESPACE_NAME }}/*/*
+        annotations:
+          kubernetes/authentication-container-name: authenticator
+          kubernetes: "true"
+      - !host
+        id: {{ TEST_APP_NAMESPACE_NAME }}/service_account/test-app
+        annotations:
+          kubernetes/authentication-container-name: authenticator
+          kubernetes: "true"
+
+    - !grant
+      role: !layer /test-app
+      members:
+      - !host {{ TEST_APP_NAMESPACE_NAME }}/*/*
+      - !host {{ TEST_APP_NAMESPACE_NAME }}/service_account/test-app
+
+    - !grant
+      role: !layer      
+      members: *hosts
+
+  - !grant
+    role: !group clients
+    member: !layer apps
