@@ -46,7 +46,7 @@ function setupTestEnvironment() {
 }
 
 function buildDockerImages() {
-  export CONJUR_APPLIANCE_IMAGE="registry2.itci.conjur.net/conjur-appliance:4.9-stable"
+  export CONJUR_APPLIANCE_IMAGE="registry.tld/conjur-appliance:4.9-stable"
   docker pull $CONJUR_APPLIANCE_IMAGE
 
   # Test image w/ kubectl and oc CLIs installed to drive scripts.
