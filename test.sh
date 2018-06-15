@@ -46,17 +46,10 @@ function setupTestEnvironment() {
 }
 
 function buildDockerImages() {
-  # Conjur appliance retagged for K8s / OpenShift registry.
-#  local appliance_image="registry2.itci.conjur.net/conjur-appliance:4.9-stable"
-#  export CONJUR_APPLIANCE_IMAGE="$DOCKER_REGISTRY_PATH/conjur-appliance:$CONJUR_NAMESPACE_NAME"
-#  docker pull $appliance_image
-    #  docker tag $appliance_image $CONJUR_APPLIANCE_IMAGE
-
   export CONJUR_APPLIANCE_IMAGE="registry2.itci.conjur.net/conjur-appliance:4.9-stable"
   docker pull $CONJUR_APPLIANCE_IMAGE
 
   # Test image w/ kubectl and oc CLIs installed to drive scripts.
-#  export K8S_CONJUR_DEPLOY_TESTER_IMAGE="${DOCKER_REGISTRY_PATH}/k8s-conjur-deploy-tester:$CONJUR_NAMESPACE_NAME"
   export K8S_CONJUR_DEPLOY_TESTER_IMAGE="k8s-conjur-deploy-tester:$CONJUR_NAMESPACE_NAME"
   docker build -t $K8S_CONJUR_DEPLOY_TESTER_IMAGE -f Dockerfile.test \
     --build-arg OPENSHIFT_CLI_URL=$OPENSHIFT_CLI_URL \

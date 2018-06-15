@@ -11,6 +11,7 @@ master_pod_name=$(get_master_pod_name)
 
 echo "Preparing follower seed files..."
 
+# Create dir w/ guid from namespace name for parallel CI execution
 seed_dir="tmp-$CONJUR_NAMESPACE_NAME"
 mkdir -p $seed_dir
 
