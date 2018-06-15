@@ -16,7 +16,6 @@ spec:
   selector:
     app: haproxy-conjur-master
   type: LoadBalancer
-  
 ---
 apiVersion: v1
 kind: Pod
