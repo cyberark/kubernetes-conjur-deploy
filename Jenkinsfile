@@ -28,7 +28,7 @@ pipeline {
         }
       }
       post { always {
-        archiveArtifacts artifacts: 'output/*-authn-k8s-logs.txt'
+        archiveArtifacts artifacts: 'output/*'
       }}
     }
   }

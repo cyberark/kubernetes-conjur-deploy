@@ -30,6 +30,7 @@ trap finish EXIT
 function main() {
   initialize
   runScripts
+  relaunchMaster
 }
 
 function initialize() {
@@ -42,6 +43,12 @@ function runScripts() {
   echo 'Running Scripts'
 
   ./start
+}
+
+function relaunchMaster() {
+  echo 'Relaunching master to test persistent volume restore'
+
+  ./relaunch_master.sh
 }
 
 # Delete an image from GCR, unless it is has multiple tags pointing to it

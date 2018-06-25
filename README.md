@@ -28,7 +28,7 @@ do not already have it.
 #### Kubernetes
 
 You will need to provide the domain and any additional pathing for the Docker
-registry from which your Kubernetes cluster pulls images: 
+registry from which your Kubernetes cluster pulls images:
 
 ```
 export DOCKER_REGISTRY_URL=<registry-domain>
@@ -38,7 +38,7 @@ export DOCKER_REGISTRY_PATH=<registry-domain>/<additional-pathing>
 Note that the deploy scripts will be pushing images to this registry so you will
 need to have push access.
 
-If you are using a private registry, you will also need to provide login 
+If you are using a private registry, you will also need to provide login
 credentials that are used by the deployment scripts to create a [secret for
 pulling images](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#create-a-secret-in-the-cluster-that-holds-your-authorization-token):
 
@@ -136,6 +136,56 @@ Run `./start` to deploy Conjur. This executes the numbered scripts in sequence
 to create and configure a Conjur cluster comprised of one Master, two Standbys,
 and two read-only Followers. The final step will print out the necessary info
 for interacting with Conjur through the CLI or UI.
+
+### Data persistence
+
+The Conjur master and standbys are deployed as a
+[Stateful Set](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/) on supported target platforms (Kubernetes 1.5+ / OpenShift 3.5+).
+Database and configuration data is symlinked and mounted to
+[persistent volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/).
+These manifests assume a default [Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/)
+is set up for the cluster so persistent volume claims will be fulfilled.
+
+Volumes:
+- `/opt/conjur/dbdata` - 2GB, database persistence
+- `/opt/conjur/data` - 1GB, seed file persistence
+
+#### Setup
+
+To configure the Conjur master to persist data, run these commands in the Conjur master container before running `evoke configure master ...`.
+
+```sh-session
+# mv /var/lib/postgresql/9.3 /opt/conjur/dbdata/
+# ln -sf /opt/conjur/dbdata/9.3 /var/lib/postgresql/9.3
+
+# evoke seed standby > /opt/conjur/data/standby-seed.tar
+```
+
+Note that setup is done as part of script [4_configure_master.sh](4_configure_master.sh).
+
+#### Restore
+
+If the Conjur master pod is rescheduled the persistent volumes will be reattached.
+Once the pod is running again, run these commands to restore the master.
+
+```
+# rm -rf /var/lib/postgresql/9.3
+# ln -sf /opt/conjur/dbdata/9.3 /var/lib/postgresql/9.3
+
+# cp /opt/conjur/data/standby-seed.tar /opt/conjur/data/standby-seed.tar-bkup
+# evoke unpack seed /opt/conjur/data/standby-seed.tar
+# cp /opt/conjur/data/standby-seed.tar-bkup /opt/conjur/data/standby-seed.tar
+# rm /etc/chef/solo.json
+
+# evoke configure master ...  # using the same arguments as the first launch
+```
+
+Standbys must also be reconfigured since the Conjur master pod IP changes.
+
+Run [relaunch_master.sh](relaunch_master.sh) to try this out in your cluster, after running the deploy.
+Our plan is to automate this process with a Kubernetes operator.
+
+---
 
 ### Conjur CLI
 

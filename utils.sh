@@ -63,7 +63,7 @@ copy_file_to_container() {
 
     local container_temp_path="/copy-tmp"
 
-    oc exec $pod_name mkdir $container_temp_path
+    oc exec $pod_name -- mkdir -p $container_temp_path
     oc rsync "$parent_path" "$pod_name:$container_temp_path"
     oc exec "$pod_name" mv "$container_temp_path/$parent_name/$source_file_name" "$to"
     oc exec "$pod_name" rm -- -rf "$container_temp_path/$parent_name"
@@ -121,7 +121,7 @@ function wait_for_it() {
 
     eval $@
   else
-    echo "Waiting for $@ forever"
+    echo "Waiting for '$@' forever"
 
     while ! eval $@; do
       echo -n .
