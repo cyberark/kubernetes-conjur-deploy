@@ -19,8 +19,13 @@ function finish {
   echo 'Finishing'
   echo '-----'
 
-  oc logs "$(oc get pods -l role=master --no-headers | awk '{print $1}')" > "output/$TEST_PLATFORM-authn-k8s-logs.txt"
-
+  {
+    pod_name="$(oc get pods -l role=master --no-headers | awk '{print $1}')"
+    oc logs $pod_name > "output/$TEST_PLATFORM-authn-k8s-logs.txt"
+  } || {
+    echo "Logs could not be extracted from pod '$pod_name'"
+    touch "output/$TEST_PLATFORM-authn-k8s-logs.txt"  # so Jenkins artifact collection doesn't fail
+  }
   ./stop
 }
 trap finish EXIT
