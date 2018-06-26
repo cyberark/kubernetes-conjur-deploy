@@ -6,6 +6,9 @@ metadata:
     app: conjur-cluster-service
 spec:
   clusterIP: None
+  ports:
+  - port: 443
+    name: https
   selector:
     app: conjur-node
 ---
@@ -21,6 +24,7 @@ spec:
     matchLabels:
       app: conjur-node
   serviceName: conjur-cluster-service
+  podManagementPolicy: Parallel  # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#pod-management-policies
   template:
     metadata:
       labels:

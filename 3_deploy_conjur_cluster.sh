@@ -52,6 +52,7 @@ sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/c
 sleep 10
 
 echo "Waiting for Conjur pods to launch..."
-wait_for_node $(get_master_pod_name)
+conjur_pod_count=3
+wait_for_it 300 "oc describe po conjur-cluster | grep Status: | grep -c Running | grep -q $conjur_pod_count"
 
 echo "Cluster created."

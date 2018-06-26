@@ -104,6 +104,10 @@ wait_for_node() {
   wait_for_it -1 "$cli describe pod $1 | grep Status: | grep -q Running"
 }
 
+wait_for_service() {
+  wait_for_it -1 "$cli get service $1 --no-headers | grep -q -v pending"
+}
+
 function wait_for_it() {
   local timeout=$1
   local spacer=2
@@ -112,7 +116,7 @@ function wait_for_it() {
   if ! [ $timeout = '-1' ]; then
     local times_to_run=$((timeout / spacer))
 
-    echo "Waiting for $@ up to $timeout s"
+    echo "Waiting for '$@' up to $timeout s"
     for i in $(seq $times_to_run); do
       eval $@ && echo 'Success!' && break
       echo -n .
