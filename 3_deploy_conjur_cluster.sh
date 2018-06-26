@@ -53,6 +53,6 @@ sleep 10
 
 echo "Waiting for Conjur pods to launch..."
 conjur_pod_count=3
-wait_for_it 300 "oc describe po conjur-cluster | grep Status: | grep -c Running | grep -q $conjur_pod_count"
+wait_for_it 300 "$cli describe po conjur-cluster | grep Status: | grep -c Running | grep -q $conjur_pod_count"
 
 echo "Cluster created."

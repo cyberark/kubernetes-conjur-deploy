@@ -14,7 +14,7 @@ if [ "$1" = 'haproxy' ]; then
 	set -- haproxy -W -db "$@"
 fi
 
-# fake syslog
-socat UNIX-RECV:/dev/log,mode=666 STDOUT &
+# fake syslog, send logs to stdout - TODO: does this actually work?
+socat UNIX-RECV:/dev/log,mode=666 STDOUT &  # https://github.com/dockerfile/haproxy/issues/3#issuecomment-390186068
 
 exec "$@"
