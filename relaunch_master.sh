@@ -51,6 +51,8 @@ else
   echo "HAProxy reconfigured."
 fi
 
+sleep 5
+
 echo "Reconfiguring standbys"
 
 standby_pods=$($cli get pods -l role=standby --no-headers | awk '{ print $1 }')
