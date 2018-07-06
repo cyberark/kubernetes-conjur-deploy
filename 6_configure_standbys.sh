@@ -44,6 +44,6 @@ rm -rf $seed_dir
 echo "Standbys configured."
 echo "Starting synchronous replication..."
 
-mastercmd evoke replication sync
+mastercmd evoke replication sync --force
 
 echo "Standbys configured."
