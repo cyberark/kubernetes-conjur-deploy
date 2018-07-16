@@ -12,12 +12,4 @@ elif [ $PLATFORM = 'openshift' ]; then
     ui_url="https://$conjur_master_route"
 fi
 
-announce "
-Conjur cluster is ready.
-
-Conjur UI address:
-  $ui_url
-
-Conjur admin credentials:
-  admin / $(rotate_api_key)
-"
+announce "Conjur cluster is ready."

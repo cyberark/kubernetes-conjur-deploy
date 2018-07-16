@@ -36,11 +36,11 @@ fi
 conjur_appliance_image=$(platform_image "conjur-appliance")
 
 echo "deploying main cluster"
-if $cli get statefulset &>/dev/null; then  # this returns non-0 if platform doesn't support statefulset
-  conjur_cluster_template="./$PLATFORM/conjur-cluster-stateful.yaml"
-else
+#if $cli get statefulset &>/dev/null; then  # this returns non-0 if platform doesn't support statefulset
+#  conjur_cluster_template="./$PLATFORM/conjur-cluster-stateful.yaml"
+#else
   conjur_cluster_template="./$PLATFORM/conjur-cluster.yaml"
-fi
+#fi
 sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" $conjur_cluster_template |
   $cli create -f -
 
