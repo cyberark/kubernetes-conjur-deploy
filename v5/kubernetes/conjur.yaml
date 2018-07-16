@@ -1,0 +1,46 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: conjur-master
+  labels:
+    app: conjur-master
+spec:
+  ports:
+  - port: 80
+    name: http
+  - port: 443
+    name: https
+  - port: 636
+    name: ldaps
+  selector:
+    app: conjur-appliance
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: conjur-appliance
+  name: conjur-appliance
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: conjur-appliance
+  template:
+    metadata:
+      labels:
+        app: conjur-appliance
+        name: conjur-appliance
+        role: unset # set to master or standby when configured
+    spec:
+      serviceAccountName: conjur-appliance
+      containers:
+      - name: conjur-appliance
+        image: {{ CONJUR_APPLIANCE_IMAGE }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 443
+          name: https
+      imagePullSecrets:
+        - name: dockerpullsecret
