@@ -10,9 +10,19 @@ environment variables. The setup instructions below walk you through the
 necessary steps for configuring your environment and show you which variables
 need to be set before deploying.
 
+### Conjur Version
+
+If you are workign with Conjur v4, you will need to set:
+
+```
+export CONJUR_VERSION=4
+```
+
+Otherwise, this variable will default to `5`.
+
 ### Platform
 
-If you are working with OpenShift, you will need to begin by setting:
+If you are working with OpenShift, you will need to set:
 
 ```
 export PLATFORM=openshift
