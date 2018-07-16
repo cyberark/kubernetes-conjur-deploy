@@ -7,14 +7,15 @@ metadata:
     app: conjur-master
 spec:
   ports:
-  - port: 80
-    name: http
   - port: 443
     name: https
   - port: 636
     name: ldaps
+  - port: 5432
+    name: pg-main
   selector:
     app: conjur-appliance
+  type: LoadBalancer
 ---
 apiVersion: apps/v1beta1
 kind: Deployment

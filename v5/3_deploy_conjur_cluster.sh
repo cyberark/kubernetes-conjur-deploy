@@ -45,4 +45,6 @@ sleep 10
 echo "Waiting for Conjur pods to launch..."
 wait_for_it 300 "$cli describe po conjur-appliance | grep Status: | grep -c Running"
 
+wait_for_service conjur-master
+
 echo "Cluster created."
