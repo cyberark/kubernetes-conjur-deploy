@@ -42,7 +42,9 @@ spec:
         imagePullPolicy: Always
         env:
           - name: CONJUR_AUTHENTICATORS
-            value: authn-k8s/{{ AUTHENTICATOR_ID }}
+            value: authn,authn-k8s/{{ AUTHENTICATOR_ID }}
+          - name: RAILS_ENV
+            value: development
         ports:
         - containerPort: 443
           name: https

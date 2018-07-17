@@ -38,6 +38,7 @@ conjur_appliance_image=$(platform_image "conjur-appliance")
 echo "deploying conjur"
 
 sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" ./$PLATFORM/conjur.yaml |
+  sed -e "s#{{ AUTHENTICATOR_ID }}#$AUTHENTICATOR_ID#g" |
   $cli create -f -
 
 sleep 10
