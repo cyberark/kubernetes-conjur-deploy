@@ -21,11 +21,11 @@ pipeline {
             sh 'summon -e openshift33 ./test.sh openshift33'
           }
         }
-        stage('Test on OpenShift 3.7 in AWS') {
-          steps {
-            sh 'summon -e openshift37 ./test.sh openshift37'
-          }
-        }
+//        stage('Test on OpenShift 3.7 in AWS') {
+//          steps {
+//            sh 'summon -e openshift37 ./test.sh openshift37'
+//          }
+//        }
       }
       post { always {
         archiveArtifacts artifacts: 'output/*'
