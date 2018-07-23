@@ -8,8 +8,8 @@ set -euo pipefail
 ./1_create_conjur_namespace.sh
 ./2_build_and_push_containers.sh
 ./3_deploy_conjur_cluster.sh
-./4_create_load_balancer.sh
-./5_configure_master.sh
-./6_configure_standbys.sh
-./7_configure_followers.sh
-./8_print_config.sh
+#./4_create_load_balancer.sh
+#./5_configure_master.sh
+#./6_configure_standbys.sh
+#./7_configure_followers.sh
+#./8_print_config.sh

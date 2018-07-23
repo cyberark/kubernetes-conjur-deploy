@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: conjur-cluster-service
+  labels:
+    app: conjur-cluster-service
+spec:
+  clusterIP: None
+  ports:
+  - port: 443
+    name: https
+  selector:
+    app: conjur-node
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  labels:
+    app: conjur-cluster
+  name: conjur-cluster
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: conjur-node
+  serviceName: conjur-cluster-service
+  podManagementPolicy: Parallel  # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#pod-management-policies
+  template:
+    metadata:
+      labels:
+        app: conjur-node
+        name: conjur-node
+        role: unset # set to master or standby when configured
+    spec:
+      serviceAccountName: conjur-cluster
+      containers:
+      - name: conjur-appliance
+        image: {{ CONJUR_APPLIANCE_IMAGE }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 443
+          name: https
+        - containerPort: 636
+          name: ldaps
+        - containerPort: 5432
+          name: pg-main
+        - containerPort: 5433
+          name: pg-audit
+        volumeMounts:
+        - name: conjur-dbdata
+          mountPath: /opt/conjur/dbdata
+        - name: conjur-data
+          mountPath: /opt/conjur/data
+      imagePullSecrets:
+        - name: dockerpullsecret
+  volumeClaimTemplates:
+  - metadata:
+      name: conjur-dbdata
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 2Gi
+  - metadata:
+      name: conjur-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
