@@ -25,8 +25,6 @@ spec:
         env:
           - name: CONJUR_AUTHENTICATORS
             value: authn,authn-k8s/{{ AUTHENTICATOR_ID }}
-          - name: RAILS_ENV
-            value: production
           - name: CONJUR_DATA_KEY
             value: {{ DATA_KEY }}
         ports:
