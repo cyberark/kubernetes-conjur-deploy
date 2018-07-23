@@ -1,6 +1,7 @@
 #!/bin/bash
 
-PLATFORM="${PLATFORM:-kubernetes}"  # default to kubernetes if env var not set
+CONJUR_VERSION=${CONJUR_VERSION:-5} # default to 5 if not set
+PLATFORM="${PLATFORM:-kubernetes}"  # default to kubernetes if not set
 
 if [ $PLATFORM = 'kubernetes' ]; then
     cli=kubectl
