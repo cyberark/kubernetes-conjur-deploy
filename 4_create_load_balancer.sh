@@ -9,16 +9,28 @@ set_namespace $CONJUR_NAMESPACE_NAME
 
 docker_image=$(platform_image haproxy)
 
+if is_minienv; then
+  IMAGE_PULL_POLICY='Never'
+else
+  IMAGE_PULL_POLICY='Always'
+fi
+
 sed -e "s#{{ DOCKER_IMAGE }}#$docker_image#g" "./$PLATFORM/haproxy-conjur-master.yaml" |
+  sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
   $cli create -f -
 
 wait_for_node 'haproxy-conjur-master'
 
-if ! $cli get statefulset &>/dev/null; then  # this returns non-0 if platform doesn't support statefulset
-  # haproxy image does not need custom configuration when using statefulset
-  echo "Configuring load balancer..."
+if [ $CONJUR_VERSION = '4' ]; then
+  if ! $cli get statefulset &>/dev/null; then  # this returns non-0 if platform doesn't support statefulset
+    # haproxy image does not need custom configuration when using statefulset
+    echo "Configuring load balancer..."
 
-  # Update HAProxy config to reflect Conjur cluster and restart daemon.
+    # Update HAProxy config to reflect Conjur cluster and restart daemon.
+    haproxy/update_haproxy.sh haproxy-conjur-master
+  fi
+else
+  echo "Configuring load balancer..."
   haproxy/update_haproxy.sh haproxy-conjur-master
 fi
 

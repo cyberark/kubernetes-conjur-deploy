@@ -2,9 +2,9 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
+  name: conjur-cli
   labels:
     app: conjur-cli
-  name: conjur-cli
 spec:
   replicas: 1
   selector:
@@ -12,14 +12,14 @@ spec:
       app: conjur-cli
   template:
     metadata:
+      name: conjur-cli
       labels:
         app: conjur-cli
-        name: conjur-cli
     spec:
+      serviceAccountName: conjur-cluster
       containers:
       - name: conjur-cli
-        image: cyberark/conjur-cli:4
-        imagePullPolicy: Always
+        image: {{ DOCKER_IMAGE }}
+        imagePullPolicy: {{ IMAGE_PULL_POLICY }}
         command: ["sleep"]
         args: ["infinity"]
-

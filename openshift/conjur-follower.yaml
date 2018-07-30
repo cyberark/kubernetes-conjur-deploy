@@ -13,7 +13,6 @@ spec:
     name: ldaps
   selector:
     app: conjur-follower
-
 ---
 apiVersion: v1
 kind: DeploymentConfig
@@ -32,7 +31,7 @@ spec:
       containers:
       - name: conjur-appliance
         image: {{ CONJUR_APPLIANCE_IMAGE }}
-        imagePullPolicy: Always
+        imagePullPolicy: {{ IMAGE_PULL_POLICY }}
         env:
           - name: CONJUR_AUTHENTICATORS
             value: authn-k8s/{{ AUTHENTICATOR_ID }}

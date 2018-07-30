@@ -9,6 +9,9 @@ set -o pipefail
 TEST_PLATFORM="$1"
 export TEST_PLATFORM
 
+CONJUR_VERSION="$2"
+export CONJUR_VERSION
+
 function main() {
   setupTestEnvironment
   buildDockerImages
@@ -32,6 +35,7 @@ function setupTestEnvironment() {
   export CONJUR_ACCOUNT=admin
   export CONJUR_ADMIN_PASSWORD=secret
   export AUTHENTICATOR_ID=conjur/k8s-test
+  export MINIKUBE=false
 
   case "$TEST_PLATFORM" in
     gke)
@@ -47,7 +51,11 @@ function setupTestEnvironment() {
 }
 
 function buildDockerImages() {
-  export CONJUR_APPLIANCE_IMAGE="registry.tld/conjur-appliance:4.9-stable"
+  if [[ "$CONJUR_VERSION" == "4" ]]; then
+    export CONJUR_APPLIANCE_IMAGE="registry.tld/conjur-appliance:4.9-stable"
+  else
+    export CONJUR_APPLIANCE_IMAGE="registry.tld/conjur-appliance:5.0-stable"
+  fi
   docker pull $CONJUR_APPLIANCE_IMAGE
 
   # Test image w/ kubectl and oc CLIs installed to drive scripts.
@@ -69,9 +77,11 @@ function test_gke() {
     -e CONJUR_NAMESPACE_NAME \
     -e DOCKER_REGISTRY_URL \
     -e DOCKER_REGISTRY_PATH \
+    -e CONJUR_VERSION \
     -e CONJUR_ACCOUNT \
     -e CONJUR_ADMIN_PASSWORD \
     -e AUTHENTICATOR_ID \
+    -e MINIKUBE \
     -v $GCLOUD_SERVICE_KEY:/tmp$GCLOUD_SERVICE_KEY \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$PWD":/src \
@@ -89,9 +99,11 @@ function test_openshift() {
     -e CONJUR_APPLIANCE_IMAGE \
     -e CONJUR_NAMESPACE_NAME \
     -e DOCKER_REGISTRY_PATH \
+    -e CONJUR_VERSION \
     -e CONJUR_ACCOUNT \
     -e CONJUR_ADMIN_PASSWORD \
     -e AUTHENTICATOR_ID \
+    -e MINIKUBE \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$PWD":/src \
     $K8S_CONJUR_DEPLOY_TESTER_IMAGE bash -c "./test_oc_entrypoint.sh"

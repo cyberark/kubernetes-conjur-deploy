@@ -21,7 +21,11 @@ spec:
       containers:
       - name: conjur-appliance
         image: {{ CONJUR_APPLIANCE_IMAGE }}
-        imagePullPolicy: Always
+        imagePullPolicy: {{ IMAGE_PULL_POLICY }}
+        env:
+          # Only required for Conjur v5
+          - name: CONJUR_DATA_KEY
+            value: "{{ CONJUR_DATA_KEY }}"
         ports:
         - containerPort: 443
           name: https

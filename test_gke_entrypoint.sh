@@ -30,7 +30,10 @@ trap finish EXIT
 function main() {
   initialize
   runScripts
-  relaunchMaster
+
+  if [ $CONJUR_VERSION = '4' ]; then
+    relaunchMaster
+  fi
 }
 
 function initialize() {
@@ -57,7 +60,7 @@ function relaunchMaster() {
 function deleteRegistryImage() {
   local image=$1
 
-  gcloud container images delete -q "$image" || gcloud container images untag -q "$image"
+  gcloud container images delete -q "$image" || gcloud container images untag -q "$image" || true
 }
 
 main

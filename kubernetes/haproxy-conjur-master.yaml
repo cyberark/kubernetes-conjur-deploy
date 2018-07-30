@@ -15,7 +15,7 @@ spec:
     name: pg-main
   selector:
     app: haproxy-conjur-master
-  type: LoadBalancer
+  type: NodePort
 ---
 apiVersion: v1
 kind: Pod
@@ -28,7 +28,7 @@ spec:
   containers:
   - name: haproxy
     image: {{ DOCKER_IMAGE }}
-    imagePullPolicy: Always
+    imagePullPolicy: {{ IMAGE_PULL_POLICY }}
     ports:
     - containerPort: 443
       name: https

@@ -1,11 +1,11 @@
-#!/bin/bash 
+#!/bin/bash -x
 set -euo pipefail
 
 . utils.sh
 
-announce "Configuring followers."
-
 set_namespace $CONJUR_NAMESPACE_NAME
+
+announce "Configuring followers."
 
 master_pod_name=$(get_master_pod_name)
 
@@ -39,3 +39,4 @@ wait  # for parallel configuration of followers
 rm -rf $seed_dir
 
 echo "Followers configured."
+
