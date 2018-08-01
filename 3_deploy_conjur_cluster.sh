@@ -37,7 +37,7 @@ conjur_appliance_image=$(platform_image "conjur-appliance")
 
 echo "deploying main cluster"
 
-if [ $PLATFORM = '4' ]; then
+if [ $CONJUR_VERSION = '4' ]; then
   if $cli get statefulset &>/dev/null; then  # this returns non-0 if platform doesn't support statefulset
     conjur_cluster_template="./$PLATFORM/conjur-cluster-stateful.yaml"
   else
