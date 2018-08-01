@@ -25,7 +25,7 @@ spec:
         env:
           # Only required for Conjur v5
           - name: CONJUR_DATA_KEY
-            value: {{ DATA_KEY }}
+            value: "{{ DATA_KEY }}"
         ports:
         - containerPort: 443
           name: https
