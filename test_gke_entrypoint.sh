@@ -30,7 +30,6 @@ trap finish EXIT
 function main() {
   initialize
   runScripts
-  
   relaunchMaster
 }
 

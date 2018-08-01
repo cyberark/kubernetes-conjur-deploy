@@ -55,9 +55,7 @@ fi
 
 echo "deploying followers"
 
-follower_manifest=$(echo "./$PLATFORM/conjur-follower.yaml")
-
-sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" $follower_manifest |
+sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/conjur-follower.yaml" |
   sed -e "s#{{ AUTHENTICATOR_ID }}#$AUTHENTICATOR_ID#g" |
   $cli create -f -
 
