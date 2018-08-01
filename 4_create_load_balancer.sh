@@ -14,11 +14,16 @@ sed -e "s#{{ DOCKER_IMAGE }}#$docker_image#g" "./$PLATFORM/haproxy-conjur-master
 
 wait_for_node 'haproxy-conjur-master'
 
-if ! $cli get statefulset &>/dev/null; then  # this returns non-0 if platform doesn't support statefulset
-  # haproxy image does not need custom configuration when using statefulset
-  echo "Configuring load balancer..."
+if [ $PLATFORM = '4' ]; then
+  if ! $cli get statefulset &>/dev/null; then  # this returns non-0 if platform doesn't support statefulset
+    # haproxy image does not need custom configuration when using statefulset
+    echo "Configuring load balancer..."
 
-  # Update HAProxy config to reflect Conjur cluster and restart daemon.
+    # Update HAProxy config to reflect Conjur cluster and restart daemon.
+    haproxy/update_haproxy.sh haproxy-conjur-master
+  fi
+else
+  echo "Configuring load balancer..."
   haproxy/update_haproxy.sh haproxy-conjur-master
 fi
 
