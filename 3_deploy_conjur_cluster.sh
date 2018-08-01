@@ -49,7 +49,7 @@ if [ $CONJUR_VERSION = '4' ]; then
 else
   sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/conjur-cluster.yaml" |
     sed -e "s#{{ AUTHENTICATOR_ID }}#$AUTHENTICATOR_ID#g" |
-    sed -e "s#{{ DATA_KEY }}#$(openssl rand -base64 32)#g" |
+    sed -e "s#{{ CONJUR_DATA_KEY }}#$(openssl rand -base64 32)#g" |
     $cli create -f -
 fi
 

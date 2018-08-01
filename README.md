@@ -12,7 +12,7 @@ need to be set before deploying.
 
 ### Conjur Version
 
-If you are workign with Conjur v4, you will need to set:
+If you are working with Conjur v4, you will need to set:
 
 ```
 export CONJUR_VERSION=4
