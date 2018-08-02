@@ -9,13 +9,15 @@ set_namespace $CONJUR_NAMESPACE_NAME
 
 master_pod_name=$(get_master_pod_name)
 
-# Move database to persistent storage if /opt/conjur/dbdata is mounted
-if $cli exec $master_pod_name -- ls /opt/conjur/dbdata &>/dev/null; then
-  if ! $cli exec $master_pod_name -- ls /opt/conjur/dbdata/9.3 &>/dev/null; then
-    # No existing data found, set up database symlink
-    $cli exec $master_pod_name -- mv /var/lib/postgresql/9.3 /opt/conjur/dbdata/
-    $cli exec $master_pod_name -- ln -sf /opt/conjur/dbdata/9.3 /var/lib/postgresql/9.3
-    echo "Master database moved to persistent storage"
+if [ $CONJUR_VERSION = '4' ]; then
+  # Move database to persistent storage if /opt/conjur/dbdata is mounted
+  if $cli exec $master_pod_name -- ls /opt/conjur/dbdata &>/dev/null; then
+    if ! $cli exec $master_pod_name -- ls /opt/conjur/dbdata/9.3 &>/dev/null; then
+      # No existing data found, set up database symlink
+      $cli exec $master_pod_name -- mv /var/lib/postgresql/9.3 /opt/conjur/dbdata/
+      $cli exec $master_pod_name -- ln -sf /opt/conjur/dbdata/9.3 /var/lib/postgresql/9.3
+      echo "Master database moved to persistent storage"
+    fi
   fi
 fi
 

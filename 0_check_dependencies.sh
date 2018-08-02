@@ -3,6 +3,7 @@ set -eo pipefail
 
 . utils.sh
 
+check_env_var "CONJUR_VERSION"
 check_env_var "CONJUR_APPLIANCE_IMAGE"
 check_env_var "CONJUR_NAMESPACE_NAME"
 

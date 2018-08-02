@@ -11,16 +11,28 @@ pipeline {
   stages {
     stage('Run Scripts') {
       parallel {
-        stage('Test on K8S 1.7 in GKE') {
+        stage('Test v4 on K8S 1.7 in GKE') {
           steps {
-            sh 'summon ./test.sh gke'
+            sh 'summon ./test.sh gke 4'
           }
         }
-        stage('Test on OpenShift 3.3 in AWS') {
+        stage('Test v5 on K8S 1.7 in GKE') {
           steps {
-            sh 'summon -e openshift33 ./test.sh openshift33'
+            sh 'summon ./test.sh gke 5'
           }
         }
+        /*
+        stage('Test v4 on OpenShift 3.3 in AWS') {
+          steps {
+            sh 'summon -e openshift33 ./test.sh openshift33 4'
+          }
+        }
+        stage('Test v5 on OpenShift 3.3 in AWS') {
+          steps {
+            sh 'summon -e openshift33 ./test.sh openshift33 5'
+          }
+        }
+        */
         /*
         stage('Test on OpenShift 3.7 in AWS') {
           steps {
