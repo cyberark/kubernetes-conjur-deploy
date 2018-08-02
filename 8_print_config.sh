@@ -6,7 +6,7 @@ set -euo pipefail
 set_namespace $CONJUR_NAMESPACE_NAME
 
 if [ $PLATFORM = 'kubernetes' ]; then
-  ui_url="https://$(get_master_service_ip):443"
+  ui_url="https://$(get_master_service_ip)"
 elif [ $PLATFORM = 'openshift' ]; then
   conjur_master_route=$($cli get routes | grep conjur-master | awk '{ print $2 }')
   ui_url="https://$conjur_master_route"
