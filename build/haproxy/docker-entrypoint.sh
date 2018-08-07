@@ -11,9 +11,8 @@ if [ "$1" = 'haproxy' ]; then
 	# if the user wants "haproxy", let's add a couple useful flags
 	#   -W  -- "master-worker mode" (similar to the old "haproxy-systemd-wrapper"; allows for reload via "SIGUSR2")
 	#   -db -- disables background mode
-	#   -dr -- ignores server address resolution failures, needed for OpenShift 3.3
 	#   -V  -- enters verbose mode (disables quiet mode)
-	set -- haproxy -W -db -dr -V "$@"
+	set -- haproxy -W -db -V "$@"
 fi
 
 exec "$@"

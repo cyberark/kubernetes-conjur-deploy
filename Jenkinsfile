@@ -22,18 +22,6 @@ pipeline {
           }
         }
         /*
-        stage('Test v4 on OpenShift 3.3 in AWS') {
-          steps {
-            sh 'summon -e openshift33 ./test.sh openshift33 4'
-          }
-        }
-        stage('Test v5 on OpenShift 3.3 in AWS') {
-          steps {
-            sh 'summon -e openshift33 ./test.sh openshift33 5'
-          }
-        }
-        */
-        /*
         stage('Test on OpenShift 3.7 in AWS') {
           steps {
             sh 'summon -e openshift37 ./test.sh openshift37'
