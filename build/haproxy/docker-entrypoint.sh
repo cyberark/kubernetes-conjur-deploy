@@ -12,7 +12,7 @@ if [ "$1" = 'haproxy' ]; then
 	#   -W  -- "master-worker mode" (similar to the old "haproxy-systemd-wrapper"; allows for reload via "SIGUSR2")
 	#   -db -- disables background mode
 	#   -V  -- enters verbose mode (disables quiet mode)
-	set -- haproxy -W -db -V "$@"
+	set -- haproxy -W -db -dr -V "$@"
 fi
 
 exec "$@"
