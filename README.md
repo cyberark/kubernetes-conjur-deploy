@@ -62,7 +62,7 @@ Please make sure that you are logged in to the registry before deploying.
 
 #### OpenShift
 
-OpenShift users should make sure the [integrated Docker registry](https://docs.openshift.com/container-platform/3.3/install_config/registry/deploy_registry_existing_clusters.html)
+OpenShift users should make sure the [integrated Docker registry](https://docs.okd.io/latest/install_config/registry/deploy_registry_existing_clusters.html)
 in your OpenShift environment is available and that you've added it as an
 [insecure registry](https://docs.docker.com/registry/insecure/) in your local
 Docker engine. You must then specify the path to the OpenShift registry like so:
