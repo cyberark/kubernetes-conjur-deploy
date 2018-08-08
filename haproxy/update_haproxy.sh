@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eox pipefail
+set -eo pipefail
 
 # This script updates the HAProxy configuration for currently running Conjur containers
 # and restarts the proxy daemon
