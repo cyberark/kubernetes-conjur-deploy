@@ -1,7 +1,10 @@
 # kubernetes-conjur-deploy
 
-This repository contains scripts for deploying a Conjur v4 cluster to a
+This repository contains scripts for deploying a Conjur cluster to a
 Kubernetes or OpenShift environment.
+
+**Note:** These scripts are intended for use with Conjur v4 and v5
+**Enterprise**. To deploy Conjur OSS, please use the [Conjur OSS helm chart](https://github.com/cyberark/conjur-oss-helm-chart).
 
 # Setup
 
