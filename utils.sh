@@ -2,6 +2,9 @@
 
 CONJUR_VERSION=${CONJUR_VERSION:-$CONJUR_MAJOR_VERSION} # default to CONJUR_MAJOR_VERSION if not set
 PLATFORM="${PLATFORM:-kubernetes}"  # default to kubernetes if not set
+MINIKUBE='0'
+MINISHIFT='0'
+
 
 if [ $PLATFORM = 'kubernetes' ]; then
     cli=kubectl
@@ -32,8 +35,10 @@ announce() {
 platform_image() {
   if [ $PLATFORM = "openshift" ]; then
     echo "$DOCKER_REGISTRY_PATH/$CONJUR_NAMESPACE_NAME/$1:$CONJUR_NAMESPACE_NAME"
-  else
+  elif ! is_minienv; then
     echo "$DOCKER_REGISTRY_PATH/$1:$CONJUR_NAMESPACE_NAME"
+  else
+    echo "$1:$CONJUR_NAMESPACE_NAME"
   fi
 }
 
@@ -92,6 +97,11 @@ mastercmd() {
   fi
 }
 
+get_conjur_cli_pod_name() {
+  pod_list=$($cli get pods -l app=conjur-cli --no-headers | awk '{ print $1 }')
+  echo $pod_list | awk '{print $1}'
+}
+
 set_namespace() {
   if [[ $# != 1 ]]; then
     printf "Error in %s/%s - expecting 1 arg.\n" $(pwd) $0
@@ -146,4 +156,24 @@ rotate_api_key() {
   $cli exec $master_pod_name -- conjur authn logout > /dev/null
 
   echo $api_key
+}
+
+function is_minienv() {
+  is_minikube || is_minishift
+}
+
+function is_minikube() {
+  if [[ "$MINIKUBE" == "0" ]]; then
+    false
+  else
+    true
+  fi
+}
+
+function is_minishift() {
+  if [[ "$MINISHIFT" == "0" ]]; then
+    false
+  else
+    true
+  fi
 }

@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash -x
 set -eo pipefail
 
 . utils.sh
@@ -35,7 +35,13 @@ fi
 
 conjur_appliance_image=$(platform_image "conjur-appliance")
 
-echo "deploying main cluster"
+announce "Deploying Master cluster pods."
+
+if is_minienv; then
+  IMAGE_PULL_POLICY='Never'
+else
+  IMAGE_PULL_POLICY='Always'
+fi
 
 if [ $CONJUR_VERSION = '4' ]; then
   if $cli get statefulset &>/dev/null; then  # this returns non-0 if platform doesn't support statefulset
@@ -45,18 +51,28 @@ if [ $CONJUR_VERSION = '4' ]; then
   fi
   
   sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" $conjur_cluster_template |
+    sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
     $cli create -f -
 else
   sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/conjur-cluster.yaml" |
     sed -e "s#{{ AUTHENTICATOR_ID }}#$AUTHENTICATOR_ID#g" |
     sed -e "s#{{ CONJUR_DATA_KEY }}#$(openssl rand -base64 32)#g" |
+    sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
     $cli create -f -
 fi
 
-echo "deploying followers"
+announce "Deploying Conjur CLI pod."
+
+cli_app_image=$(platform_image conjur-cli)
+sed -e "s#{{ DOCKER_IMAGE }}#$cli_app_image#g" ./$PLATFORM/conjur-cli.yml |
+  sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
+  $cli create -f -
+
+announce "Deploying Follower pods."
 
 sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/conjur-follower.yaml" |
   sed -e "s#{{ AUTHENTICATOR_ID }}#$AUTHENTICATOR_ID#g" |
+  sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
   $cli create -f -
 
 sleep 10

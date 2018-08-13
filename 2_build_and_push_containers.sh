@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 set -euo pipefail
 
 . utils.sh
@@ -11,7 +11,9 @@ fi
 
 conjur_appliance_image=$(platform_image conjur-appliance)
 docker tag $CONJUR_APPLIANCE_IMAGE $conjur_appliance_image
-docker push $conjur_appliance_image
+if ! is_minienv; then
+  docker push $conjur_appliance_image
+fi
 
 announce "Building and pushing haproxy image."
 
@@ -21,6 +23,19 @@ popd
 
 haproxy_image=$(platform_image haproxy)
 docker tag haproxy:$CONJUR_NAMESPACE_NAME $haproxy_image
-docker push $haproxy_image
+if ! is_minienv; then
+  docker push $haproxy_image
+fi
+
+announce "Pulling and pushing Conjur CLI image."
+
+docker pull cyberark/conjur-cli:$CONJUR_VERSION-latest
+docker tag cyberark/conjur-cli:$CONJUR_VERSION-latest conjur-cli:$CONJUR_NAMESPACE_NAME
+
+cli_app_image=$(platform_image conjur-cli)
+docker tag conjur-cli:$CONJUR_NAMESPACE_NAME $cli_app_image
+if ! is_minienv; then
+  docker push $cli_app_image
+fi
 
 echo "Docker images pushed."

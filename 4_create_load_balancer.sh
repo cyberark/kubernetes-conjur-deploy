@@ -9,7 +9,14 @@ set_namespace $CONJUR_NAMESPACE_NAME
 
 docker_image=$(platform_image haproxy)
 
+if is_minienv; then
+  IMAGE_PULL_POLICY='Never'
+else
+  IMAGE_PULL_POLICY='Always'
+fi
+
 sed -e "s#{{ DOCKER_IMAGE }}#$docker_image#g" "./$PLATFORM/haproxy-conjur-master.yaml" |
+  sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
   $cli create -f -
 
 wait_for_node 'haproxy-conjur-master'

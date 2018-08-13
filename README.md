@@ -13,6 +13,10 @@ environment variables. The setup instructions below walk you through the
 necessary steps for configuring your environment and show you which variables
 need to be set before deploying.
 
+All environment variables can be set/defined with the bootstrap.env file. Edit the values per instructions below, source the file and run 0_check_dependencies.sh to verify.
+
+The Conjur appliance image can be loaded with _load_conjur_tarfile.sh. The script uses environment variables to locate the tarfile image and the value to use as a tag once it's loaded.
+
 ### Conjur Version
 
 If you are working with Conjur v4, you will need to set:
@@ -76,6 +80,22 @@ export DOCKER_REGISTRY_PATH=docker-registry-<registry-namespace>.<routing-domain
 
 Please make sure that you are logged in to the registry before deploying.
 
+##### Running OpenShift in Minishift
+
+You can use Minishift to run OpenShift locally in a single-node cluster. Minishift provides a convenient way to test out Conjur deployments on a laptop or local machine and also provides an integrated Docker daemon from which to stage and push images into the OpenShift registry. The ./openshift subdirectory contains two files:
+ * _minishift-boot.env that defines environment variables to configure Minishift, and
+ * _minishift-start.sh to startup Minishift.
+The script assumes VirtualBox as the hypervisor but others are supported. See https://github.com/minishift/minishift for more information.
+
+Steps to startup Minishift:
+
+ 0) ensure VirtualBox is installed
+ 1) cd openshift
+ 2) edit & source _minishift-bootstrap.env
+ 3) run _minishift-start.sh
+ 4) source _minishift-bootstrap.env again to user internal docker daemon
+ 5) cd ..
+
 ### Kubernetes / OpenShift Configuration
 
 Before deploying Conjur, you must first make sure that you are connected to your
@@ -103,10 +123,10 @@ your user will need to have the `cluster-admin` role to do so):
 
 ```
 # Kubernetes
-kubectl create -f ./kubernetes/conjur-authenticator-role.yaml
+kubectl apply -f ./kubernetes/conjur-authenticator-role.yaml
 
 # OpenShift
-oc create -f ./openshift/conjur-authenticator-role.yaml
+oc apply -f ./openshift/conjur-authenticator-role.yaml
 ```
 
 ### Conjur Configuration
@@ -200,7 +220,7 @@ Our plan is to automate this process with a Kubernetes operator.
 
 ---
 
-### Conjur CLI
+### Conjur CLI !!! These files no longer exist - think this section can be deleted. !!!
 
 The deploy scripts include a manifest for creating a Conjur CLI container within
 the Kubernetes environment that can then be used to interact with Conjur. Deploy

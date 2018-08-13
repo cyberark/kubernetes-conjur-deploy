@@ -28,7 +28,7 @@ spec:
   containers:
   - name: haproxy
     image: {{ DOCKER_IMAGE }}
-    imagePullPolicy: Always
+    imagePullPolicy: {{ IMAGE_PULL_POLICY }}
     ports:
     - containerPort: 443
       name: https
