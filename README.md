@@ -123,10 +123,10 @@ your user will need to have the `cluster-admin` role to do so):
 
 ```
 # Kubernetes
-kubectl create -f ./kubernetes/conjur-authenticator-role.yaml
+kubectl apply -f ./kubernetes/conjur-authenticator-role.yaml
 
 # OpenShift
-oc create -f ./openshift/conjur-authenticator-role.yaml
+oc apply -f ./openshift/conjur-authenticator-role.yaml
 ```
 
 ### Conjur Configuration

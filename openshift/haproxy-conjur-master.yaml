@@ -15,7 +15,7 @@ spec:
     name: pg-main
   selector:
     app: haproxy-conjur-master
-  type: NodePort
+  type: LoadBalancer
 ---
 apiVersion: v1
 kind: Pod
