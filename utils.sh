@@ -5,6 +5,7 @@ PLATFORM="${PLATFORM:-kubernetes}"  # default to kubernetes if not set
 MINIKUBE='0'
 MINISHIFT='0'
 
+
 if [ $PLATFORM = 'kubernetes' ]; then
     cli=kubectl
 elif [ $PLATFORM = 'openshift' ]; then
