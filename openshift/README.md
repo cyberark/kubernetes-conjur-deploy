@@ -10,6 +10,7 @@ You will need to install VirtualBox and the minishift executable.
 ## Startup procedure
 
 In this directory:
+
 1) edit _minishift-boostrap.env to set environment variables
 2) source _minishift-boostrap.env - to setup OpenShift version & VM RAM
 3) run _minishift-start.sh
@@ -20,6 +21,7 @@ In this directory:
 8) cd ..
 
 In parent directory:
+
 9) edit bootstrap.env to set path to tarfile for Conjur appliance image
 10) run _load_conjur_tarfile.sh to load & tag conjur-appliance image
 IMPORTANT: The installation scripts will look for the value $CONJUR_APPLIANCE_IMAGE. Make sure the Conjur appliance image is tagged correctly. Fix manually if necessary.
