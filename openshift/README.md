@@ -18,7 +18,7 @@ In this directory:
 5) check docker images - you should see openshift images only.
 6) login as cluster admin (oc login -u system:admin)
 7) run "oc get pods --namespace=default" - confirm all pods are Running or Completed
-8) cd ..
+8) cd to parent directory (cd ..)
 
 In parent directory:
 
