@@ -33,6 +33,8 @@ If you are working with OpenShift, you will need to set:
 
 ```
 export PLATFORM=openshift
+export OSHIFT_CLUSTER_ADMIN_USERNAME=<name-of-cluster-admin> # system:admin in minishift
+export OSHIFT_CONJUR_ADMIN_USERNAME=<name-of-conjur-namespace-admin> # developer in minishift
 ```
 
 Otherwise, this variable will default to `kubernetes`.

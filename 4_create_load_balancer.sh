@@ -34,6 +34,11 @@ else
   haproxy/update_haproxy.sh haproxy-conjur-master
 fi
 
-wait_for_service 'conjur-master'
+if [[ $PLATFORM == openshift ]]; then
+  wait_for_service 'conjur-master'
+else
+  # External IP always pending w/ k8s 
+  sleep 5
+fi
 
 echo "Load balancer created and configured."

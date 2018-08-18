@@ -6,8 +6,9 @@ if [[ "$KUBERNETES_VERSION" == "" ]]; then
 	exit -1
 fi
 minikube config set memory $MINIKUBE_VM_MEMORY
-minikube start --memory $MINIKUBE_VM_MEMORY --vm-driver virtualbox --kubernetes-version $KUBERNETES_VERSION
-kubectl taint nodes minikube node-role.kubernetes.io/master:NoSchedule- node/minikube untainted
+minikube start --memory $MINIKUBE_VM_MEMORY --vm-driver virtualbox --kubernetes-version $KUBERNETES_VERSION 
+#remove all taints from the minikube node so that pods will get scheduled
+kubectl patch node minikube -p '{"spec":{"taints":[]}}'
 echo ""
 echo "IMPORTANT!  IMPORTANT!  IMPORTANT!  IMPORTANT!"
 echo "You need to source _minikube-boot.env again to reference docker daemon in Minikube..."

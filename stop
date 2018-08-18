@@ -3,6 +3,10 @@ set -euo pipefail
 
 . utils.sh
 
+if [[ $PLATFORM == openshift ]]; then
+  $cli login -u system:admin
+fi
+
 set_namespace default
 
 if has_namespace $CONJUR_NAMESPACE_NAME; then

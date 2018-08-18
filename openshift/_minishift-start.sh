@@ -1,5 +1,5 @@
 #!/bin/bash
-rm -rf ~/.kube
+rm -rf ~/.kube ~/.minishift
 if [[ "$OPENSHIFT_VERSION" == "" ]]; then
 	echo "source _minishift-boot.env first before running this script."
 	echo "Ignore errors re: not finding Openshift binary (cuz Openshift is not running yet, right?)"
