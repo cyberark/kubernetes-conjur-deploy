@@ -9,7 +9,7 @@ set_namespace default
 
 if [[ $PLATFORM == openshift ]]; then
   echo "Logging in as cluster admin..."
-  oc login -u system:admin
+  oc login -u $CONJUR_OSHIFT_ADMIN
 fi
 
 if has_namespace "$CONJUR_NAMESPACE_NAME"; then
