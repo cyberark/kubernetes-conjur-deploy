@@ -1,7 +1,6 @@
 #!/bin/bash
 if [[ "$KUBERNETES_VERSION" == "" ]]; then
 	echo "source _minikube-boot.env first before running this script."
-	echo "Ignore errors re: not getting Kubernetes host (cuz Kubernetes is not running yet, right?)"
 	exit -1
 fi
 if [[ $1 == reinstall ]]; then
