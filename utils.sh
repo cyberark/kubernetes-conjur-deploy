@@ -7,11 +7,6 @@ fi
 
 if [ $PLATFORM = 'kubernetes' ]; then
     cli=kubectl
-    if [[ "$MINIKUBE" == "" ]]; then
-	MINIKUBE='0'
-    else
-	MINIKUBE='1'
-    fi
 elif [ $PLATFORM = 'openshift' ]; then
     cli=oc
 else
@@ -163,11 +158,7 @@ rotate_api_key() {
 }
 
 function is_minienv() {
-  is_minikube 
-}
-
-function is_minikube() {
-  if [[ "$MINIKUBE" == "0" ]]; then
+  if [[ $MINIKUBE == false ]]; then
     false
   else
     true
