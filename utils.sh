@@ -159,7 +159,7 @@ rotate_api_key() {
 }
 
 function is_minienv() {
-  if [[ $MINIKUBE = false ]]; then
+  if [[ $MINIKUBE == false ]]; then
     false
   else
     true

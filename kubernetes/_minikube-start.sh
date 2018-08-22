@@ -3,7 +3,8 @@ if [[ "$KUBERNETES_VERSION" == "" ]]; then
 	echo "source _minikube-boot.env first before running this script."
 	exit -1
 fi
-if [[ $1 == reinstall ]]; then
+# if no existing VM, delete past login state and minikube resources 
+if [[ "$(minikube status | grep minikube | awk '{print $2}')" == "" ]]; then
   minikube delete
   rm -rf ~/.kube ~/.minikube
 fi
