@@ -4,7 +4,7 @@ if [[ "$OPENSHIFT_VERSION" == "" ]]; then
 	exit -1
 fi
 if [[ $1 == reinstall ]]; then
-  minishift -f delete
+  minishift delete -f
   rm -rf ~/.kube ~/.minishift
 fi
 minishift start --memory $MINISHIFT_VM_MEMORY --vm-driver virtualbox --show-libmachine-logs --openshift-version $OPENSHIFT_VERSION

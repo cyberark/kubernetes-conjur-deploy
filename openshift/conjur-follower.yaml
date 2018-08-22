@@ -9,10 +9,12 @@ spec:
   ports:
   - port: 443
     name: https
+    nodePort: 30444
   - port: 636
     name: ldaps
   selector:
     app: conjur-follower
+  type: LoadBalancer
 ---
 apiVersion: v1
 kind: DeploymentConfig
