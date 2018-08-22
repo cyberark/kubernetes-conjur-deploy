@@ -6,7 +6,11 @@ set -euo pipefail
 set_namespace $CONJUR_NAMESPACE_NAME
 
 if [ $PLATFORM = 'kubernetes' ]; then
-  ui_url="https://$(minikube ip):30443"
+  if [[ $MINIKUBE = true ]]; then
+    ui_url="https://$(minikube ip):30443"
+  else
+    ui_url="https://$(get_master_service_ip)"
+  fi
 elif [ $PLATFORM = 'openshift' ]; then
   conjur_master_route=$($cli get routes | grep conjur-master | awk '{ print $2 }')
   ui_url="https://$conjur_master_route"
