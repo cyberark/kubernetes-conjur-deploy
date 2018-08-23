@@ -6,7 +6,7 @@ set -euo pipefail
 set_namespace $CONJUR_NAMESPACE_NAME
 
 if [ $PLATFORM = 'kubernetes' ]; then
-  if [[ is_minienv ]]; then
+  if is_minienv; then
     master_nodeport=$(kubectl describe service conjur-master | grep NodePort: | grep https | awk '{print $3}' | cut -d'/' -f 1)
     ui_url="https://$(minikube ip):$master_nodeport"
   else
