@@ -9,9 +9,16 @@ set_namespace $CONJUR_NAMESPACE_NAME
 
 conjur_appliance_image=$(platform_image "conjur-appliance")
 
+if is_minienv; then
+  IMAGE_PULL_POLICY='Never'
+else
+  IMAGE_PULL_POLICY='Always'
+fi
+
 announce "Deleting Follower pods."
 sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/conjur-follower.yaml" |
   sed -e "s#{{ AUTHENTICATOR_ID }}#$AUTHENTICATOR_ID#g" |
+  sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
   $cli delete --ignore-not-found -f -
 
 announce "Deleting Master cluster pods."
@@ -27,6 +34,7 @@ fi
 
 $cli delete --ignore-not-found deploy/conjur-cluster
 sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" $conjur_cluster_template |
+  sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
   $cli delete --ignore-not-found -f -
 
 announce "Deleting CLI pod."
@@ -36,6 +44,7 @@ announce "Deleting load balancer pod."
 docker_image=$(platform_image haproxy)
 
 sed -e "s#{{ DOCKER_IMAGE }}#$docker_image#g" "./$PLATFORM/haproxy-conjur-master.yaml" |
+  sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
   $cli delete --ignore-not-found -f -
 
 announce "Deleting Master route."
@@ -43,8 +52,10 @@ conjur_master_route=$($cli get routes | grep -s conjur-master | awk '{ print $3 
 $cli delete --ignore-not-found route $conjur_master_route
 
 echo "Waiting for Conjur pods to terminate..."
-sleep 10
-conjur_pod_count=0
-wait_for_it 300 "$cli describe po conjur-cluster | grep Status: | grep -c Running | grep -q $conjur_pod_count"
+while [[ "$($cli get pods 2>&1)" != "No resources found." ]]; do
+  echo -n '.'
+  sleep 3
+done 
+echo
 
 echo "Cluster deleted."

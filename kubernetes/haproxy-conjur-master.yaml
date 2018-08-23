@@ -9,6 +9,7 @@ spec:
   ports:
   - port: 443
     name: https
+#    nodePort: 30443
   - port: 636
     name: ldaps
   - port: 5432

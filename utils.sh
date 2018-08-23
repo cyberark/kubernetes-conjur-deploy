@@ -1,10 +1,10 @@
 #!/bin/bash
 
 CONJUR_VERSION=${CONJUR_VERSION:-$CONJUR_MAJOR_VERSION} # default to CONJUR_MAJOR_VERSION if not set
-PLATFORM="${PLATFORM:-kubernetes}"  # default to kubernetes if not set
-MINIKUBE='0'
-MINISHIFT='0'
+PLATFORM="${PLATFORM:-kubernetes}" # default to kubernetes if not set
 
+MINIKUBE="${MINIKUBE:-false}"
+MINISHIFT="${MINISHIFT:-false}"
 
 if [ $PLATFORM = 'kubernetes' ]; then
     cli=kubectl
@@ -159,19 +159,7 @@ rotate_api_key() {
 }
 
 function is_minienv() {
-  is_minikube || is_minishift
-}
-
-function is_minikube() {
-  if [[ "$MINIKUBE" == "0" ]]; then
-    false
-  else
-    true
-  fi
-}
-
-function is_minishift() {
-  if [[ "$MINISHIFT" == "0" ]]; then
+  if [[ $MINIKUBE == false ]]; then
     false
   else
     true
