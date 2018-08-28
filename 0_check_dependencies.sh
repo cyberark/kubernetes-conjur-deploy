@@ -17,3 +17,11 @@ check_env_var "DOCKER_REGISTRY_PATH"
 check_env_var "CONJUR_ACCOUNT"
 check_env_var "CONJUR_ADMIN_PASSWORD"
 check_env_var "AUTHENTICATOR_ID"
+
+# check if CONJUR_VERSION is consistent with CONJUR_APPLIANCE_IMAGE
+appliance_tag=${CONJUR_APPLIANCE_IMAGE//[A-Za-z.]*:/}
+appliance_version=${appliance_tag//\.[0-9A-Za-z.-]*/}
+if [ "$appliance_version" != "$CONJUR_VERSION" ]; then
+  echo "Your appliance does not match the specified Conjur version."
+  exit 1
+fi
