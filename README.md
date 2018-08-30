@@ -93,9 +93,9 @@ Steps to startup Minishift:
 
  0) ensure VirtualBox is installed
  1) cd openshift
- 2) edit & source _minishift-bootstrap.env
+ 2) edit & source _minishift-boot.env
  3) run _minishift-start.sh
- 4) source _minishift-bootstrap.env again to user internal docker daemon
+ 4) source _minishift-boot.env again to user internal docker daemon
  5) cd ..
 
 ### Kubernetes / OpenShift Configuration
