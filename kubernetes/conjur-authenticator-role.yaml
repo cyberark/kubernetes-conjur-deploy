@@ -2,7 +2,7 @@
 apiVersion: rbac.authorization.k8s.io/v1beta1 # TODO: change this to match your k8s version
 kind: ClusterRole
 metadata:
-  name: conjur-authenticator
+  name: conjur-authenticator-{{ CONJUR_NAMESPACE_NAME }}
 rules:
 - apiGroups: [""] # "" indicates the core API group
   resources: ["pods", "serviceaccounts"]
