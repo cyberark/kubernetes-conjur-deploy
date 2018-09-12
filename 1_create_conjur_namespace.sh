@@ -34,12 +34,13 @@ if ! has_serviceaccount $CONJUR_SERVICEACCOUNT_NAME; then
   $cli create serviceaccount $CONJUR_SERVICEACCOUNT_NAME -n $CONJUR_NAMESPACE_NAME
 fi
 
-$cli delete --ignore-not-found clusterrole conjur-authenticator
+$cli delete --ignore-not-found clusterrole conjur-authenticator-$CONJUR_NAMESPACE_NAME
 
 # Grant default service account permissions it needs for authn-k8s to:
 # 1) get + list pods (to verify pod names)
 # 2) create + get pods/exec (to inject cert into app sidecar)
-$cli apply -f ./$PLATFORM/conjur-authenticator-role.yaml
+sed -e "s#{{ CONJUR_NAMESPACE_NAME }}#$CONJUR_NAMESPACE_NAME#g" ./$PLATFORM/conjur-authenticator-role.yaml |
+  $cli apply -f -
 
 if [[ "$PLATFORM" == "openshift" ]]; then
   # allow pods with conjur-cluster serviceaccount to run as root

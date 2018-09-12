@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ClusterRole
 metadata:
-  name: conjur-authenticator
+  name: conjur-authenticator-{{ CONJUR_NAMESPACE_NAME }}
 rules:
 - apiGroups: [""] # "" indicates the core API group
   resources: ["pods", "serviceaccounts"]
