@@ -21,7 +21,7 @@ kind: DeploymentConfig
 metadata:
   name: conjur-follower
 spec:
-  replicas: 2
+  replicas: {{ CONJUR_FOLLOWER_COUNT }}
   template:
     metadata:
       labels:
