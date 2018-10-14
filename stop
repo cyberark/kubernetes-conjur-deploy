@@ -5,7 +5,6 @@ set -euo pipefail
 
 if [[ $PLATFORM == openshift ]]; then
   $cli login -u $OSHIFT_CLUSTER_ADMIN_USERNAME
-  $cli login -u system:admin
 fi
 
 set_namespace default
