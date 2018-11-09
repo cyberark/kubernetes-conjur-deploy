@@ -12,7 +12,7 @@ if [ $PLATFORM = 'kubernetes' ]; then
 else
     check_env_var "OSHIFT_CONJUR_ADMIN_USERNAME"
 fi
-    
+
 check_env_var "DOCKER_REGISTRY_PATH"
 check_env_var "CONJUR_ACCOUNT"
 check_env_var "CONJUR_ADMIN_PASSWORD"
