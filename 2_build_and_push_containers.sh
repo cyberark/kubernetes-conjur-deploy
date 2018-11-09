@@ -6,7 +6,12 @@ set -euo pipefail
 announce "Tagging and pushing Conjur appliance"
 
 if [ $PLATFORM = 'openshift' ]; then
-    docker login -u _ -p $(oc whoami -t) $DOCKER_REGISTRY_PATH
+  docker login -u _ -p $(oc whoami -t) $DOCKER_REGISTRY_PATH
+elif is_minienv; then
+  echo "Fetching image from registry..."
+  docker login "${DOCKER_REGISTRY_PATH}"
+  docker pull "${DOCKER_REGISTRY_PATH}/${CONJUR_APPLIANCE_IMAGE}"
+  docker tag "${DOCKER_REGISTRY_PATH}/${CONJUR_APPLIANCE_IMAGE}" "${CONJUR_APPLIANCE_IMAGE}"
 fi
 
 conjur_appliance_image=$(platform_image conjur-appliance)
