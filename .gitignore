@@ -6,3 +6,4 @@ tmp/
 output/
 notes.txt
 setenv.sh
+tmp*

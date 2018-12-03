@@ -4,15 +4,17 @@ set -euo pipefail
 
 main() {
   set_namespace $CONJUR_NAMESPACE_NAME
+  
   configure_master_pod
+  
   sleep 10
+  
   configure_cli_pod
 }
 
-##################################
 configure_master_pod() {
-
   announce "Configuring master pod."
+  
   master_pod_name=$(get_master_pod_name)
 
   if [ $CONJUR_VERSION = '4' ]; then
@@ -63,7 +65,6 @@ configure_master_pod() {
   fi
 }
 
-#################################
 configure_cli_pod() {
   announce "Configuring Conjur CLI."
 
