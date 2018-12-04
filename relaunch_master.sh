@@ -65,4 +65,4 @@ done
 
 $cli exec $master_pod_name -- curl -s localhost/health | tee "output/$PLATFORM-relaunch-health.json"
 
-./8_print_config.sh
+./8_print_cluster_info.sh
