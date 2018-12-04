@@ -10,6 +10,7 @@ main() {
   
   deploy_conjur_master_cluster
   deploy_conjur_cli
+  deploy_conjur_followers
 
   sleep 10
 
@@ -83,7 +84,9 @@ deploy_conjur_cli() {
   sed -e "s#{{ DOCKER_IMAGE }}#$cli_app_image#g" ./$PLATFORM/conjur-cli.yml |
     sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
     $cli create -f -
+}
 
+deploy_conjur_followers() {
   announce "Deploying Follower pods."
 
   sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/conjur-follower.yaml" |
