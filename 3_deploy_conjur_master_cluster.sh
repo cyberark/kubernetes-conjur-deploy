@@ -18,8 +18,6 @@ main() {
   echo "Cluster created."
 }
 
-announce "Creating Conjur master cluster."
-
 docker_login() {
   if [ $PLATFORM = 'kubernetes' ]; then
     if ! [ "${DOCKER_EMAIL}" = "" ]; then
@@ -49,7 +47,7 @@ docker_login() {
 }
 
 deploy_conjur_master_cluster() {
-  announce "Deploying Master cluster pods."
+  announce "Deploying Conjur Master cluster pods."
 
   conjur_appliance_image=$(platform_image "conjur-appliance")
 
@@ -94,7 +92,6 @@ deploy_conjur_cli() {
     sed -e "s#{{ CONJUR_FOLLOWER_COUNT }}#${CONJUR_FOLLOWER_COUNT:-2}#g" |
     $cli create -f -
 }
-
 
 wait_for_conjur() {
   echo "Waiting for Conjur pods to launch..."

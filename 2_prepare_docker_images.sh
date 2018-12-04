@@ -34,6 +34,7 @@ prepare_conjur_cli_image() {
 
   cli_app_image=$(platform_image conjur-cli)
   docker tag conjur-cli:$CONJUR_NAMESPACE_NAME $cli_app_image
+  
   if ! is_minienv; then
     docker push $cli_app_image
   fi
@@ -43,11 +44,12 @@ prepare_haproxy_image() {
   announce "Building and pushing haproxy image."
 
   pushd build/haproxy
-  ./build.sh
+    ./build.sh
   popd
 
   haproxy_image=$(platform_image haproxy)
   docker tag haproxy:$CONJUR_NAMESPACE_NAME $haproxy_image
+  
   if ! is_minienv; then
     docker push $haproxy_image
   fi

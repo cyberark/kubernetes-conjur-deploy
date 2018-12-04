@@ -22,7 +22,7 @@ prepare_follower_seed() {
 
   # Create dir w/ guid from namespace name for parallel CI execution
   seed_dir="tmp-$CONJUR_NAMESPACE_NAME"
-  mkdir -p $seed_dir
+  mkdir -p "$seed_dir"
 
   $cli exec $master_pod_name evoke seed follower conjur-follower > "./$seed_dir/follower-seed.tar"
 }
