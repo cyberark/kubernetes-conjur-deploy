@@ -2,6 +2,7 @@
 
 CONJUR_VERSION=${CONJUR_VERSION:-$CONJUR_MAJOR_VERSION} # default to CONJUR_MAJOR_VERSION if not set
 PLATFORM="${PLATFORM:-kubernetes}" # default to kubernetes if not set
+DEPLOY_MASTER="${DEPLOY_MASTER:-false}"
 
 MINIKUBE="${MINIKUBE:-false}"
 MINISHIFT="${MINISHIFT:-false}"

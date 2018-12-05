@@ -25,3 +25,7 @@ if [ "$appliance_version" != "$CONJUR_VERSION" ]; then
   echo "Your appliance does not match the specified Conjur version."
   exit 1
 fi
+
+if [[ $DEPLOY_CONJUR_MASTER = "false" ]]; then
+  check_env_var "FOLLOWER_SEED_PATH"
+fi

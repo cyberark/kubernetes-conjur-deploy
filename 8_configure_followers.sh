@@ -10,7 +10,14 @@ main() {
   
   master_pod_name=$(get_master_pod_name)
 
-  prepare_follower_seed
+  # if deploy master
+  #   create a seed file
+  # otherwise
+  #   get seed file location from env var?
+
+  if [[ $DEPLOY_CONJUR_MASTER = "true" ]]; then
+    prepare_follower_seed
+  fi
 
   configure_followers
 
@@ -24,7 +31,9 @@ prepare_follower_seed() {
   seed_dir="tmp-$CONJUR_NAMESPACE_NAME"
   mkdir -p "$seed_dir"
 
-  $cli exec $master_pod_name evoke seed follower conjur-follower > "./$seed_dir/follower-seed.tar"
+  FOLLOWER_SEED_PATH="./$seed_dir/follower-seed.tar"
+
+  $cli exec $master_pod_name evoke seed follower conjur-follower > $FOLLOWER_SEED_PATH
 }
 
 configure_followers() {
@@ -42,7 +51,7 @@ configure_follower() {
 
   printf "Configuring follower %s...\n" $pod_name
 
-  copy_file_to_container "./$seed_dir/follower-seed.tar" "/tmp/follower-seed.tar" "$pod_name"
+  copy_file_to_container $FOLLOWER_SEED_PATH "/tmp/follower-seed.tar" "$pod_name"
 
   $cli exec $pod_name -- evoke unpack seed /tmp/follower-seed.tar
   $cli exec $pod_name -- evoke configure follower

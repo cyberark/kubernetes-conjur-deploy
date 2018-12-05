@@ -7,16 +7,15 @@ main() {
   set_namespace $CONJUR_NAMESPACE_NAME
 
   docker_login
-  
+
   deploy_conjur_master_cluster
   deploy_conjur_cli
-  deploy_conjur_followers
 
   sleep 10
 
   wait_for_conjur
   
-  echo "Cluster created."
+  echo "Master cluster created."
 }
 
 docker_login() {
@@ -83,16 +82,6 @@ deploy_conjur_cli() {
   cli_app_image=$(platform_image conjur-cli)
   sed -e "s#{{ DOCKER_IMAGE }}#$cli_app_image#g" ./$PLATFORM/conjur-cli.yml |
     sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
-    $cli create -f -
-}
-
-deploy_conjur_followers() {
-  announce "Deploying Follower pods."
-
-  sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/conjur-follower.yaml" |
-    sed -e "s#{{ AUTHENTICATOR_ID }}#$AUTHENTICATOR_ID#g" |
-    sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
-    sed -e "s#{{ CONJUR_FOLLOWER_COUNT }}#${CONJUR_FOLLOWER_COUNT:-2}#g" |
     $cli create -f -
 }
 
