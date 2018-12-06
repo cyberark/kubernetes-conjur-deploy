@@ -8,13 +8,17 @@ main() {
 
   announce "Configuring followers."
 
+  seed_dir="tmp-$CONJUR_NAMESPACE_NAME"
+  
   if [[ $DEPLOY_CONJUR_MASTER = "true" ]]; then
     prepare_follower_seed
   fi
 
   configure_followers
 
-  delete_follower_seed
+  if [[ $DEPLOY_CONJUR_MASTER = "true" ]]; then
+    delete_follower_seed
+  fi
 
   echo "Followers configured."
 }
@@ -25,7 +29,6 @@ prepare_follower_seed() {
   master_pod_name=$(get_master_pod_name)
 
   # Create dir w/ guid from namespace name for parallel CI execution
-  seed_dir="tmp-$CONJUR_NAMESPACE_NAME"
   mkdir -p "$seed_dir"
 
   FOLLOWER_SEED_PATH="./$seed_dir/follower-seed.tar"

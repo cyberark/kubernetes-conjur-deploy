@@ -60,21 +60,7 @@ copy_file_to_container() {
   local to=$2
   local pod_name=$3
 
-  if [ $PLATFORM = "kubernetes" ]; then
-    $cli cp "$from" $pod_name:"$to"
-  elif [ $PLATFORM = "openshift" ]; then
-    local source_file_path=$from
-    local source_file_name="$(basename "$source_file_path")"
-    local parent_path="$(dirname "$source_file_path")"
-    local parent_name="$(basename "$parent_path")"
-
-    local container_temp_path="/copy-tmp"
-
-    oc exec $pod_name -- mkdir -p $container_temp_path
-    oc rsync "$parent_path" "$pod_name:$container_temp_path"
-    oc exec "$pod_name" mv "$container_temp_path/$parent_name/$source_file_name" "$to"
-    oc exec "$pod_name" rm -- -rf "$container_temp_path/$parent_name"
-  fi
+  $cli cp "$from" $pod_name:"$to"
 }
 
 get_master_pod_name() {
