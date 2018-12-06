@@ -3,23 +3,41 @@ set -euo pipefail
 
 . utils.sh
 
-set_namespace $CONJUR_NAMESPACE_NAME
+main() {
+  set_namespace $CONJUR_NAMESPACE_NAME
 
-announce "Configuring followers."
+  announce "Configuring followers."
+  
+  master_pod_name=$(get_master_pod_name)
 
-master_pod_name=$(get_master_pod_name)
+  prepare_follower_seed
 
-echo "Preparing follower seed files..."
+  configure_followers
 
-# Create dir w/ guid from namespace name for parallel CI execution
-seed_dir="tmp-$CONJUR_NAMESPACE_NAME"
-mkdir -p $seed_dir
+  echo "Followers configured."
+}
 
-$cli exec $master_pod_name evoke seed follower conjur-follower > "./$seed_dir/follower-seed.tar"
+prepare_follower_seed() {
+  echo "Preparing follower seed files..."
 
-pod_list=$($cli get pods -l role=follower --no-headers | awk '{ print $1 }')
+  # Create dir w/ guid from namespace name for parallel CI execution
+  seed_dir="tmp-$CONJUR_NAMESPACE_NAME"
+  mkdir -p "$seed_dir"
 
-function configure_follower() {
+  $cli exec $master_pod_name evoke seed follower conjur-follower > "./$seed_dir/follower-seed.tar"
+}
+
+configure_followers() {
+  pod_list=$($cli get pods -l role=follower --no-headers | awk '{ print $1 }')
+  
+  for pod_name in $pod_list; do
+    configure_follower $pod_name &
+  done
+  
+  wait # for parallel configuration of followers
+}
+
+configure_follower() {
   local pod_name=$1
 
   printf "Configuring follower %s...\n" $pod_name
@@ -30,13 +48,10 @@ function configure_follower() {
   $cli exec $pod_name -- evoke configure follower
 }
 
-for pod_name in $pod_list; do
-  configure_follower $pod_name &
-done
+delete_follower_seed() {
+  echo "Deleting follower seed..."
+  
+  rm -rf $seed_dir
+}
 
-wait  # for parallel configuration of followers
-
-rm -rf $seed_dir
-
-echo "Followers configured."
-
+main $@

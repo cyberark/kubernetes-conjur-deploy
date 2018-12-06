@@ -119,7 +119,7 @@ wait_for_service() {
   wait_for_it -1 "$cli get service $1 --no-headers | grep -q -v pending"
 }
 
-function wait_for_it() {
+wait_for_it() {
   local timeout=$1
   local spacer=2
   shift
@@ -158,7 +158,7 @@ rotate_api_key() {
   echo $api_key
 }
 
-function is_minienv() {
+is_minienv() {
   if [[ $MINIKUBE == false ]]; then
     false
   else
