@@ -8,9 +8,8 @@ main() {
 
   announce "Configuring followers."
 
-  seed_dir="tmp-$CONJUR_NAMESPACE_NAME"
-  
   if [[ $DEPLOY_CONJUR_MASTER = "true" ]]; then
+    seed_dir="tmp-$CONJUR_NAMESPACE_NAME"
     prepare_follower_seed
   fi
 
