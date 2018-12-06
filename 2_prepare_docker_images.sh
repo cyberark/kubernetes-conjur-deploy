@@ -9,8 +9,11 @@ main() {
   fi
   
   prepare_conjur_appliance_image
-  prepare_conjur_cli_image
-  prepare_haproxy_image
+
+  if [[ "$DEPLOY_CONJUR_MASTER" = "True" ]]; then
+    prepare_conjur_cli_image
+    prepare_haproxy_image
+  fi
 
   echo "Docker images pushed."
 }

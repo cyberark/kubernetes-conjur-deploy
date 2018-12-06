@@ -7,13 +7,6 @@ main() {
   set_namespace $CONJUR_NAMESPACE_NAME
 
   announce "Configuring followers."
-  
-  master_pod_name=$(get_master_pod_name)
-
-  # if deploy master
-  #   create a seed file
-  # otherwise
-  #   get seed file location from env var?
 
   if [[ $DEPLOY_CONJUR_MASTER = "true" ]]; then
     prepare_follower_seed
@@ -21,11 +14,15 @@ main() {
 
   configure_followers
 
+  delete_follower_seed
+
   echo "Followers configured."
 }
 
 prepare_follower_seed() {
   echo "Preparing follower seed files..."
+
+  master_pod_name=$(get_master_pod_name)
 
   # Create dir w/ guid from namespace name for parallel CI execution
   seed_dir="tmp-$CONJUR_NAMESPACE_NAME"
