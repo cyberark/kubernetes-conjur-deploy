@@ -8,14 +8,14 @@ main() {
 
   announce "Configuring followers."
 
-  if [[ $DEPLOY_CONJUR_MASTER = "true" ]]; then
+  if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
     seed_dir="tmp-$CONJUR_NAMESPACE_NAME"
     prepare_follower_seed
   fi
 
   configure_followers
 
-  if [[ $DEPLOY_CONJUR_MASTER = "true" ]]; then
+  if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
     delete_follower_seed
   fi
 

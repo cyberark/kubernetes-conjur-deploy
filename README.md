@@ -1,10 +1,11 @@
 # kubernetes-conjur-deploy
 
-This repository contains scripts for deploying a Conjur cluster to a
-Kubernetes or OpenShift environment.
+This repository contains scripts for automating the deployment of Conjur
+followers to a Kubernetes or OpenShift environment. These scripts can also be
+used to deploy a full cluster with Master and Standbys for testing and demo
+purposes but this is not recommended for a production deployment of Conjur.
 
-**Note:** These scripts are intended for use with Conjur v4 and v5
-**Enterprise**. To deploy Conjur OSS, please use the [Conjur OSS helm chart](https://github.com/cyberark/conjur-oss-helm-chart).
+**Enterprise Only**. To deploy Conjur OSS, please use the [Conjur OSS helm chart](https://github.com/cyberark/conjur-oss-helm-chart).
 
 # Setup
 
@@ -17,17 +18,29 @@ All environment variables can be set/defined with the bootstrap.env file. Edit t
 
 The Conjur appliance image can be loaded with _load_conjur_tarfile.sh. The script uses environment variables to locate the tarfile image and the value to use as a tag once it's loaded.
 
-### Conjur Version
+### Conjur Configuration
 
-If you are working with Conjur v4, you will need to set:
+#### Appliance Image
+
+You need to obtain a Docker image of the Conjur v4 appliance and push it to an
+accessible Docker registry. Provide the image and tag like so:
 
 ```
-export CONJUR_VERSION=4
+export CONJUR_APPLIANCE_IMAGE=<tagged-docker-appliance-image>
 ```
 
-Otherwise, this variable will default to `5`.
+You will also need to provide an ID for the Conjur authenticator that will later
+be used in [Conjur policy](https://developer.conjur.net/policy) to provide your
+apps with access to secrets through Conjur:
 
-### Platform
+```
+export AUTHENTICATOR_ID=<authenticator-id>
+```
+
+This ID should describe the cluster in which Conjur resides. For example, if
+you're hosting your dev environment on GKE you might use `gke/dev`.
+
+### Platform Configuration
 
 If you are working with OpenShift, you will need to set:
 
@@ -37,7 +50,38 @@ export OSHIFT_CLUSTER_ADMIN_USERNAME=<name-of-cluster-admin> # system:admin in m
 export OSHIFT_CONJUR_ADMIN_USERNAME=<name-of-conjur-namespace-admin> # developer in minishift
 ```
 
-Otherwise, this variable will default to `kubernetes`.
+Otherwise, `$PLATFORM` variable will default to `kubernetes`.
+
+Before deploying Conjur, you must first make sure that you are connected to your
+chosen platform with a user that has the `cluster-admin` role. The user must be
+able to create namespaces and cluster roles.
+
+#### Conjur Namespace
+
+Provide the name of a namespace in which to deploy Conjur:
+
+```
+export CONJUR_NAMESPACE_NAME=<my-namespace>
+```
+
+#### The `conjur-authenticator` Cluster Role
+
+Conjur's Kubernetes authenticator requires the following privileges:
+
+- [`"get"`, `"list"`] on `"pods"` for confirming a pod's namespace membership
+- [`"create"`, `"get"`] on "pods/exec" for injecting a certificate into a pod
+
+The deploy scripts include a manifest that defines the `conjur-authenticator`
+cluster role, which grants these privileges. Create the role now (note that
+your user will need to have the `cluster-admin` role to do so):
+
+```
+# Kubernetes
+kubectl apply -f ./kubernetes/conjur-authenticator-role.yaml
+
+# OpenShift
+oc apply -f ./openshift/conjur-authenticator-role.yaml
+```
 
 ### Docker Configuration
 
@@ -82,7 +126,7 @@ export DOCKER_REGISTRY_PATH=docker-registry-<registry-namespace>.<routing-domain
 
 Please make sure that you are logged in to the registry before deploying.
 
-##### Running OpenShift in Minishift
+### Running OpenShift in Minishift
 
 You can use Minishift to run OpenShift locally in a single-node cluster. Minishift provides a convenient way to test out Conjur deployments on a laptop or local machine and also provides an integrated Docker daemon from which to stage and push images into the OpenShift registry. The ./openshift subdirectory contains two files:
  * _minishift-boot.env that defines environment variables to configure Minishift, and
@@ -98,79 +142,40 @@ Steps to startup Minishift:
  4) source _minishift-boot.env again to user internal docker daemon
  5) cd ..
 
-### Kubernetes / OpenShift Configuration
+# Usage
 
-Before deploying Conjur, you must first make sure that you are connected to your
-chosen platform with a user that has the `cluster-admin` role. The user must be
-able to create namespaces and cluster roles.
+### Deploying Conjur
 
-#### Conjur Namespace
+Run `./start` to execute the scripts necessary for deploying a set of Conjur
+Followers.
 
-Provide the name of a namespace in which to deploy Conjur:
+---
 
-```
-export CONJUR_NAMESPACE_NAME=<my-namespace>
-```
+# Master Cluster Deployment (*Test and Demo Only*)
 
-#### The `conjur-authenticator` Cluster Role
+### Master Cluster configuration
 
-Conjur's Kubernetes authenticator requires the following privileges:
-
-- [`"get"`, `"list"`] on `"pods"` for confirming a pod's namespace membership
-- [`"create"`, `"get"`] on "pods/exec" for injecting a certificate into a pod
-
-The deploy scripts include a manifest that defines the `conjur-authenticator`
-cluster role, which grants these privileges. Create the role now (note that
-your user will need to have the `cluster-admin` role to do so):
+If you are using these scripts to deploy a full cluster, you will need to set:
 
 ```
-# Kubernetes
-kubectl apply -f ./kubernetes/conjur-authenticator-role.yaml
-
-# OpenShift
-oc apply -f ./openshift/conjur-authenticator-role.yaml
+export DEPLOY_MASTER_CLUSTER=true
 ```
 
-### Conjur Configuration
-
-#### Appliance Image
-
-You need to obtain a Docker image of the Conjur v4 appliance and push it to an
-accessible Docker registry. Provide the image and tag like so:
+You will also need to set a few environment variable that are only used when
+configuring the Conjur master. If you are working with Conjur v4, you will need to set:
 
 ```
-export CONJUR_APPLIANCE_IMAGE=<tagged-docker-appliance-image>
+export CONJUR_VERSION=4
 ```
 
-#### Appliance Configuration
+Otherwise, this variable will default to `5`.
 
-When setting up a new Conjur installation, you must provide an account name and
-a password for the admin account:
+You must also provide an account name and password for the Conjur admin account:
 
 ```
 export CONJUR_ACCOUNT=<my_account_name>
 export CONJUR_ADMIN_PASSWORD=<my_admin_password>
 ```
-
-You will also need to provide an ID for the Conjur authenticator that will later
-be used in [Conjur policy](https://developer.conjur.net/policy) to provide your
-apps with access to secrets through Conjur:
-
-```
-export AUTHENTICATOR_ID=<authenticator-id>
-```
-
-This ID should describe the cluster in which Conjur resides. For example, if
-you're hosting your dev environment on GKE you might use `gke/dev`.
-
-# Usage
-
-### Deploying Conjur
-
-Run `./start` to deploy Conjur. This executes the numbered scripts in sequence
-to create and configure a Conjur cluster comprised of one Master, two Standbys,
-and two read-only Followers. The final step will print out the necessary info
-for interacting with Conjur through the CLI or UI.
 
 ### Data persistence
 
@@ -220,9 +225,7 @@ Standbys must also be reconfigured since the Conjur master pod IP changes.
 Run [relaunch_master.sh](relaunch_master.sh) to try this out in your cluster, after running the deploy.
 Our plan is to automate this process with a Kubernetes operator.
 
----
-
-### Conjur CLI !!! These files no longer exist - think this section can be deleted. !!!
+### Conjur CLI
 
 The deploy scripts include a manifest for creating a Conjur CLI container within
 the Kubernetes environment that can then be used to interact with Conjur. Deploy
@@ -230,11 +233,11 @@ the CLI pod and SSH into it:
 
 ```
 # Kubernetes
-kubectl create -f ./manifests/conjur-cli.yaml
+kubectl create -f ./kubernetes/conjur-cli.yaml
 kubectl exec -it [cli-pod-name] bash
 
 # OpenShift
-oc create -f ./manifests/conjur-cli.yaml
+oc create -f ./openshift/conjur-cli.yaml
 oc exec -it <cli-pod-name> bash
 ```
 
@@ -252,7 +255,7 @@ to get started with the Conjur CLI.
 Visit the Conjur UI URL in your browser and login with the admin credentials to
 access the Conjur UI.
 
-# Test App Demo
+### Test App Demo
 
 The [kubernetes-conjur-demo repo](https://github.com/conjurdemos/kubernetes-conjur-demo)
 deploys test applications that retrieve secrets from Conjur and serves as a

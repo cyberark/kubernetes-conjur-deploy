@@ -24,12 +24,12 @@ if [ "${appliance_version}" != "$CONJUR_VERSION" ]; then
   exit 1
 fi
 
-if [[ "${DEPLOY_CONJUR_MASTER}" = "true" ]]; then
+if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
   check_env_var "CONJUR_VERSION"
   check_env_var "CONJUR_ACCOUNT"
   check_env_var "CONJUR_ADMIN_PASSWORD"
 fi
 
-if [[ "${DEPLOY_CONJUR_MASTER}" = "false" ]]; then
+if [[ "${DEPLOY_MASTER_CLUSTER}" = "false" ]]; then
   check_env_var "FOLLOWER_SEED_PATH"
 fi
