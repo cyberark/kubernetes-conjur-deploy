@@ -10,7 +10,7 @@ main() {
   
   prepare_conjur_appliance_image
 
-  if [[ "${DEPLOY_MASTER_CLUSTER}" = "True" ]]; then
+  if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
     prepare_conjur_cli_image
     prepare_haproxy_image
   fi
