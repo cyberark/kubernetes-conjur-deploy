@@ -4,13 +4,16 @@ set -euo pipefail
 . utils.sh
 
 main() {
-  if [[ "$PLATFORM" = "openshift" ]]; then
+  if [[ "${PLATFORM}" = "openshift" ]]; then
     docker login -u _ -p $(oc whoami -t) $DOCKER_REGISTRY_PATH
   fi
   
   prepare_conjur_appliance_image
-  prepare_conjur_cli_image
-  prepare_haproxy_image
+
+  if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
+    prepare_conjur_cli_image
+    prepare_haproxy_image
+  fi
 
   echo "Docker images pushed."
 }

@@ -7,12 +7,17 @@ main() {
   set_namespace $CONJUR_NAMESPACE_NAME
 
   announce "Configuring followers."
-  
-  master_pod_name=$(get_master_pod_name)
 
-  prepare_follower_seed
+  if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
+    seed_dir="tmp-$CONJUR_NAMESPACE_NAME"
+    prepare_follower_seed
+  fi
 
   configure_followers
+
+  if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
+    delete_follower_seed
+  fi
 
   echo "Followers configured."
 }
@@ -20,11 +25,14 @@ main() {
 prepare_follower_seed() {
   echo "Preparing follower seed files..."
 
+  master_pod_name=$(get_master_pod_name)
+
   # Create dir w/ guid from namespace name for parallel CI execution
-  seed_dir="tmp-$CONJUR_NAMESPACE_NAME"
   mkdir -p "$seed_dir"
 
-  $cli exec $master_pod_name evoke seed follower conjur-follower > "./$seed_dir/follower-seed.tar"
+  FOLLOWER_SEED_PATH="./$seed_dir/follower-seed.tar"
+
+  $cli exec $master_pod_name evoke seed follower conjur-follower > $FOLLOWER_SEED_PATH
 }
 
 configure_followers() {
@@ -42,7 +50,7 @@ configure_follower() {
 
   printf "Configuring follower %s...\n" $pod_name
 
-  copy_file_to_container "./$seed_dir/follower-seed.tar" "/tmp/follower-seed.tar" "$pod_name"
+  copy_file_to_container $FOLLOWER_SEED_PATH "/tmp/follower-seed.tar" "$pod_name"
 
   $cli exec $pod_name -- evoke unpack seed /tmp/follower-seed.tar
   $cli exec $pod_name -- evoke configure follower
