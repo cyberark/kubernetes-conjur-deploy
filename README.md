@@ -171,12 +171,28 @@ Steps to startup Minishift:
  4) `source _minishift-boot.env` again to user internal docker daemon
  5) `cd ..`
 
+---
+
 # Usage
 
-### Deploying Conjur
+### Deploying Conjur Master (*Test and Demo Only*)
 
-Run `./start` to execute the scripts necessary for deploying a set of Conjur
-Followers.
+Ensure that:
+- You followed [these steps](#master-cluster-configuration)
+- Edited and sourced `bootstrap.env`
+
+Finally, run `./start` to execute the scripts necessary for deploying Conjur.
+
+*Please note that running master cluster in OpenShift and Kubernetes environments
+is not recommended and should be only done for test and demo setups.*
+
+### Deploying Conjur Follower
+
+Ensure that `bootstrap.env` has the `FOLLOWER_SEED_PATH` variable set to the seed
+file created [here](#follower-seed).
+
+After verifying this setting, source `./bootstrap.env` and then run `./start` to
+execute the scripts necessary to have the follower deployed in your environment.
 
 ---
 
@@ -184,7 +200,7 @@ Followers.
 
 ### Master Cluster configuration
 
-If you are using these scripts to deploy a full cluster, you will need to set:
+As mentioned before if you are using these scripts to deploy a full cluster, you will need to set:
 
 ```
 export DEPLOY_MASTER_CLUSTER=true
@@ -230,7 +246,7 @@ To configure the Conjur master to persist data, run these commands in the Conjur
 # evoke seed standby > /opt/conjur/data/standby-seed.tar
 ```
 
-Note that setup is done as part of script [4_configure_master.sh](4_configure_master.sh).
+Note that setup is done as part of script [`4_configure_master.sh`](4_configure_master.sh).
 
 #### Restore
 
@@ -251,7 +267,7 @@ Once the pod is running again, run these commands to restore the master.
 
 Standbys must also be reconfigured since the Conjur master pod IP changes.
 
-Run [relaunch_master.sh](relaunch_master.sh) to try this out in your cluster, after running the deploy.
+Run [`relaunch_master.sh`](relaunch_master.sh) to try this out in your cluster, after running the deploy.
 Our plan is to automate this process with a Kubernetes operator.
 
 ### Conjur CLI
