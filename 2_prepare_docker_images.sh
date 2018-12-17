@@ -7,7 +7,7 @@ main() {
   if [[ "${PLATFORM}" = "openshift" ]]; then
     docker login -u _ -p $(oc whoami -t) $DOCKER_REGISTRY_PATH
   fi
-  
+
   prepare_conjur_appliance_image
 
   if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
@@ -20,10 +20,14 @@ main() {
 
 prepare_conjur_appliance_image() {
   announce "Tagging and pushing Conjur appliance"
-  
+
   conjur_appliance_image=$(platform_image conjur-appliance)
+
+  # Try to pull the image if we can
+  docker pull $CONJUR_APPLIANCE_IMAGE || true
+
   docker tag $CONJUR_APPLIANCE_IMAGE $conjur_appliance_image
-  
+
   if ! is_minienv; then
     docker push $conjur_appliance_image
   fi
@@ -37,7 +41,7 @@ prepare_conjur_cli_image() {
 
   cli_app_image=$(platform_image conjur-cli)
   docker tag conjur-cli:$CONJUR_NAMESPACE_NAME $cli_app_image
-  
+
   if ! is_minienv; then
     docker push $cli_app_image
   fi
@@ -52,7 +56,7 @@ prepare_haproxy_image() {
 
   haproxy_image=$(platform_image haproxy)
   docker tag haproxy:$CONJUR_NAMESPACE_NAME $haproxy_image
-  
+
   if ! is_minienv; then
     docker push $haproxy_image
   fi
