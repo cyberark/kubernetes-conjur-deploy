@@ -164,12 +164,11 @@ The script assumes VirtualBox as the hypervisor but others are supported. See ht
 
 Steps to startup Minishift:
 
- 0) ensure VirtualBox is installed
- 1) `cd openshift`
- 2) edit & `source _minishift-boot.env`
- 3) run `_minishift-start.sh`
- 4) `source _minishift-boot.env` again to user internal docker daemon
- 5) `cd ..`
+1. Ensure VirtualBox is installed
+1. `cd openshift`
+1. Run `./minishift-start.sh`
+1. `source minishift.env` to gain use of the internal Docker daemon
+1. `cd ..`
 
 ---
 
