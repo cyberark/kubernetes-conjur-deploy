@@ -29,4 +29,7 @@ if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
 fi
 
 ./8_configure_followers.sh
-./9_print_cluster_info.sh
+
+if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
+  ./9_print_cluster_info.sh
+fi
