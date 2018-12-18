@@ -14,7 +14,12 @@ environment variables. The setup instructions below walk you through the
 necessary steps for configuring your environment and show you which variables
 need to be set before deploying.
 
-All environment variables can be set/defined with the `bootstrap.env` file. Edit the values per instructions below, source the file and run `0_check_dependencies.sh` to verify.
+All environment variables can be set/defined with:
+- `bootstrap.env` file if deploying the follower to Kubernetes or OpenShift
+- `dev-bootstrap.env` for all other configurations.
+
+Edit the values per instructions below, source the appropriate file and run
+`0_check_dep0endencies.sh` to verify.
 
 The Conjur appliance image can be loaded with `_load_conjur_tarfile.sh`. The script uses environment variables to locate the tarfile image and the value to use as a tag once it's loaded.
 
@@ -169,6 +174,8 @@ Steps to startup Minishift:
 1. Run `./minishift-start.sh`
 1. `source minishift.env` to gain use of the internal Docker daemon
 1. `cd ..`
+1. Use `dev-bootstrap.env` for your variable configuration
+1. Run `./start`
 
 ---
 
@@ -178,7 +185,7 @@ Steps to startup Minishift:
 
 Ensure that:
 - You followed [these steps](#master-cluster-configuration)
-- Edited and sourced `bootstrap.env`
+- Edited and sourced `dev-bootstrap.env`
 
 Finally, run `./start` to execute the scripts necessary for deploying Conjur.
 
