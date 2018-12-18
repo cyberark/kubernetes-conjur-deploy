@@ -35,7 +35,7 @@ function setupTestEnvironment() {
   export CONJUR_ACCOUNT=admin
   export CONJUR_ADMIN_PASSWORD=secret
   export AUTHENTICATOR_ID=conjur/k8s-test
-  export MINIKUBE=false
+  export MINI_ENV=false
 
   case "$TEST_PLATFORM" in
     gke)
@@ -82,7 +82,7 @@ function test_gke() {
     -e CONJUR_ACCOUNT \
     -e CONJUR_ADMIN_PASSWORD \
     -e AUTHENTICATOR_ID \
-    -e MINIKUBE \
+    -e MINI_ENV \
     -v $GCLOUD_SERVICE_KEY:/tmp$GCLOUD_SERVICE_KEY \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$PWD":/src \
@@ -105,7 +105,7 @@ function test_openshift() {
     -e CONJUR_ACCOUNT \
     -e CONJUR_ADMIN_PASSWORD \
     -e AUTHENTICATOR_ID \
-    -e MINIKUBE \
+    -e MINI_ENV \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$PWD":/src \
     $K8S_CONJUR_DEPLOY_TESTER_IMAGE bash -c "./test_oc_entrypoint.sh"
