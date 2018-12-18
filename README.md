@@ -22,7 +22,7 @@ The Conjur appliance image can be loaded with _load_conjur_tarfile.sh. The scrip
 
 #### Appliance Image
 
-You need to obtain a Docker image of the Conjur v4 appliance and push it to an
+You need to obtain a Docker image of the Conjur appliance and push it to an
 accessible Docker registry. Provide the image and tag like so:
 
 ```
