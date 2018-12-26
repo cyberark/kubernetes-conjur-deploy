@@ -7,6 +7,8 @@ purposes but this is not recommended for a production deployment of Conjur.
 
 **Enterprise Only**. To deploy Conjur OSS, please use the [Conjur OSS helm chart](https://github.com/cyberark/conjur-oss-helm-chart).
 
+---
+
 # Setup
 
 The Conjur deployment scripts pick up configuration details from local
@@ -195,18 +197,7 @@ Steps to startup Minishift:
 
 # Usage
 
-### Deploying Conjur Master (*Test and Demo Only*)
-
-Ensure that:
-- You followed [these steps](#master-cluster-configuration)
-- Edited and sourced `dev-bootstrap.env`
-
-Finally, run `./start` to execute the scripts necessary for deploying Conjur.
-
-*Please note that running master cluster in OpenShift and Kubernetes environments
-is not recommended and should be only done for test and demo setups.*
-
-### Deploying Conjur Follower
+## Deploying Conjur Follower
 
 Ensure that `bootstrap.env` has the `FOLLOWER_SEED_PATH` variable set to the seed
 file created [here](#follower-seed).
@@ -216,11 +207,16 @@ execute the scripts necessary to have the follower deployed in your environment.
 
 ---
 
-# Master Cluster Deployment (*Test and Demo Only*)
+## Deploying Conjur Master and Followers (*Test and Demo Only*)
 
 ### Master Cluster configuration
 
-As mentioned before if you are using these scripts to deploy a full cluster, you will need to set:
+*Please note that running master cluster in OpenShift and Kubernetes environments
+is not recommended and should be only done for test and demo setups.*
+
+
+As mentioned before if you are using these scripts to deploy a full cluster, you will need to set
+in `dev-bootstrap.env`:
 
 ```
 export DEPLOY_MASTER_CLUSTER=true
@@ -232,6 +228,7 @@ configuring the Conjur master. If you are working with Conjur v4, you will need 
 ```
 export CONJUR_VERSION=4
 ```
+along with any other changes you might want.
 
 Otherwise, this variable will default to `5`.
 
@@ -241,6 +238,8 @@ You must also provide an account name and password for the Conjur admin account:
 export CONJUR_ACCOUNT=<my_account_name>
 export CONJUR_ADMIN_PASSWORD=<my_admin_password>
 ```
+
+Finally, run `./start` to execute the scripts necessary for deploying Conjur.
 
 ### Data persistence
 
@@ -255,7 +254,7 @@ Volumes:
 - `/opt/conjur/dbdata` - 2GB, database persistence
 - `/opt/conjur/data` - 1GB, seed file persistence
 
-#### Setup
+### Setup
 
 To configure the Conjur master to persist data, run these commands in the Conjur master container before running `evoke configure master ...`.
 
@@ -268,7 +267,7 @@ To configure the Conjur master to persist data, run these commands in the Conjur
 
 Note that setup is done as part of script [`4_configure_master.sh`](4_configure_master.sh).
 
-#### Restore
+### Restore
 
 If the Conjur master pod is rescheduled the persistent volumes will be reattached.
 Once the pod is running again, run these commands to restore the master.
@@ -320,7 +319,9 @@ to get started with the Conjur CLI.
 Visit the Conjur UI URL in your browser and login with the admin credentials to
 access the Conjur UI.
 
-### Test App Demo
+---
+
+# Test App Demo
 
 The [kubernetes-conjur-demo repo](https://github.com/conjurdemos/kubernetes-conjur-demo)
 deploys test applications that retrieve secrets from Conjur and serves as a
