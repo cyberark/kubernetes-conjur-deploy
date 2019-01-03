@@ -4,8 +4,7 @@ CONJUR_VERSION=${CONJUR_VERSION:-$CONJUR_MAJOR_VERSION} # default to CONJUR_MAJO
 PLATFORM="${PLATFORM:-kubernetes}" # default to kubernetes if not set
 DEPLOY_MASTER_CLUSTER="${DEPLOY_MASTER_CLUSTER:-false}"
 
-MINIKUBE="${MINIKUBE:-false}"
-MINISHIFT="${MINISHIFT:-false}"
+MINI_ENV="${MINI_ENV:-false}"
 
 if [ $PLATFORM = 'kubernetes' ]; then
     cli=kubectl
@@ -137,7 +136,7 @@ rotate_api_key() {
   set_namespace $CONJUR_NAMESPACE_NAME
 
   master_pod_name=$(get_master_pod_name)
-    
+
   $cli exec $master_pod_name -- conjur authn login -u admin -p $CONJUR_ADMIN_PASSWORD > /dev/null
   api_key=$($cli exec $master_pod_name -- conjur user rotate_api_key)
   $cli exec $master_pod_name -- conjur authn logout > /dev/null
@@ -146,7 +145,7 @@ rotate_api_key() {
 }
 
 is_minienv() {
-  if [[ $MINIKUBE == false ]]; then
+  if [[ "$MINI_ENV" == "false" ]]; then
     false
   else
     true
