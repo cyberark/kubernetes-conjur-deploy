@@ -9,12 +9,6 @@ set_namespace $CONJUR_NAMESPACE_NAME
 
 conjur_appliance_image=$(platform_image "conjur-appliance")
 
-if is_minienv; then
-  IMAGE_PULL_POLICY='Never'
-else
-  IMAGE_PULL_POLICY='Always'
-fi
-
 announce "Deleting Follower pods."
 sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/conjur-follower.yaml" |
   sed -e "s#{{ AUTHENTICATOR_ID }}#$AUTHENTICATOR_ID#g" |

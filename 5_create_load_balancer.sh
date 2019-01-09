@@ -21,12 +21,6 @@ deploy_load_balancer() {
 
   docker_image=$(platform_image haproxy)
 
-  if is_minienv; then
-    IMAGE_PULL_POLICY='Never'
-  else
-    IMAGE_PULL_POLICY='Always'
-  fi
-
   sed -e "s#{{ DOCKER_IMAGE }}#$docker_image#g" "./$PLATFORM/haproxy-conjur-master.yaml" |
     sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
     $cli create -f -

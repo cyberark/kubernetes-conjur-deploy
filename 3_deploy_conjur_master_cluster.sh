@@ -51,12 +51,6 @@ deploy_conjur_master_cluster() {
 
   conjur_appliance_image=$(platform_image "conjur-appliance")
 
-  if is_minienv; then
-    IMAGE_PULL_POLICY='Never'
-  else
-    IMAGE_PULL_POLICY='Always'
-  fi
-
   if [ $CONJUR_VERSION = '4' ]; then
     if $cli get statefulset &>/dev/null; then  # this returns non-0 if platform doesn't support statefulset
       conjur_cluster_template="./$PLATFORM/conjur-cluster-stateful.yaml"

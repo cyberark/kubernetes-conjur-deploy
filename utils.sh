@@ -6,6 +6,12 @@ DEPLOY_MASTER_CLUSTER="${DEPLOY_MASTER_CLUSTER:-false}"
 
 MINI_ENV="${MINI_ENV:-false}"
 
+if [[ "$MINI_ENV" == "true" ]]; then
+  IMAGE_PULL_POLICY='Never'
+else
+  IMAGE_PULL_POLICY='Always'
+fi
+
 if [ $PLATFORM = 'kubernetes' ]; then
     cli=kubectl
 elif [ $PLATFORM = 'openshift' ]; then
