@@ -16,7 +16,7 @@ sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/c
   $cli delete --ignore-not-found -f -
 
 announce "Deleting Master cluster pods."
-if $cli get statefulset &>/dev/null; then  # this returns non-0 if platform doesn't support statefulset
+if $cli get statefulset &>/dev/null && [[ $PLATFORM != openshift ]]; then  # this returns non-0 if platform doesn't support statefulset
   conjur_cluster_template="./$PLATFORM/conjur-cluster-stateful.yaml"
 else
   conjur_cluster_template="./$PLATFORM/conjur-cluster.yaml"

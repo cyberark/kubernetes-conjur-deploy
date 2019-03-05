@@ -28,7 +28,7 @@ deploy_load_balancer() {
 
 configure_load_balancer() {
   if [ $CONJUR_VERSION = '4' ]; then
-    if ! $cli get statefulset &>/dev/null; then  # this returns non-0 if platform doesn't support statefulset
+    if ! $cli get statefulset &>/dev/null || [[ $PLATFORM == openshift ]]; then  # this returns non-0 if platform doesn't support statefulset
       # haproxy image does not need custom configuration when using statefulset
       echo "Configuring load balancer..."
       
