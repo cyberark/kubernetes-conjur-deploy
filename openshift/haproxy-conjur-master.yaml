@@ -9,7 +9,11 @@ spec:
   ports:
   - port: 443
     name: https
-    nodePort: 30443
+# NOTE: Adding a nodePort to the provides external access
+#  via a fixed port number. It's commented out because
+#  nodePorts will conflict when multiple CI jobs run at the same time
+#
+#    nodePort: 30443
   - port: 636
     name: ldaps
   - port: 5432
