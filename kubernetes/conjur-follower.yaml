@@ -42,9 +42,7 @@ spec:
           - name: SEEDFILE_DIR
             value: /tmp/seedfile
           - name: FOLLOWER_HOSTNAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
+            value: conjur-follower # this should be the same value as the service name
         volumeMounts:
           - name: seedfile
             mountPath: /tmp/seedfile
