@@ -28,13 +28,36 @@ spec:
         role: follower
     spec:
       serviceAccountName: conjur-cluster
+      volumes:
+      - name: seedfile
+        emptyDir:
+          medium: Memory
+      initContainers:
+      - name: seed-fetcher
+        image: {{ CONJUR_SEED_FETCHER_IMAGE }}
+        imagePullPolicy: {{ IMAGE_PULL_POLICY }}
+        env:
+          - name: CONJUR_SEED_FILE_URL
+            value: {{ CONJUR_SEED_FILE_URL }}
+          - name: SEEDFILE_DIR
+            value: /tmp/seedfile
+          - name: FOLLOWER_HOSTNAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+        volumeMounts:
+          - name: seedfile
+            mountPath: /tmp/seedfile
       containers:
       - name: conjur-appliance
+        command: ["/tmp/seedfile/start-follower.sh"]
         image: {{ CONJUR_APPLIANCE_IMAGE }}
         imagePullPolicy: {{ IMAGE_PULL_POLICY }}
         env:
           - name: CONJUR_AUTHENTICATORS
             value: authn-k8s/{{ AUTHENTICATOR_ID }}
+          - name: SEEDFILE_DIR
+            value: /tmp/seedfile
         ports:
         - containerPort: 443
           name: https
@@ -51,5 +74,9 @@ spec:
             scheme: HTTPS
           initialDelaySeconds: 15
           timeoutSeconds: 1
+        volumeMounts:
+          - name: seedfile
+            mountPath: /tmp/seedfile
+            readOnly: true
       imagePullSecrets:
         - name: dockerpullsecret

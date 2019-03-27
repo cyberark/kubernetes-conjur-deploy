@@ -34,10 +34,10 @@ if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
 fi
 
 if [[ "${DEPLOY_MASTER_CLUSTER}" = "false" ]]; then
-  check_env_var "FOLLOWER_SEED_PATH"
+  check_env_var "FOLLOWER_SEED"
 
-  if [[ ! -f "${FOLLOWER_SEED_PATH}" ]]; then
-    echo "ERROR! Follower seed path '${FOLLOWER_SEED_PATH}' does not point to a file!"
+  if [[ ! -f "${FOLLOWER_SEED}" ]] && [[ ! "${FOLLOWER_SEED}" =~ ^http[s]?:// ]]; then
+    echo "ERROR! Follower seed '${FOLLOWER_SEED}' does not point to a file or a seed service!"
     exit 1
   fi
 fi
