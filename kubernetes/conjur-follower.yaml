@@ -32,6 +32,10 @@ spec:
       - name: seedfile
         emptyDir:
           medium: Memory
+      - configMap:
+          defaultMode: 420
+          name: server-certificate
+        name: master-server-certificate
       initContainers:
       - name: seed-fetcher
         image: {{ CONJUR_SEED_FETCHER_IMAGE }}
@@ -43,9 +47,18 @@ spec:
             value: /tmp/seedfile
           - name: FOLLOWER_HOSTNAME
             value: conjur-follower # this should be the same value as the service name
+          - name: MASTER_SSL_CERT_PATH
+            value: /tmp/master-certs/ssl-certificate
+          - name: MY_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
         volumeMounts:
           - name: seedfile
             mountPath: /tmp/seedfile
+          - name: master-server-certificate
+            mountPath: /tmp/master-certs
+            readOnly: true
       containers:
       - name: conjur-appliance
         command: ["/tmp/seedfile/start-follower.sh"]

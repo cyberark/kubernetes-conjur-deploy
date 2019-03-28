@@ -13,3 +13,4 @@ if [[ -f "$SEEDFILE_DIR/follower-seed.tar" ]]; then
     evoke configure follower
 fi
 
+wait

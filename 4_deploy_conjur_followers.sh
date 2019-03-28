@@ -8,6 +8,8 @@ main() {
 
   docker_login
 
+  add_server_certificate_to_configmap
+
   deploy_conjur_followers
 
   sleep 10
@@ -56,6 +58,18 @@ deploy_conjur_followers() {
     sed -e "s#{{ CONJUR_SEED_FILE_URL }}#$FOLLOWER_SEED#g" |
     sed -e "s#{{ CONJUR_SEED_FETCHER_IMAGE }}#$seed_fetcher_image#g" |
     $cli create -f -
+}
+
+add_server_certificate_to_configmap() {
+  SERVER_CERTIFICATE="./server_certificate.cert"
+  ./_save_server_cert.sh $SERVER_CERTIFICATE
+  if [[ -f "${SERVER_CERTIFICATE}" ]]; then
+    announce "Saving server certificate to configmap."
+    $cli create configmap server-certificate --from-file=ssl-certificate=<(cat "${SERVER_CERTIFICATE}")
+  else
+    echo "WARN: no server certificate was provided saving empty configmap"
+    $cli create configmap server-certificate --from-file=ssl-certificate=<(echo "")
+  fi
 }
 
 main $@
