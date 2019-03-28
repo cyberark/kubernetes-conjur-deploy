@@ -37,11 +37,11 @@ prepare_follower_seed() {
 
 configure_followers() {
   pod_list=$($cli get pods -l role=follower --no-headers | awk '{ print $1 }')
-  
+
   for pod_name in $pod_list; do
     configure_follower $pod_name &
   done
-  
+
   wait # for parallel configuration of followers
 }
 
@@ -58,7 +58,7 @@ configure_follower() {
 
 delete_follower_seed() {
   echo "Deleting follower seed..."
-  
+
   rm -rf $seed_dir
 }
 

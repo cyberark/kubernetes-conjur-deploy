@@ -5,7 +5,7 @@ set -euo pipefail
 
 main() {
   set_namespace $CONJUR_NAMESPACE_NAME
-  
+
   announce "Configuring standbys."
 
   master_pod_name=$(get_master_pod_name)
@@ -13,10 +13,10 @@ main() {
   prepare_standby_seed
 
   configure_standbys
-  
+
   delete_standby_seed
   enable_synchronous_replication
-  
+
   echo "Standbys configured."
 }
 
@@ -37,7 +37,7 @@ configure_standbys() {
   for pod_name in $pod_list; do
     configure_standby $pod_name &
   done
-  
+
   wait # for parallel configuration of standbys
 }
 
@@ -47,7 +47,7 @@ configure_standby() {
   printf "Configuring standby %s...\n" $pod_name
 
   $cli label --overwrite pod $pod_name role=standby
-  
+
   copy_file_to_container "./$seed_dir/standby-seed.tar" "/tmp/standby-seed.tar" "$pod_name"
 
   $cli exec $pod_name -- evoke unpack seed /tmp/standby-seed.tar
@@ -56,13 +56,13 @@ configure_standby() {
 
 delete_standby_seed() {
   echo "Deleting standby seed..."
-  
+
   rm -rf $seed_dir
 }
 
 enable_synchronous_replication() {
   echo "Starting synchronous replication..."
-  
+
   mastercmd evoke replication sync --force
 }
 
