@@ -28,14 +28,15 @@ spec:
         role: follower
     spec:
       serviceAccountName: conjur-cluster
+
       volumes:
       - name: seedfile
         emptyDir:
           medium: Memory
-      - configMap:
-          defaultMode: 420
-          name: server-certificate
-        name: master-server-certificate
+      - name: conjur-token
+        emptyDir:
+          medium: Memory
+
       initContainers:
       - name: seed-fetcher
         image: {{ CONJUR_SEED_FETCHER_IMAGE }}
@@ -47,18 +48,36 @@ spec:
             value: /tmp/seedfile
           - name: FOLLOWER_HOSTNAME
             value: conjur-follower # this should be the same value as the service name
-          - name: MASTER_SSL_CERT_PATH
-            value: /tmp/master-certs/ssl-certificate
+          - name: AUTHENTICATOR_ID
+            value: {{ AUTHENTICATOR_ID }}
+          - name: CONJUR_ACCOUNT
+            value: {{ CONJUR_ACCOUNT }}
+
+          - name: CONJUR_SSL_CERTIFICATE
+            valueFrom:
+              configMapKeyRef:
+                name: server-certificate
+                key: ssl-certificate
+
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
           - name: MY_POD_NAMESPACE
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
+          - name: MY_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+
         volumeMounts:
           - name: seedfile
             mountPath: /tmp/seedfile
-          - name: master-server-certificate
-            mountPath: /tmp/master-certs
-            readOnly: true
+          - name: conjur-token
+            mountPath: /run/conjur
+
       containers:
       - name: conjur-appliance
         command: ["/tmp/seedfile/start-follower.sh"]
