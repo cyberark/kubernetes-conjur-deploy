@@ -50,7 +50,7 @@ configure_follower() {
 
   printf "Configuring follower %s...\n" $pod_name
 
-  copy_file_to_container $FOLLOWER_SEED_PATH "/tmp/follower-seed.tar" "$pod_name"
+  copy_file_to_container $FOLLOWER_SEED "/tmp/follower-seed.tar" "$pod_name"
 
   $cli exec $pod_name -- evoke unpack seed /tmp/follower-seed.tar
   $cli exec $pod_name -- evoke configure follower
