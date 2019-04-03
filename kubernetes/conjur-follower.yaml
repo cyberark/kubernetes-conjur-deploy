@@ -38,7 +38,7 @@ spec:
           medium: Memory
 
       initContainers:
-      - name: seed-fetcher
+      - name: authenticator
         image: {{ CONJUR_SEED_FETCHER_IMAGE }}
         imagePullPolicy: {{ IMAGE_PULL_POLICY }}
         env:
@@ -71,7 +71,8 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: status.podIP
-
+          - name: CONJUR_AUTHN_LOGIN
+            value: "{{ CONJUR_AUTHN_LOGIN_PREFIX }}/conjur-cluster"
         volumeMounts:
           - name: seedfile
             mountPath: /tmp/seedfile

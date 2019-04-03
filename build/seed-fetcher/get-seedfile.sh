@@ -23,10 +23,10 @@ MASTER_HOSTNAME=$(echo "${CONJUR_SEED_FILE_URL}" | cut -d'/' -f3)
 
 WGET_CERT_ARGS=()
 
-export CONJUR_APPLIANCE_URL="http://$MASTER_HOSTNAME/"
+export CONJUR_APPLIANCE_URL="http://$MASTER_HOSTNAME"
 if [[ "${CONJUR_SEED_FILE_URL}" =~ ^https:// ]]; then
     echo "$CONJUR_SSL_CERTIFICATE" > "$MASTER_SSL_CERT_PATH"
-    export CONJUR_APPLIANCE_URL="https://$MASTER_HOSTNAME/"
+    export CONJUR_APPLIANCE_URL="https://$MASTER_HOSTNAME"
 
     echo "Using master ssl cert from ${MASTER_SSL_CERT_PATH}"
     WGET_CERT_ARGS=( "--ca-certificate" "${MASTER_SSL_CERT_PATH}" )
@@ -34,30 +34,18 @@ fi
 
 export CONJUR_AUTHN_URL="$CONJUR_APPLIANCE_URL/authn-k8s/$AUTHENTICATOR_ID"
 
-echo "Extracting service account..."
-SERVICE_ACCOUNT_NAME=$(cat "$TOKEN_PATH" | awk -F. {'print $2'} | base64 -d | jq -r '."kubernetes.io/serviceaccount/service-account.name"')
-
-export CONJUR_AUTHN_LOGIN="$MY_POD_NAMESPACE/service_account/$SERVICE_ACCOUNT_NAME"
-
 echo "Calculated vars:"
 echo "- CONJUR_APPLIANCE_URL: $CONJUR_APPLIANCE_URL"
 echo "- CONJUR_AUTHN_URL: $CONJUR_AUTHN_URL"
 echo "- CONJUR_AUTHN_LOGIN: $CONJUR_AUTHN_LOGIN"
-echo "- SERVICE_ACCOUNT_NAME: $SERVICE_ACCOUNT_NAME"
 echo "- WGET_CERT_ARGS: $WGET_CERT_ARGS"
 echo
 
 echo "Running authenticator..."
 /usr/bin/authenticator
 
-
-# Read service account token
-
-# Send jwt token
-
-
 echo "Parsing Conjur token..."
-conjur_api_token=$(cat "/run/conjur/access-token")
+conjur_api_token=$(cat "/run/conjur/access-token" | base64 | tr -d '\r\n')
 
 if [[ "${conjur_api_token}" == "" ]]; then
   echo "ERROR: API token is invalid (empty)!"
