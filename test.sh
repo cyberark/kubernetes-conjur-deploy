@@ -83,6 +83,7 @@ function test_gke() {
     -e CONJUR_ADMIN_PASSWORD \
     -e AUTHENTICATOR_ID \
     -e MINI_ENV \
+    -e FOLLOWER_SEED="" \
     -v $GCLOUD_SERVICE_KEY:/tmp$GCLOUD_SERVICE_KEY \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$PWD":/src \
@@ -106,6 +107,7 @@ function test_openshift() {
     -e CONJUR_ADMIN_PASSWORD \
     -e AUTHENTICATOR_ID \
     -e MINI_ENV \
+    -e FOLLOWER_SEED="" \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$PWD":/src \
     $K8S_CONJUR_DEPLOY_TESTER_IMAGE bash -c "./test_oc_entrypoint.sh"

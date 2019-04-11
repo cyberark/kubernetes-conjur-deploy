@@ -37,11 +37,11 @@ prepare_follower_seed() {
 
 configure_followers() {
   pod_list=$($cli get pods -l role=follower --no-headers | awk '{ print $1 }')
-  
+
   for pod_name in $pod_list; do
     configure_follower $pod_name &
   done
-  
+
   wait # for parallel configuration of followers
 }
 
@@ -50,7 +50,7 @@ configure_follower() {
 
   printf "Configuring follower %s...\n" $pod_name
 
-  copy_file_to_container $FOLLOWER_SEED_PATH "/tmp/follower-seed.tar" "$pod_name"
+  copy_file_to_container $FOLLOWER_SEED "/tmp/follower-seed.tar" "$pod_name"
 
   $cli exec $pod_name -- evoke unpack seed /tmp/follower-seed.tar
   $cli exec $pod_name -- evoke configure follower
@@ -58,7 +58,7 @@ configure_follower() {
 
 delete_follower_seed() {
   echo "Deleting follower seed..."
-  
+
   rm -rf $seed_dir
 }
 

@@ -9,7 +9,7 @@ main() {
   if [[ "$PLATFORM" == "openshift" ]]; then
     oc_login
   fi
-  
+
   create_conjur_namespace
   create_service_account
   create_cluster_role
@@ -26,19 +26,19 @@ oc_login() {
 
 create_conjur_namespace() {
   announce "Creating Conjur namespace."
-  
+
   if has_namespace "$CONJUR_NAMESPACE_NAME"; then
     echo "Namespace '$CONJUR_NAMESPACE_NAME' exists, not going to create it."
     set_namespace $CONJUR_NAMESPACE_NAME
   else
     echo "Creating '$CONJUR_NAMESPACE_NAME' namespace."
-    
+
     if [[ "$PLATFORM" = "kubernetes" ]]; then
       kubectl create namespace $CONJUR_NAMESPACE_NAME
     elif [[ "$PLATFORM" = "openshift" ]]; then
       oc new-project $CONJUR_NAMESPACE_NAME
     fi
-    
+
     set_namespace $CONJUR_NAMESPACE_NAME
   fi
 }
@@ -62,7 +62,7 @@ create_cluster_role() {
 
 configure_oc_rbac() {
   echo "Configuring OpenShift admin permissions."
-  
+
   # allow pods with conjur-cluster serviceaccount to run as root
   oc adm policy add-scc-to-user anyuid "system:serviceaccount:$CONJUR_NAMESPACE_NAME:$CONJUR_SERVICEACCOUNT_NAME"
 

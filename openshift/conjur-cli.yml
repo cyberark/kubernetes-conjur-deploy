@@ -19,8 +19,8 @@ spec:
       serviceAccountName: conjur-cluster
       containers:
       - name: conjur-cli
-        image: {{ DOCKER_IMAGE }}
-        imagePullPolicy: {{ IMAGE_PULL_POLICY }}
+        image: cyberark/conjur-cli:5
+        imagePullPolicy: IfNotPresent
         command: ["sleep"]
         args: ["infinity"]
       imagePullSecrets:

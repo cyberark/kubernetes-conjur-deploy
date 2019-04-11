@@ -28,7 +28,9 @@ if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
   ./7_configure_standbys.sh
 fi
 
-./8_configure_followers.sh
+if [[ -f "${FOLLOWER_SEED}" ]] || [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
+    ./8_configure_followers.sh
+fi
 
 if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
   ./9_print_cluster_info.sh

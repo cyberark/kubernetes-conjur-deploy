@@ -9,19 +9,13 @@ spec:
   ports:
   - port: 443
     name: https
-# NOTE: Adding a nodePort to the provides external access
-#  via a fixed port number. It's commented out because
-#  nodePorts will conflict when multiple CI jobs run at the same time
-#
-#    nodePort: 30444
   - port: 636
     name: ldaps
   selector:
     app: conjur-follower
-  type: LoadBalancer
 ---
-apiVersion: v1
-kind: DeploymentConfig
+apiVersion: apps/v1beta1
+kind: Deployment
 metadata:
   name: conjur-follower
 spec:
@@ -34,13 +28,67 @@ spec:
         role: follower
     spec:
       serviceAccountName: conjur-cluster
+
+      volumes:
+      - name: seedfile
+        emptyDir:
+          medium: Memory
+      - name: conjur-token
+        emptyDir:
+          medium: Memory
+
+      initContainers:
+      - name: authenticator
+        image: {{ CONJUR_SEED_FETCHER_IMAGE }}
+        imagePullPolicy: {{ IMAGE_PULL_POLICY }}
+        env:
+          - name: CONJUR_SEED_FILE_URL
+            value: {{ CONJUR_SEED_FILE_URL }}
+          - name: SEEDFILE_DIR
+            value: /tmp/seedfile
+          - name: FOLLOWER_HOSTNAME
+            value: conjur-follower # this should be the same value as the service name
+          - name: AUTHENTICATOR_ID
+            value: {{ AUTHENTICATOR_ID }}
+          - name: CONJUR_ACCOUNT
+            value: {{ CONJUR_ACCOUNT }}
+
+          - name: CONJUR_SSL_CERTIFICATE
+            valueFrom:
+              configMapKeyRef:
+                name: server-certificate
+                key: ssl-certificate
+
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: MY_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: MY_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: CONJUR_AUTHN_LOGIN
+            value: "{{ CONJUR_AUTHN_LOGIN_PREFIX }}/conjur-cluster"
+        volumeMounts:
+          - name: seedfile
+            mountPath: /tmp/seedfile
+          - name: conjur-token
+            mountPath: /run/conjur
+
       containers:
       - name: conjur-appliance
+        command: ["/tmp/seedfile/start-follower.sh"]
         image: {{ CONJUR_APPLIANCE_IMAGE }}
         imagePullPolicy: {{ IMAGE_PULL_POLICY }}
         env:
           - name: CONJUR_AUTHENTICATORS
             value: authn-k8s/{{ AUTHENTICATOR_ID }}
+          - name: SEEDFILE_DIR
+            value: /tmp/seedfile
         ports:
         - containerPort: 443
           name: https
@@ -57,3 +105,9 @@ spec:
             scheme: HTTPS
           initialDelaySeconds: 15
           timeoutSeconds: 1
+        volumeMounts:
+          - name: seedfile
+            mountPath: /tmp/seedfile
+            readOnly: true
+      imagePullSecrets:
+        - name: dockerpullsecret

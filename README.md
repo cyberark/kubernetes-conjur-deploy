@@ -81,7 +81,7 @@ Copy the resulting seed file from the Conjur master to your local filesystem and
 set the following environment variable to point to it:
 
 ```
-export FOLLOWER_SEED_PATH=path/to/follower/seed/file
+export FOLLOWER_SEED=path/to/follower/seed/file
 ```
 
 The deploy scripts will copy the seed to your follower pods and use it to
@@ -199,8 +199,8 @@ Steps to startup Minishift:
 
 ## Deploying Conjur Follower
 
-Ensure that `bootstrap.env` has the `FOLLOWER_SEED_PATH` variable set to the seed
-file created [here](#follower-seed).
+Ensure that `bootstrap.env` has the `FOLLOWER_SEED` variable set to the seed
+file created [here](#follower-seed) or a URL to the seed service.
 
 After verifying this setting, source `./bootstrap.env` and then run `./start` to
 execute the scripts necessary to have the follower deployed in your environment.
