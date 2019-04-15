@@ -55,7 +55,7 @@ fi
 
 # TODO: Follower hostname should be changed to be alt names
 echo "Fetching seed file from $CONJUR_SEED_FILE_URL"
-wget --post-data "follower_hostname=$FOLLOWER_HOSTNAME.$MY_POD_NAMESPACE.svc.cluster.local" \
+wget --post-data "follower_hostnames=$FOLLOWER_HOSTNAME.$MY_POD_NAMESPACE.svc.cluster.local" \
      --header "Authorization: Token token=\"$conjur_api_token\"" \
      "${WGET_CERT_ARGS[@]}" \
      -O "$SEEDFILE_DIR/follower-seed.tar" \
