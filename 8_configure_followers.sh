@@ -30,9 +30,9 @@ prepare_follower_seed() {
   # Create dir w/ guid from namespace name for parallel CI execution
   mkdir -p "$seed_dir"
 
-  FOLLOWER_SEED_PATH="./$seed_dir/follower-seed.tar"
+  FOLLOWER_SEED="./$seed_dir/follower-seed.tar"
 
-  $cli exec $master_pod_name evoke seed follower conjur-follower > $FOLLOWER_SEED_PATH
+  $cli exec $master_pod_name evoke seed follower conjur-follower > $FOLLOWER_SEED
 }
 
 configure_followers() {
