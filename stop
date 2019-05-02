@@ -14,14 +14,9 @@ if has_namespace $CONJUR_NAMESPACE_NAME; then
 
   printf "Waiting for $CONJUR_NAMESPACE_NAME namespace deletion to complete"
 
-  while : ; do
-    printf "..."
-    
-    if has_namespace "$CONJUR_NAMESPACE_NAME"; then
-      sleep 5
-    else
-      break
-    fi
+  while has_namespace "$CONJUR_NAMESPACE_NAME"; do
+    printf "."
+    sleep 5
   done
 
   echo ""

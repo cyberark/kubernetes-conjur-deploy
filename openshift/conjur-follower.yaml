@@ -104,7 +104,7 @@ spec:
             port: 443
             scheme: HTTPS
           initialDelaySeconds: 15
-          timeoutSeconds: 1
+          timeoutSeconds: 5
         volumeMounts:
           - name: seedfile
             mountPath: /tmp/seedfile
