@@ -60,7 +60,7 @@ function buildDockerImages() {
 
   # Test image w/ kubectl and oc CLIs installed to drive scripts.
   export K8S_CONJUR_DEPLOY_TESTER_IMAGE="k8s-conjur-deploy-tester:$CONJUR_NAMESPACE_NAME"
-  docker build -t $K8S_CONJUR_DEPLOY_TESTER_IMAGE -f Dockerfile.test \
+  docker build --tag $K8S_CONJUR_DEPLOY_TESTER_IMAGE --file Dockerfile.test \
     --build-arg OPENSHIFT_CLI_URL=$OPENSHIFT_CLI_URL \
     --build-arg KUBECTL_CLI_URL=$KUBECTL_CLI_URL \
     .

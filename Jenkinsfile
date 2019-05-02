@@ -29,7 +29,7 @@ pipeline {
         /*
         stage('Test on OpenShift 3.7 in AWS') {
           steps {
-            sh 'summon -e openshift37 ./test.sh openshift37'
+            sh 'summon --environment openshift37 ./test.sh openshift37'
           }
         }
         */

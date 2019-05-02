@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 set -eo pipefail
 
 . utils.sh
@@ -14,7 +14,7 @@ main() {
   sleep 10
 
   wait_for_conjur
-  
+
   echo "Master cluster created."
 }
 
@@ -33,15 +33,15 @@ docker_login() {
     fi
   elif [ $PLATFORM = 'openshift' ]; then
     announce "Creating image pull secret."
-    
+
     $cli delete --ignore-not-found secrets dockerpullsecret
-    
+
     $cli secrets new-dockercfg dockerpullsecret \
          --docker-server=${DOCKER_REGISTRY_PATH} \
          --docker-username=_ \
          --docker-password=$($cli whoami -t) \
          --docker-email=_
-    
+
     $cli secrets add serviceaccount/conjur-cluster secrets/dockerpullsecret --for=pull
   fi
 }
@@ -57,7 +57,7 @@ deploy_conjur_master_cluster() {
     else
       conjur_cluster_template="./$PLATFORM/conjur-cluster.yaml"
     fi
-    
+
     sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" $conjur_cluster_template |
       sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
       $cli create -f -
@@ -82,7 +82,7 @@ deploy_conjur_cli() {
 wait_for_conjur() {
   echo "Waiting for Conjur pods to launch..."
   conjur_pod_count=${CONJUR_POD_COUNT:-3}
-  wait_for_it 300 "$cli describe po conjur-cluster | grep Status: | grep -c Running | grep -q $conjur_pod_count"
+  wait_for_it -1 "$cli describe po conjur-cluster | grep Status: | grep -c Running | grep -q $conjur_pod_count"
 }
 
 main $@
