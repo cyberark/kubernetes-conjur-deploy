@@ -26,13 +26,11 @@ pipeline {
             sh 'summon ./test.sh gke 5'
           }
         }
-        /*
-        stage('Test on OpenShift 3.7 in AWS') {
+        stage('Test on OpenShift 3.9 in AWS') {
           steps {
-            sh 'summon --environment openshift37 ./test.sh openshift37'
+            sh 'summon --environment openshift39 ./test.sh openshift39'
           }
         }
-        */
       }
       post { always {
         archiveArtifacts artifacts: 'output/*'
