@@ -15,12 +15,12 @@ pipeline {
   stages {
     stage('Run Scripts') {
       parallel {
-        stage('Test v4 on K8S 1.7 in GKE') {
+        /*stage('Test v4 on K8S 1.7 in GKE') {
           steps {
             sh 'sleep 15'  // sleep 15s to avoid script collisions
             sh 'summon ./test.sh gke 4'
           }
-        }
+        }*/
         stage('Test v5 on K8S 1.7 in GKE') {
           steps {
             sh 'summon ./test.sh gke 5'
