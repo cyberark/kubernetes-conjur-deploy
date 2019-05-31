@@ -28,7 +28,7 @@ pipeline {
         }*/
         stage('Test on OpenShift 3.9 in AWS') {
           steps {
-            sh 'summon --environment openshift39 ./test.sh openshift39'
+            sh 'summon --environment openshift39 ./test.sh openshift39 5'
           }
         }
       }
