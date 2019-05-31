@@ -14,7 +14,7 @@ pipeline {
 
   stages {
     stage('Run Scripts') {
-      parallel {
+      parallel {/*
         stage('Test v4 on K8S 1.7 in GKE') {
           steps {
             sh 'sleep 15'  // sleep 15s to avoid script collisions
@@ -25,7 +25,7 @@ pipeline {
           steps {
             sh 'summon ./test.sh gke 5'
           }
-        }
+        }*/
         stage('Test on OpenShift 3.9 in AWS') {
           steps {
             sh 'summon --environment openshift39 ./test.sh openshift39'

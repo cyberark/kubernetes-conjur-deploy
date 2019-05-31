@@ -16,7 +16,7 @@ if [ "${PLATFORM}" = "kubernetes" ] && [ ! is_minienv ]; then
 fi
 
 if [ "${PLATFORM}" = "openshift" ]; then
-  check_env_var "OSHIFT_CONJUR_ADMIN_USERNAME"
+  check_env_var "OPENSHIFT_USERNAME"
 fi
 
 # check if CONJUR_VERSION is consistent with CONJUR_APPLIANCE_IMAGE
