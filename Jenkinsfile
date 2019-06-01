@@ -15,24 +15,32 @@ pipeline {
   stages {
     stage('Run Scripts') {
       parallel {
-        stage('Test v4 on K8S 1.7 in GKE') {
+        /*stage('Test v4 on K8S 1.7 in GKE') {
           steps {
             sh 'sleep 15'  // sleep 15s to avoid script collisions
             sh 'summon ./test.sh gke 4'
           }
-        }
-        stage('Test v5 on K8S 1.7 in GKE') {
+        }*/
+        stage('Test v5 on GKE') {
           steps {
             sh 'summon ./test.sh gke 5'
           }
         }
-        /*
-        stage('Test on OpenShift 3.7 in AWS') {
+        stage('Test on OpenShift 3.9 in AWS') {
           steps {
-            sh 'summon --environment openshift37 ./test.sh openshift37'
+            sh 'summon --environment openshift39 ./test.sh openshift39 5'
           }
         }
-        */
+        stage('Test on OpenShift 3.10 in AWS') {
+          steps {
+            sh 'summon --environment openshift310 ./test.sh openshift310 5'
+          }
+        }
+        stage('Test on OpenShift 3.11 in AWS') {
+          steps {
+            sh 'summon --environment openshift311 ./test.sh openshift311 5'
+          }
+        }
       }
       post { always {
         archiveArtifacts artifacts: 'output/*'

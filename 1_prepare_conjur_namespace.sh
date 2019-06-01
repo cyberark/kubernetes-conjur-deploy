@@ -21,7 +21,7 @@ main() {
 
 oc_login() {
   echo "Logging in as cluster admin..."
-  oc login -u $OSHIFT_CLUSTER_ADMIN_USERNAME
+  oc login -u $OPENSHIFT_USERNAME
 }
 
 create_conjur_namespace() {
@@ -67,13 +67,13 @@ configure_oc_rbac() {
   oc adm policy add-scc-to-user anyuid "system:serviceaccount:$CONJUR_NAMESPACE_NAME:$CONJUR_SERVICEACCOUNT_NAME"
 
   # add permissions for Conjur admin user on registry, default & Conjur cluster namespaces
-  oc adm policy add-role-to-user system:registry $OSHIFT_CONJUR_ADMIN_USERNAME
-  oc adm policy add-role-to-user system:image-builder $OSHIFT_CONJUR_ADMIN_USERNAME
-  oc adm policy add-role-to-user admin $OSHIFT_CONJUR_ADMIN_USERNAME -n default
-  oc adm policy add-role-to-user admin $OSHIFT_CONJUR_ADMIN_USERNAME -n $CONJUR_NAMESPACE_NAME
+  oc adm policy add-role-to-user system:registry $OPENSHIFT_USERNAME
+  oc adm policy add-role-to-user system:image-builder $OPENSHIFT_USERNAME
+  oc adm policy add-role-to-user admin $OPENSHIFT_USERNAME -n default
+  oc adm policy add-role-to-user admin $OPENSHIFT_USERNAME -n $CONJUR_NAMESPACE_NAME
 
   echo "Logging in as Conjur admin user, provide password as needed..."
-  oc login -u $OSHIFT_CONJUR_ADMIN_USERNAME
+  oc login -u $OPENSHIFT_USERNAME
 }
 
 main $@

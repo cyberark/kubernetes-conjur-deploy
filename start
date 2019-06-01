@@ -9,7 +9,7 @@ STOP_RUNNING_ENV="${STOP_RUNNING_ENV:-true}"
 
 
 if [[ $PLATFORM == openshift ]]; then
-  oc login -u $OSHIFT_CLUSTER_ADMIN_USERNAME
+  oc login -u $OPENSHIFT_USERNAME
 fi
 
 ./0_check_dependencies.sh

@@ -33,9 +33,9 @@ trap finish EXIT
 function main() {
   initialize
   runScripts
-  if [[ "$K8S_VERSION" != "1.3" ]]; then  # 1.3 does not support stateful sets
-    relaunchMaster
-  fi
+  #if [[ "$K8S_VERSION" != "1.3" ]]; then  # 1.3 does not support stateful sets
+  #  relaunchMaster
+  #fi
 }
 
 function initialize() {

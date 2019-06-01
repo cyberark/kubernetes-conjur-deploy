@@ -82,7 +82,7 @@ deploy_conjur_cli() {
 wait_for_conjur() {
   echo "Waiting for Conjur pods to launch..."
   conjur_pod_count=${CONJUR_POD_COUNT:-3}
-  wait_for_it -1 "$cli describe po conjur-cluster | grep Status: | grep -c Running | grep -q $conjur_pod_count"
+  wait_for_it 600 "$cli describe po conjur-cluster | grep Status: | grep -c Running | grep -q $conjur_pod_count"
 }
 
 main $@
