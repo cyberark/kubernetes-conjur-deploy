@@ -21,7 +21,7 @@ pipeline {
             sh 'summon ./test.sh gke 4'
           }
         }*/
-        stage('Test v5 on K8S 1.7 in GKE') {
+        stage('Test v5 on GKE') {
           steps {
             sh 'summon ./test.sh gke 5'
           }
