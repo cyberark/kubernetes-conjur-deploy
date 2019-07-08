@@ -14,62 +14,62 @@ main() {
 
 configure_master_pod() {
   announce "Configuring master pod."
-
   master_pod_name=$(get_master_pod_name)
-
   if [ $CONJUR_VERSION = '5' ]; then
     # Move database to persistent storage if /opt/conjur/dbdata is mounted
     if $cli exec $master_pod_name -- ls /opt/conjur/dbdata &>/dev/null; then
       if ! $cli exec $master_pod_name -- ls /opt/conjur/dbdata/9.4 &>/dev/null; then
         echo "Nessi defined DB persistent storage"
-        # No existing data found, set up database symlink
-        $cli exec $master_pod_name -- mv /var/lib/postgresql/9.4 /opt/conjur/dbdata/
-        $cli exec $master_pod_name -- ln -sf /opt/conjur/dbdata/9.4 /var/lib/postgresql/9.4
-        $cli exec $master_pod_name -- chown -h postgres:postgres /var/lib/postgresql/9.4
-        echo "Master database moved to persistent storage"
+##         No existing data found, set up database symlink
+#        $cli exec $master_pod_name -- mv /var/lib/postgresql/9.4 /opt/conjur/dbdata/
+#        $cli exec $master_pod_name -- ln -sf /opt/conjur/dbdata/9.4 /var/lib/postgresql/9.4
+#        $cli exec $master_pod_name -- chown -h postgres:postgres /var/lib/postgresql/9.4
+#        $cli exec $master_pod_name -- chown -h postgres:postgres /opt/conjur/dbdata
+#        $cli exec $master_pod_name -- chmod 777 /opt/conjur/dbdata
+#        echo "Master database moved to persistent storage"
       fi
     fi
-
     if $cli exec $master_pod_name -- ls /opt/conjur/data &>/dev/null; then
       if ! $cli exec $master_pod_name -- ls /opt/conjur/data/runsvdir &>/dev/null; then
-        echo "Nessi defined runsvdir persistent storage"
-         $cli exec $master_pod_name -- mkdir /opt/conjur/data/runsvdir
-        $cli exec $master_pod_name -- mv /etc/runit/runsvdir/default/conjur /opt/conjur/data/runsvdir
-        $cli exec $master_pod_name -- ln -sf /opt/conjur/data/runsvdir/conjur /etc/runit/runsvdir/default/conjur
+         echo "Nessi defined runsvdir persistent storage"
+#        $cli exec $master_pod_name -- mkdir -p /opt/conjur/data/runsvdir
+#        $cli exec $master_pod_name -- mv /etc/runit/runsvdir /opt/conjur/data
+#        $cli exec $master_pod_name -- ln -sf /opt/conjur/data/runsvdir /etc/runit/runsvdir
+#        $cli exec $master_pod_name -- rm /etc/service
+#        $cli exec $master_pod_name -- ln -sf /opt/conjur/data/runsvdir/default /etc/service
+#        $cli exec $master_pod_name -- chown -h conjur:root /opt/conjur/data
+#        $cli exec $master_pod_name -- chmod 777 /opt/conjur/data
       fi
       if ! $cli exec $master_pod_name -- ls /opt/conjur/data/etc &>/dev/null; then
         echo "Nessi defined etc persistent storage"
         $cli exec $master_pod_name -- mv /opt/conjur/etc /opt/conjur/data/
         $cli exec $master_pod_name -- ln -sf /opt/conjur/data/etc /opt/conjur/etc
+        #$cli exec $master_pod_name -- chown -h conjur:root /opt/conjur/etc
+        $cli exec $master_pod_name -- chown -h conjur:root /opt/conjur/data/etc
+        $cli exec $master_pod_name -- chmod 777 /opt/conjur/data
       fi
-      if ! $cli exec $master_pod_name -- ls /opt/conjur/data/ssl &>/dev/null; then
+      if ! $cli exec $master_pod_name -- ls /opt/conjur/ssl &>/dev/null; then
         echo "Nessi defined ssl persistent storage"
-        $cli exec $master_pod_name -- mv /etc/ssl /opt/conjur/data/
-        $cli exec $master_pod_name -- ln -sf /opt/conjur/data/ssl /etc/ssl
+#        $cli exec $master_pod_name -- mv /etc/ssl /opt/conjur/
+#        $cli exec $master_pod_name -- ln -sf /opt/conjur/ssl /etc/ssl
+#        $cli exec $master_pod_name -- chmod 777 /opt/conjur/ssl
+        #$cli exec $master_pod_name -- chown -h postgres:postgres /opt/conjur/data
       fi
     fi
   fi
-
   $cli label --overwrite pod $master_pod_name role=master
-
   MASTER_ALTNAMES="localhost,conjur-master.$CONJUR_NAMESPACE_NAME.svc.cluster.local"
-
   if [ $PLATFORM = 'openshift' ]; then
     $cli create route passthrough --service=conjur-master
-
     echo "Created passthrough route for conjur-master service."
-
     conjur_master_route=$($cli get routes | grep conjur-master | awk '{ print $2 }')
     MASTER_ALTNAMES="$MASTER_ALTNAMES,$conjur_master_route"
-
     echo "Added conjur-master service route ($conjur_master_route) to Master cert altnames."
   else
     conjur_master_service_external_ip="$(kubectl get --no-headers service conjur-master | awk '{print $3 }')"
     MASTER_ALTNAMES="$MASTER_ALTNAMES,$conjur_master_service_external_ip"
-
     echo "Added conjur-master service external IP ($conjur_master_service_external_ip) to Master cert altnames."
   fi
-
   # Configure Conjur master server using evoke.
   $cli exec $master_pod_name -- evoke configure master \
      -h conjur-master \
@@ -78,7 +78,6 @@ configure_master_pod() {
      -p $CONJUR_ADMIN_PASSWORD \
      $CONJUR_ACCOUNT
   echo "Master pod configured."
-
   # Write standby seed to persistent storage if /opt/conjur/data is mounted
   if $cli exec $master_pod_name -- ls /opt/conjur/data &>/dev/null; then
     $cli exec $master_pod_name -- bash -c "evoke seed standby > /opt/conjur/data/standby-seed.tar"

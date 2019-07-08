@@ -25,18 +25,18 @@ if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
   ./3_deploy_conjur_master_cluster.sh
 fi
 
-./4_deploy_conjur_followers.sh
+#./4_deploy_conjur_followers.sh
 
 if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
   ./5_create_load_balancer.sh
   ./6_configure_master.sh
-  ./7_configure_standbys.sh
+#  ./7_configure_standbys.sh
 fi
 
-if [[ -f "${FOLLOWER_SEED}" ]] || [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
-    ./8_configure_followers.sh
-fi
-
-if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
-  ./9_print_cluster_info.sh
-fi
+#if [[ -f "${FOLLOWER_SEED}" ]] || [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
+#    ./8_configure_followers.sh
+#fi
+#
+#if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
+#  ./9_print_cluster_info.sh
+#fi

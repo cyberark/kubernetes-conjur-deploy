@@ -41,6 +41,8 @@ spec:
           # Only required for Conjur v5
           - name: CONJUR_DATA_KEY
             value: "{{ CONJUR_DATA_KEY }}"
+        command: ["/bin/sh"]
+        args: ["-c", "bash -c 'if [ ! -d /opt/conjur/dbdata/9.4 ]; then mv /var/lib/postgresql/9.4 /opt/conjur/dbdata; mv /opt/conjur/etc /opt/conjur/data;mv /etc/runit/runsvdir /opt/conjur/data; mv /etc/ssl /opt/conjur/ssl;mv /etc/service /opt/conjur/data/runsvdir/default; fi; rm -rf /etc/service ;rm -rf /etc/runit/runsvdir; ln -sf /opt/conjur/data/runsvdir /etc/runit/runsvdir;ln -sf /opt/conjur/data/runsvdir/default /etc/service; chown -h conjur:root /opt/conjur/data; chmod 777 /opt/conjur/data;ln -sf /opt/conjur/data/etc /opt/conjur/etc;chown -h conjur:root /opt/conjur/etc ;chown -h conjur:root /opt/conjur/data/etc;chmod 777 /opt/conjur/data/etc; ln -sf /opt/conjur/ssl/ssl /etc/ssl; chmod 777 /opt/conjur/ssl; ln -sf /opt/conjur/dbdata/9.4 /var/lib/postgresql/9.4; chown -h postgres:postgres /var/lib/postgresql/9.4; chown -h postgres:postgres /opt/conjur/dbdata; chown -h conjur:root /opt/conjur/data; chmod 777 /opt/conjur/dbdata; chmod 777 /opt/conjur/ssl;' & /bin/keyctl session - /sbin/my_init" ]
         ports:
         - containerPort: 443
           name: https
@@ -55,9 +57,8 @@ spec:
           mountPath: /opt/conjur/dbdata
         - name: conjur-data
           mountPath: /opt/conjur/data
-      securitycontext:
-        fsGroup:
-          type: 104
+        - name: conjur-ssl
+          mountPath: /opt/conjur/ssl
       imagePullSecrets:
         - name: dockerpullsecret
   volumeClaimTemplates:
@@ -75,3 +76,11 @@ spec:
       resources:
         requests:
           storage: 1Gi
+  - metadata:
+      name: conjur-ssl
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 500Mi
+
