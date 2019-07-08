@@ -37,6 +37,10 @@ spec:
       - name: conjur-appliance
         image: {{ CONJUR_APPLIANCE_IMAGE }}
         imagePullPolicy: {{ IMAGE_PULL_POLICY }}
+        env:
+          # Only required for Conjur v5
+          - name: CONJUR_DATA_KEY
+            value: "{{ CONJUR_DATA_KEY }}"
         ports:
         - containerPort: 443
           name: https
@@ -51,6 +55,9 @@ spec:
           mountPath: /opt/conjur/dbdata
         - name: conjur-data
           mountPath: /opt/conjur/data
+      securitycontext:
+        fsGroup:
+          type: 104
       imagePullSecrets:
         - name: dockerpullsecret
   volumeClaimTemplates:

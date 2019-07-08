@@ -19,7 +19,7 @@ if [[ "${STOP_RUNNING_ENV}" = "true" ]]; then
 fi
 
 ./1_prepare_conjur_namespace.sh
-./2_prepare_docker_images.sh
+#./2_prepare_docker_images.sh
 
 if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
   ./3_deploy_conjur_master_cluster.sh

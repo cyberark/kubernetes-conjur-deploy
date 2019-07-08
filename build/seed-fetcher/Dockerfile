@@ -1,4 +1,4 @@
-FROM cyberark/conjur-kubernetes-authenticator:latest as authenticator
+FROM cyberark/conjur-kubernetes-authenticator:latest AS authenticator
 
 # Main container
 FROM alpine:3.9

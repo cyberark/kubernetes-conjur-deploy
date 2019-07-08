@@ -17,14 +17,35 @@ configure_master_pod() {
 
   master_pod_name=$(get_master_pod_name)
 
-  if [ $CONJUR_VERSION = '4' ]; then
+  if [ $CONJUR_VERSION = '5' ]; then
     # Move database to persistent storage if /opt/conjur/dbdata is mounted
     if $cli exec $master_pod_name -- ls /opt/conjur/dbdata &>/dev/null; then
-      if ! $cli exec $master_pod_name -- ls /opt/conjur/dbdata/9.3 &>/dev/null; then
+      if ! $cli exec $master_pod_name -- ls /opt/conjur/dbdata/9.4 &>/dev/null; then
+        echo "Nessi defined DB persistent storage"
         # No existing data found, set up database symlink
-        $cli exec $master_pod_name -- mv /var/lib/postgresql/9.3 /opt/conjur/dbdata/
-        $cli exec $master_pod_name -- ln -sf /opt/conjur/dbdata/9.3 /var/lib/postgresql/9.3
+        $cli exec $master_pod_name -- mv /var/lib/postgresql/9.4 /opt/conjur/dbdata/
+        $cli exec $master_pod_name -- ln -sf /opt/conjur/dbdata/9.4 /var/lib/postgresql/9.4
+        $cli exec $master_pod_name -- chown -h postgres:postgres /var/lib/postgresql/9.4
         echo "Master database moved to persistent storage"
+      fi
+    fi
+
+    if $cli exec $master_pod_name -- ls /opt/conjur/data &>/dev/null; then
+      if ! $cli exec $master_pod_name -- ls /opt/conjur/data/runsvdir &>/dev/null; then
+        echo "Nessi defined runsvdir persistent storage"
+         $cli exec $master_pod_name -- mkdir /opt/conjur/data/runsvdir
+        $cli exec $master_pod_name -- mv /etc/runit/runsvdir/default/conjur /opt/conjur/data/runsvdir
+        $cli exec $master_pod_name -- ln -sf /opt/conjur/data/runsvdir/conjur /etc/runit/runsvdir/default/conjur
+      fi
+      if ! $cli exec $master_pod_name -- ls /opt/conjur/data/etc &>/dev/null; then
+        echo "Nessi defined etc persistent storage"
+        $cli exec $master_pod_name -- mv /opt/conjur/etc /opt/conjur/data/
+        $cli exec $master_pod_name -- ln -sf /opt/conjur/data/etc /opt/conjur/etc
+      fi
+      if ! $cli exec $master_pod_name -- ls /opt/conjur/data/ssl &>/dev/null; then
+        echo "Nessi defined ssl persistent storage"
+        $cli exec $master_pod_name -- mv /etc/ssl /opt/conjur/data/
+        $cli exec $master_pod_name -- ln -sf /opt/conjur/data/ssl /etc/ssl
       fi
     fi
   fi
