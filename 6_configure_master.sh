@@ -35,18 +35,7 @@ configure_master_pod() {
 
   if [ $PLATFORM = 'openshift' ]; then
     $cli create route passthrough --service=conjur-master
-
     echo "Created passthrough route for conjur-master service."
-
-    conjur_master_route=$($cli get routes | grep conjur-master | awk '{ print $2 }')
-    MASTER_ALTNAMES="$MASTER_ALTNAMES,$conjur_master_route"
-
-    echo "Added conjur-master service route ($conjur_master_route) to Master cert altnames."
-  else
-    conjur_master_service_external_ip="$(kubectl get --no-headers service conjur-master | awk '{print $3 }')"
-    MASTER_ALTNAMES="$MASTER_ALTNAMES,$conjur_master_service_external_ip"
-
-    echo "Added conjur-master service external IP ($conjur_master_service_external_ip) to Master cert altnames."
   fi
 
   # Configure Conjur master server using evoke.
