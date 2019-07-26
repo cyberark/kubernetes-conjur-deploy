@@ -40,6 +40,7 @@ configure_master_pod() {
 
   # Configure Conjur master server using evoke.
   $cli exec $master_pod_name -- evoke configure master \
+     --accept-eula \
      -h conjur-master \
      --master-altnames "$MASTER_ALTNAMES" \
      --follower-altnames conjur-follower,conjur-follower.$CONJUR_NAMESPACE_NAME.svc.cluster.local \

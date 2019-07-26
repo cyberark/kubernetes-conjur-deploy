@@ -35,6 +35,7 @@ if [ $PLATFORM = 'openshift' ]; then
 fi
 
 $cli exec $master_pod_name -- evoke configure master \
+   --accept-eula \
    -h conjur-master \
    --master-altnames $master_altnames \
    --follower-altnames conjur-follower,conjur-follower.$CONJUR_NAMESPACE_NAME.svc.cluster.local \
