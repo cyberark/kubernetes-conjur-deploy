@@ -135,8 +135,8 @@ oc apply -f ./openshift/conjur-authenticator-role.yaml
 
 ### Docker Configuration
 
-[Install Docker](https://www.docker.com/get-docker) on your local machine if you
-do not already have it. Makre sure the Docker version is 17.05 or highier.
+[Install Docker](https://www.docker.com/get-docker) from version 17.05 or higher on your local machine if you
+do not already have it.
 
 
 #### Kubernetes
