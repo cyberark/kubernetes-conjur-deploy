@@ -121,16 +121,17 @@ wait_for_it() {
 
     echo "Waiting for '$@' up to $timeout s"
     for i in $(seq $times_to_run); do
-      eval $@ && echo 'Success!' && break
+      eval $@ > /dev/null && echo 'Success!' && return 0
       echo -n .
       sleep $spacer
     done
 
+    # Last run evaluated. If this fails we return an error exit code to caller
     eval $@
   else
     echo "Waiting for '$@' forever"
 
-    while ! eval $@; do
+    while ! eval $@ > /dev/null; do
       echo -n .
       sleep $spacer
     done
