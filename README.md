@@ -327,3 +327,8 @@ access the Conjur UI.
 The [kubernetes-conjur-demo repo](https://github.com/conjurdemos/kubernetes-conjur-demo)
 deploys test applications that retrieve secrets from Conjur and serves as a
 useful reference when setting up your own applications to integrate with Conjur.
+
+# License
+
+This repository is licensed under Apache License 2.0 - see [`LICENSE`](LICENSE) for more details.
+
