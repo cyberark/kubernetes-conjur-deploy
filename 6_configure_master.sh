@@ -31,7 +31,7 @@ configure_master_pod() {
 
   $cli label --overwrite pod $master_pod_name role=master
 
-  MASTER_ALTNAMES="localhost,conjur-master.$CONJUR_NAMESPACE_NAME.svc.cluster.local"
+  MASTER_ALTNAMES="localhost,conjur-master"
 
   if [ $PLATFORM = 'openshift' ]; then
     $cli create route passthrough --service=conjur-master
@@ -41,7 +41,7 @@ configure_master_pod() {
   # Configure Conjur master server using evoke.
   $cli exec $master_pod_name -- evoke configure master \
      --accept-eula \
-     -h conjur-master \
+     -h conjur-master.$CONJUR_NAMESPACE_NAME.svc.cluster.local \
      --master-altnames "$MASTER_ALTNAMES" \
      --follower-altnames conjur-follower,conjur-follower.$CONJUR_NAMESPACE_NAME.svc.cluster.local \
      -p $CONJUR_ADMIN_PASSWORD \
