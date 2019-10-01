@@ -3,6 +3,8 @@ set -euo pipefail
 
 . utils.sh
 
+: "${SEEDFETCHER_IMAGE:=cyberark/dap-seedfetcher}"
+
 main() {
   if [[ "${PLATFORM}" = "openshift" ]]; then
     docker login -u _ -p $(oc whoami -t) $DOCKER_REGISTRY_PATH
@@ -64,17 +66,15 @@ prepare_haproxy_image() {
 }
 
 prepare_seed_fetcher_image() {
-  announce "Building and pushing seed-fetcher image."
+  announce "Pulling and pushing seed-fetcher image."
 
-  pushd build/seed-fetcher
-    ./build.sh
-  popd
+  docker pull $SEEDFETCHER_IMAGE
 
-  seed_fetcher_image=$(platform_image seed-fetcher)
-  docker tag seed-fetcher:$CONJUR_NAMESPACE_NAME $seed_fetcher_image
+  seedfetcher_image=$(platform_image seed-fetcher)
+  docker tag $SEEDFETCHER_IMAGE $seedfetcher_image
 
   if ! is_minienv; then
-    docker push $seed_fetcher_image
+    docker push $seedfetcher_image
   fi
 }
 
