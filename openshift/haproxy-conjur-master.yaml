@@ -18,6 +18,8 @@ spec:
     name: ldaps
   - port: 5432
     name: pg-main
+  - port: 1999
+    name: syslog-audit
   selector:
     app: haproxy-conjur-master
   type: LoadBalancer
@@ -43,3 +45,5 @@ spec:
       name: pg-main
     - containerPort: 5433
       name: pg-audit
+    - containerPort: 1999
+      name: syslog-audit
