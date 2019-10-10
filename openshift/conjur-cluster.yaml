@@ -34,3 +34,5 @@ spec:
           name: pg-main
         - containerPort: 5433
           name: pg-audit
+        - containerPort: 1999
+          name: syslog-audit
