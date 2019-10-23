@@ -48,12 +48,19 @@ configure_followers() {
 configure_follower() {
   local pod_name=$1
 
+  KEYS_COMMAND=""
+
   printf "Configuring follower %s...\n" $pod_name
 
   copy_file_to_container $FOLLOWER_SEED "/tmp/follower-seed.tar" "$pod_name"
 
+  if [ -f "$CONJUR_DATA_KEY" ]; then
+    copy_file_to_container $CONJUR_DATA_KEY "/opt/conjur/etc/conjur-data-key" "$pod_name"
+    KEYS_COMMAND="evoke keys exec -m /opt/conjur/etc/conjur-data-key --"
+  fi
+
   $cli exec $pod_name -- evoke unpack seed /tmp/follower-seed.tar
-  $cli exec $pod_name -- evoke configure follower
+  $cli exec $pod_name -- $KEYS_COMMAND evoke configure follower
 }
 
 delete_follower_seed() {
