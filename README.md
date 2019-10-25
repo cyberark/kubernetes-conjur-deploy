@@ -21,7 +21,7 @@ All environment variables can be set/defined with:
 - `dev-bootstrap.env` for all other configurations.
 
 Edit the values per instructions below, source the appropriate file and run
-`0_check_dep0endencies.sh` to verify.
+`0_check_dependencies.sh` to verify.
 
 The Conjur appliance image can be loaded with `_load_conjur_tarfile.sh`. The script uses environment variables to locate the tarfile image and the value to use as a tag once it's loaded.
 
