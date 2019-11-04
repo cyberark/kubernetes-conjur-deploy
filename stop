@@ -23,4 +23,7 @@ if has_namespace $CONJUR_NAMESPACE_NAME; then
   echo ""
 fi
 
+echo "Deleting cluster role"
+$cli delete --ignore-not-found clusterrole conjur-authenticator-$CONJUR_NAMESPACE_NAME
+
 echo "Conjur environment purged."
