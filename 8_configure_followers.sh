@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 set -euo pipefail
 
 . utils.sh
@@ -54,12 +54,15 @@ configure_follower() {
 
   copy_file_to_container $FOLLOWER_SEED "/tmp/follower-seed.tar" "$pod_name"
 
-  if [ -f "$CONJUR_DATA_KEY" ]; then
+  if [ -f "${CONJUR_DATA_KEY:-}" ]; then
     copy_file_to_container $CONJUR_DATA_KEY "/opt/conjur/etc/conjur-data-key" "$pod_name"
     KEYS_COMMAND="evoke keys exec -m /opt/conjur/etc/conjur-data-key --"
   fi
 
+  echo "Unpacking seed..."
   $cli exec $pod_name -- evoke unpack seed /tmp/follower-seed.tar
+
+  echo "Configuring follower with evoke..."
   $cli exec $pod_name -- $KEYS_COMMAND evoke configure follower
 }
 
