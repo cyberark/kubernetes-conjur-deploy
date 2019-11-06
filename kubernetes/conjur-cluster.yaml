@@ -23,7 +23,6 @@ spec:
         image: {{ CONJUR_APPLIANCE_IMAGE }}
         imagePullPolicy: {{ IMAGE_PULL_POLICY }}
         env:
-          # Only required for Conjur v5
           - name: CONJUR_DATA_KEY
             value: "{{ CONJUR_DATA_KEY }}"
         ports:
@@ -35,5 +34,13 @@ spec:
           name: pg-main
         - containerPort: 5433
           name: pg-audit
+        - containerPort: 1999
+          name: syslog-audit
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: https
+            scheme: HTTPS
+
       imagePullSecrets:
         - name: dockerpullsecret
