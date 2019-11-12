@@ -1,0 +1,124 @@
+./stop
+
+export CONJUR_SERVICEACCOUNT_NAME=conjur-cluster
+export OFFLINE_MODE=true
+
+. ../utils.sh
+
+# set out conjur-oss namespace
+$cli new-project $CONJUR_NAMESPACE_NAME
+$cli config set-context $($cli config current-context) --namespace="$CONJUR_NAMESPACE_NAME" > /dev/null
+
+# create our service account in our namespace
+$cli create serviceaccount $CONJUR_SERVICEACCOUNT_NAME -n $CONJUR_NAMESPACE_NAME
+
+# create secret for docker
+$cli create secret docker-registry dockerpullsecret --docker-server=$DOCKER_REGISTRY_PATH --docker-username=_ --docker-password=$($cli whoami -t) --docker-email=_
+
+# Why are we deleteing this clusterrole? 
+$cli delete --ignore-not-found clusterrole conjur-authenticator-$CONJUR_NAMESPACE_NAME
+
+# Grant default service account permissions it needs for authn-k8s to:
+# 1) get + list pods (to verify pod names)
+# 2) create + get pods/exec (to inject cert into app sidecar
+sed -e "s#{{ CONJUR_NAMESPACE_NAME }}#$CONJUR_NAMESPACE_NAME#g" ./conjur-authenticator-role.yaml | $cli apply -f -
+
+# allow pods to run as root
+$cli adm policy add-scc-to-user anyuid "system:serviceaccount:$CONJUR_NAMESPACE_NAME:$CONJUR_SERVICEACCOUNT_NAME"
+
+# Create resources
+$cli adm policy add-scc-to-user anyuid -z default # TODO: check why
+$cli adm policy add-scc-to-user anyuid -z conjur-cluster # TODO: check why
+
+# Why do we set our namespace again?
+$cli config set-context $($cli config current-context) --namespace="$CONJUR_NAMESPACE_NAME" > /dev/null
+
+# Create image pull secret
+$cli policy add-role-to-user system:image-puller "system:serviceaccount:$CONJUR_NAMESPACE_NAME:$CONJUR_SERVICEACCOUNT_NAME" -n=default
+$cli policy add-role-to-user system:image-puller "system:serviceaccount:$CONJUR_NAMESPACE_NAME:$CONJUR_SERVICEACCOUNT_NAME" -n=$CONJUR_NAMESPACE_NAME
+
+# Configuring initial values
+$cli create secret generic conjur-data-key --from-literal=CONJUR_DATA_KEY=$(openssl rand -base64 32) --namespace=$CONJUR_NAMESPACE_NAME
+postgres_password=$(openssl rand -base64 16)
+$cli create secret generic conjur-database-url --from-literal=DATABASE_URL=postgres://postgres:$postgres_password@conjur-postgres/postgres --namespace=$CONJUR_NAMESPACE_NAME
+$cli create secret generic postgres-admin-password --from-literal=POSTGRESQL_ADMIN_PASSWORD=$postgres_password --namespace=$CONJUR_NAMESPACE_NAME
+
+# Deploy our postgres database as a pod
+postgres_image=$(platform_image "postgres")
+sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" "./conjur-postgres.yaml" | sed -e "s#{{ POSTGRES_IMAGE }}#$postgres_image#g" | $cli create -f -
+
+# Deploy conjur pod
+conjur_image=$(platform_image "conjur")
+nginx_image=$(platform_image "nginx")
+
+# Log into docker
+docker login --username=_ --password=$($cli whoami -t) $DOCKER_REGISTRY_PATH
+
+# Allow using local conjur images for deployment
+if [[ -z "${LOCAL_CONJUR_IMAGE}" ]]; then
+  conjur_image_name="cyberark/conjur"
+  docker pull $conjur_image_name
+else
+  conjur_image_name="${LOCAL_CONJUR_IMAGE}"
+fi
+
+docker tag "$conjur_image_name" $conjur_image
+echo "Pushing Conjur image ${conjur_image_name} to Openshift repo..."
+docker push $conjur_image
+
+# Push nginx image to openshift repo
+cd nginx_base
+sed -i "s#{{ CONJUR_NAMESPACE_NAME }}#$CONJUR_NAMESPACE_NAME#g" ./proxy/ssl.conf
+docker build -t $nginx_image .
+docker push $nginx_image
+cd ..
+
+conjur_log_level=${CONJUR_LOG_LEVEL:-debug}
+
+sed -e "s#{{ CONJUR_IMAGE }}#$conjur_image#g" "./conjur-cluster.yaml" |
+  sed -e "s#{{ NGINX_IMAGE }}#$nginx_image#g" |
+  sed -e "s#{{ CONJUR_DATA_KEY }}#$(openssl rand -base64 32)#g" |
+  sed -e "s#{{ CONJUR_ACCOUNT }}#$CONJUR_ACCOUNT#g" |
+  sed -e "s#{{ CONJUR_NAMESPACE_NAME }}#$CONJUR_NAMESPACE_NAME#g" |
+  sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
+  sed -e "s#{{ AUTHENTICATOR_ID }}#$AUTHENTICATOR_ID#g" |
+  sed -e "s#{{ CONJUR_LOG_LEVEL }}#$conjur_log_level#g" |
+  $cli create -f -
+
+# Deploy conjur cli pod
+cli_app_image=$(platform_image conjur-cli)
+sed -e "s#{{ CLI_IMAGE }}#$cli_app_image#g" "./conjur-cli.yaml" |
+  sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
+  $cli create -f -
+
+echo "Waiting for Conjur pod to launch..."
+wait_for_it 50 "$cli describe pod conjur-cluster | grep State: | grep -c Running | grep -q 2"
+echo "Waiting for Conjur cli pod to launch..."
+wait_for_it 50 "$cli describe pod conjur-cli | grep State: | grep -c Running | grep -q 1"
+echo "Waiting for postgres pod to launch..."
+wait_for_it 50 "$cli describe pod conjur-postgres | grep State: | grep -c Running | grep -q 1"
+
+sleep 15
+
+echo "Conjur created."
+
+# Setup Conjur
+echo "Creating admin account."
+
+conjur_pod=$($cli get pods | grep conjur-cluster | cut -f 1 -d ' ')
+echo $conjur_pod
+
+conjur_admin_api_key=$($cli exec $conjur_pod -c conjur conjurctl account create $CONJUR_ACCOUNT | grep "API key for admin" | cut -f 5 -d ' ')
+echo "Admin API key: $conjur_admin_api_key"
+
+sleep 60
+
+# Setup Conjur CLI
+echo "Changing admin password."
+
+conjur_cli_pod=$($cli get pods | grep conjur-cli | cut -f 1 -d ' ')
+$cli exec $conjur_cli_pod -- bash -c "yes yes | conjur init -a $CONJUR_ACCOUNT -u https://conjur-cluster.$CONJUR_NAMESPACE_NAME.svc.cluster.local"
+sleep 10
+$cli exec $conjur_cli_pod -- conjur authn login -u admin -p $conjur_admin_api_key
+sleep 5
+$cli exec $conjur_cli_pod -- conjur user update_password -p $CONJUR_ADMIN_PASSWORD
