@@ -8,8 +8,6 @@ main() {
   configure_master_pod
 
   sleep 10
-
-  configure_cli_pod
 }
 
 configure_master_pod() {
@@ -53,23 +51,6 @@ configure_master_pod() {
     $cli exec $master_pod_name -- bash -c "evoke seed standby > /opt/conjur/data/standby-seed.tar"
     echo "Seed created in persistent storage."
   fi
-}
-
-configure_cli_pod() {
-  announce "Configuring Conjur CLI."
-
-  conjur_url="https://conjur-master.$CONJUR_NAMESPACE_NAME.svc.cluster.local"
-
-  conjur_cli_pod=$(get_conjur_cli_pod_name)
-
-  if [ $CONJUR_VERSION = '4' ]; then
-    $cli exec $conjur_cli_pod -- bash -c "yes yes | conjur init -a $CONJUR_ACCOUNT -h $conjur_url"
-    $cli exec $conjur_cli_pod -- conjur plugin install policy
-  elif [ $CONJUR_VERSION = '5' ]; then
-    $cli exec $conjur_cli_pod -- bash -c "yes yes | conjur init -a $CONJUR_ACCOUNT -u $conjur_url"
-  fi
-
-  $cli exec $conjur_cli_pod -- conjur authn login -u admin -p $CONJUR_ADMIN_PASSWORD
 }
 
 main $@
