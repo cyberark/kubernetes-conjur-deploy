@@ -30,8 +30,8 @@ spec:
         app: conjur-postgres
         name: conjur-postgres
     spec:
+      serviceAccountName: conjur-cluster
       containers:
-      - image: postgres:10.1
-        # image: {{ POSTGRES_IMAGE }}
+      - image: postgres:9.3
         imagePullPolicy: {{ IMAGE_PULL_POLICY }}
         name: postgres
