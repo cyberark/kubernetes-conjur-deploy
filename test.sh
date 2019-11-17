@@ -12,6 +12,9 @@ export TEST_PLATFORM
 CONJUR_VERSION="$2"
 export CONJUR_VERSION
 
+CONJUR_DEPLOYMENT="dap"
+export CONJUR_DEPLOYMENT
+
 function main() {
   setupTestEnvironment
   buildDockerImages
@@ -79,6 +82,7 @@ function test_gke() {
     -e DOCKER_REGISTRY_URL \
     -e DOCKER_REGISTRY_PATH \
     -e CONJUR_VERSION \
+    -e CONJUR_DEPLOYMENT \
     -e CONJUR_ACCOUNT \
     -e CONJUR_ADMIN_PASSWORD \
     -e AUTHENTICATOR_ID \
@@ -103,6 +107,7 @@ function test_openshift() {
     -e CONJUR_NAMESPACE_NAME \
     -e DOCKER_REGISTRY_PATH \
     -e CONJUR_VERSION \
+    -e CONJUR_DEPLOYMENT \
     -e CONJUR_ACCOUNT \
     -e CONJUR_ADMIN_PASSWORD \
     -e AUTHENTICATOR_ID \
