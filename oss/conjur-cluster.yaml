@@ -13,12 +13,12 @@ spec:
     app: conjur-cluster
   type: ClusterIP
 ---
-apiVersion: apps/v1
+apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: conjur-cluster
   labels:
     app: conjur-cluster
+  name: conjur-cluster
 spec:
   replicas: 1
   selector:
@@ -33,11 +33,9 @@ spec:
         role: master
     spec:
       serviceAccountName: conjur-cluster
-      imagePullSecret:
-        - name: dockerpullsecret
       containers:
         - name: conjur
-          image: docker-registry.default.svc:5000/{{ CONJUR_NAMESPACE_NAME }}/conjur:{{ CONJUR_NAMESPACE_NAME }}
+          image: {{ CONJUR_IMAGE }}
           imagePullPolicy: {{ IMAGE_PULL_POLICY }}
           args: ["server", "-p", "3000"]
           ports:
@@ -68,7 +66,7 @@ spec:
               value: {{ CONJUR_LOG_LEVEL }}
 
         - name: nginx
-          image: docker-registry.default.svc:5000/{{ CONJUR_NAMESPACE_NAME }}/nginx:{{ CONJUR_NAMESPACE_NAME }}
+          image: {{ NGINX_IMAGE }}
           imagePullPolicy: {{ IMAGE_PULL_POLICY }}
           command: ["nginx"]
           args: ["-g", "daemon off;"]
@@ -90,3 +88,5 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 10
 
+      imagePullSecrets:
+        - name: dockerpullsecret

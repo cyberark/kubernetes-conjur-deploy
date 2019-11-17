@@ -54,7 +54,6 @@ deploy_conjur_master_cluster() {
     postgres_password=$(openssl rand -base64 16)
     $cli create secret generic conjur-database-url --from-literal=DATABASE_URL=postgres://postgres:$postgres_password@conjur-postgres/postgres --namespace=$CONJUR_NAMESPACE_NAME
     $cli create secret generic postgres-admin-password --from-literal=POSTGRESQL_ADMIN_PASSWORD=$postgres_password --namespace=$CONJUR_NAMESPACE_NAME
-    $cli adm policy add-scc-to-user anyuid "system:serviceaccount:$CONJUR_NAMESPACE_NAME:$CONJUR_SERVICEACCOUNT_NAME"
     sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" "./oss/conjur-postgres.yaml" | $cli create -f -
 
     # deploy conjur & nginx pod
@@ -103,6 +102,8 @@ deploy_conjur_cli() {
 }
 
 wait_for_conjur() {
+  announce "Waiting for Conjur pods to launch"
+
   if [[ $CONJUR_DEPLOYMENT == oss ]]; then
     echo "Waiting for Conjur pod to launch..."
     wait_for_it 50 "$cli describe pod conjur-cluster | grep State: | grep -c Running | grep -q 2"
