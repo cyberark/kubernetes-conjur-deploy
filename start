@@ -3,10 +3,11 @@ set -eo pipefail
 
 function print_help() {
   cat << EOF
-TODO: add description
+Deploys a Conjur OSS deployment. One pod includes the conjur server & nginx,
+and another pod includes postgres.
 
 Usage: ./bin/test_integation [options]
-    --dap         TODO: add description
+    --dap         Deploy a DAP environment
 
     -h, --help    Shows this help message.
 EOF
