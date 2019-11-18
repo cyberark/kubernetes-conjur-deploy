@@ -87,6 +87,8 @@ function test_gke() {
     -e CONJUR_ADMIN_PASSWORD \
     -e AUTHENTICATOR_ID \
     -e MINI_ENV \
+    -e LOCAL_CONJUR_IMAGE="" \
+    -e DOCKER_EMAIL="" \
     -e FOLLOWER_SEED="" \
     -v $GCLOUD_SERVICE_KEY:/tmp$GCLOUD_SERVICE_KEY \
     -v /var/run/docker.sock:/var/run/docker.sock \
@@ -112,6 +114,8 @@ function test_openshift() {
     -e CONJUR_ADMIN_PASSWORD \
     -e AUTHENTICATOR_ID \
     -e MINI_ENV \
+    -e LOCAL_CONJUR_IMAGE="" \
+    -e DOCKER_EMAIL="" \
     -e FOLLOWER_SEED="" \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$PWD":/src \

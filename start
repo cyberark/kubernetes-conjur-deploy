@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eo pipefail
+set -euo pipefail
 
 function print_help() {
   cat << EOF
@@ -14,20 +14,25 @@ EOF
   exit
 }
 
-CONJUR_DEPLOYMENT=oss
-while true ; do
-  case "$1" in
-    --dap ) CONJUR_DEPLOYMENT=dap ; shift ;;
-    -h | --help ) print_help ; shift ;;
-     * ) if [ -z "$1" ]; then break; else echo "$1 is not a valid option"; exit 1; fi;;
-  esac
-done
-
 # XXX: Prevents `set -u` from breaking out of the checks if this
 #      variable is not defined
 export DEPLOY_MASTER_CLUSTER="${DEPLOY_MASTER_CLUSTER:-false}"
 export FOLLOWER_SEED="${FOLLOWER_SEED:-}"
+export DOCKER_EMAIL="${DOCKER_EMAIL:-}"
+export LOCAL_CONJUR_IMAGE="${LOCAL_CONJUR_IMAGE:-}"
 STOP_RUNNING_ENV="${STOP_RUNNING_ENV:-true}"
+
+CONJUR_DEPLOYMENT=oss
+
+while true ; do
+  case "${1:-}" in
+    --dap ) CONJUR_DEPLOYMENT=dap ; shift ;;
+    -h | --help ) print_help ; shift ;;
+     * ) if [ -z "${1:-}" ]; then break; else echo "'${1:-}' is not a valid option"; exit 1; fi;;
+  esac
+done
+
+export CONJUR_DEPLOYMENT
 
 if [[ $CONJUR_DEPLOYMENT == oss ]]; then
   export DEPLOY_MASTER_CLUSTER=true
