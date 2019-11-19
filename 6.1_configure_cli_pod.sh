@@ -6,7 +6,7 @@ main() {
   set_namespace $CONJUR_NAMESPACE_NAME
 
   # TODO: wait for conjur server properly to be ready
-  sleep 60
+  sleep 100
 
   configure_cli_pod
 }
@@ -18,6 +18,7 @@ configure_cli_pod() {
 
   conjur_cli_pod=$(get_conjur_cli_pod_name)
 
+  echo "Run conjur init"
   if [ $CONJUR_VERSION = '4' ]; then
     $cli exec $conjur_cli_pod -- bash -c "yes yes | conjur init -a $CONJUR_ACCOUNT -h $conjur_url"
     $cli exec $conjur_cli_pod -- conjur plugin install policy
@@ -26,6 +27,7 @@ configure_cli_pod() {
   fi
 
   if [[ $CONJUR_DEPLOYMENT == oss ]]; then
+    echo "Set Conjur admin password"
     # Set admin password. In DAP this happens in `evoke configure master`
     conjur_pod=$($cli get pods | grep conjur-cluster | cut -f 1 -d ' ')
     conjur_admin_api_key=$($cli exec $conjur_pod -c conjur conjurctl account create $CONJUR_ACCOUNT | grep "API key for admin" | cut -f 5 -d ' ')
@@ -33,6 +35,7 @@ configure_cli_pod() {
     $cli exec $conjur_cli_pod -- conjur user update_password -p $CONJUR_ADMIN_PASSWORD
   fi
 
+  echo "Login to Conjur CLI with admin"
   $cli exec $conjur_cli_pod -- conjur authn login -u admin -p $CONJUR_ADMIN_PASSWORD
 }
 
