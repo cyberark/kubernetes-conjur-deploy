@@ -12,9 +12,6 @@ export TEST_PLATFORM
 CONJUR_VERSION="$2"
 export CONJUR_VERSION
 
-CONJUR_DEPLOYMENT="dap"
-export CONJUR_DEPLOYMENT
-
 function main() {
   setupTestEnvironment
   buildDockerImages
@@ -82,13 +79,10 @@ function test_gke() {
     -e DOCKER_REGISTRY_URL \
     -e DOCKER_REGISTRY_PATH \
     -e CONJUR_VERSION \
-    -e CONJUR_DEPLOYMENT \
     -e CONJUR_ACCOUNT \
     -e CONJUR_ADMIN_PASSWORD \
     -e AUTHENTICATOR_ID \
     -e MINI_ENV \
-    -e LOCAL_CONJUR_IMAGE="" \
-    -e DOCKER_EMAIL="" \
     -e FOLLOWER_SEED="" \
     -v $GCLOUD_SERVICE_KEY:/tmp$GCLOUD_SERVICE_KEY \
     -v /var/run/docker.sock:/var/run/docker.sock \
@@ -109,13 +103,10 @@ function test_openshift() {
     -e CONJUR_NAMESPACE_NAME \
     -e DOCKER_REGISTRY_PATH \
     -e CONJUR_VERSION \
-    -e CONJUR_DEPLOYMENT \
     -e CONJUR_ACCOUNT \
     -e CONJUR_ADMIN_PASSWORD \
     -e AUTHENTICATOR_ID \
     -e MINI_ENV \
-    -e LOCAL_CONJUR_IMAGE="" \
-    -e DOCKER_EMAIL="" \
     -e FOLLOWER_SEED="" \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$PWD":/src \
