@@ -1,12 +1,43 @@
 #!/bin/bash
 set -euo pipefail
 
+function print_help() {
+  cat << EOF
+Deploys a Conjur OSS deployment. One pod includes the conjur server & nginx,
+and another pod includes postgres.
+
+Usage: ./bin/test_integation [options]
+    --dap         Deploy a DAP environment
+
+    -h, --help    Shows this help message.
+EOF
+  exit
+}
+
 # XXX: Prevents `set -u` from breaking out of the checks if this
 #      variable is not defined
 export DEPLOY_MASTER_CLUSTER="${DEPLOY_MASTER_CLUSTER:-false}"
 export FOLLOWER_SEED="${FOLLOWER_SEED:-}"
+export DOCKER_EMAIL="${DOCKER_EMAIL:-}"
+export LOCAL_CONJUR_IMAGE="${LOCAL_CONJUR_IMAGE:-}"
 STOP_RUNNING_ENV="${STOP_RUNNING_ENV:-true}"
 
+CONJUR_DEPLOYMENT=oss
+
+while true ; do
+  case "${1:-}" in
+    --dap ) CONJUR_DEPLOYMENT=dap ; shift ;;
+    -h | --help ) print_help ; shift ;;
+     * ) if [ -z "${1:-}" ]; then break; else echo "'${1:-}' is not a valid option"; exit 1; fi;;
+  esac
+done
+
+export CONJUR_DEPLOYMENT
+
+if [[ $CONJUR_DEPLOYMENT == oss ]]; then
+  export DEPLOY_MASTER_CLUSTER=true
+  export OFFLINE_MODE=true
+fi
 
 if [[ $PLATFORM == openshift ]]; then
   export OPENSHIFT_USERNAME="${OPENSHIFT_USERNAME:-$OSHIFT_CLUSTER_ADMIN_USERNAME}"
@@ -26,18 +57,25 @@ if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
   ./3_deploy_conjur_master_cluster.sh
 fi
 
-./4_deploy_conjur_followers.sh
+if [[ $CONJUR_DEPLOYMENT == dap ]]; then
+  export CONJUR_NODE_NAME="conjur-master"
+  ./4_deploy_conjur_followers.sh
 
-if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
-  ./5_create_load_balancer.sh
-  ./6_configure_master.sh
-  ./7_configure_standbys.sh
-fi
+  if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
+    ./5_create_load_balancer.sh
+    ./6_configure_master.sh
+    ./6.1_configure_cli_pod.sh
+    ./7_configure_standbys.sh
+  fi
 
-if [[ -f "${FOLLOWER_SEED}" ]] || [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
-    ./8_configure_followers.sh
-fi
+  if [[ -f "${FOLLOWER_SEED}" ]] || [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
+      ./8_configure_followers.sh
+  fi
 
-if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
-  ./9_print_cluster_info.sh
+  if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
+    ./9_print_cluster_info.sh
+  fi
+else
+  export CONJUR_NODE_NAME="conjur-cluster"
+  ./6.1_configure_cli_pod.sh
 fi

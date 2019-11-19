@@ -1,0 +1,92 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: conjur-cluster
+  labels:
+    app: conjur-cluster
+spec:
+  ports:
+    - port: 443
+      name: https
+  selector:
+    app: conjur-cluster
+  type: ClusterIP
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: conjur-cluster
+  name: conjur-cluster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: conjur-cluster
+      name: conjur-cluster
+  template:
+    metadata:
+      labels:
+        app: conjur-cluster
+        name: conjur-cluster
+        role: master
+    spec:
+      serviceAccountName: conjur-cluster
+      containers:
+        - name: conjur
+          image: {{ CONJUR_IMAGE }}
+          imagePullPolicy: {{ IMAGE_PULL_POLICY }}
+          args: ["server", "-p", "3000"]
+          ports:
+            - containerPort: 3000
+              name: conjur
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          env:
+            - name: CONJUR_DATA_KEY
+              value: "{{ CONJUR_DATA_KEY }}"
+            - name: DATABASE_URL
+              value: postgres://postgres@conjur-postgres/postgres
+            - name: CONJUR_AUTHENTICATORS
+              value: authn-k8s/{{ AUTHENTICATOR_ID }},authn
+            - name: CONJUR_ACCOUNT
+              value: {{ CONJUR_ACCOUNT }}
+            - name: CONJUR_LOG_LEVEL
+              value: {{ CONJUR_LOG_LEVEL }}
+
+        - name: nginx
+          image: {{ NGINX_IMAGE }}
+          imagePullPolicy: {{ IMAGE_PULL_POLICY }}
+          command: ["nginx"]
+          args: ["-g", "daemon off;"]
+          ports:
+            - containerPort: 443
+              name: https
+          livenessProbe:
+            httpGet:
+              path: /
+              scheme: HTTPS
+              port: https
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              scheme: HTTPS
+              port: https
+            initialDelaySeconds: 30
+            periodSeconds: 10
+
+      imagePullSecrets:
+        - name: dockerpullsecret

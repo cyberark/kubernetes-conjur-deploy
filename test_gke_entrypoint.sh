@@ -46,7 +46,11 @@ function initialize() {
 function runScripts() {
   echo 'Running Scripts'
 
-  ./start
+  cmd="./start"
+  if [ $CONJUR_DEPLOYMENT == "dap" ]; then
+      cmd="$cmd --dap"
+  fi
+  $cmd
 }
 
 function relaunchMaster() {

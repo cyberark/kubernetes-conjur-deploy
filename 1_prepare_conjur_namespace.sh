@@ -71,6 +71,7 @@ configure_oc_rbac() {
   oc adm policy add-role-to-user system:image-builder $OPENSHIFT_USERNAME
   oc adm policy add-role-to-user admin $OPENSHIFT_USERNAME -n default
   oc adm policy add-role-to-user admin $OPENSHIFT_USERNAME -n $CONJUR_NAMESPACE_NAME
+  oc adm policy add-scc-to-user anyuid "system:serviceaccount:$CONJUR_NAMESPACE_NAME:$CONJUR_SERVICEACCOUNT_NAME"
 
   echo "Logging in as Conjur admin user, provide password as needed..."
   oc login -u $OPENSHIFT_USERNAME
