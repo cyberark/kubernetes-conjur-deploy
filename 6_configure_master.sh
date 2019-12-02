@@ -48,6 +48,12 @@ configure_master_pod() {
      $CONJUR_ACCOUNT
   echo "Master pod configured."
 
+  # Set Conjur log level in case it was provided
+  if [ -n "${CONJUR_LOG_LEVEL:-}" ]; then
+    echo "Setting CONJUR_LOG_LEVEL to $CONJUR_LOG_LEVEL"
+    $cli exec $master_pod_name -- evoke variable set CONJUR_LOG_LEVEL $CONJUR_LOG_LEVEL
+  fi
+
   # Write standby seed to persistent storage if /opt/conjur/data is mounted
   if $cli exec $master_pod_name -- ls /opt/conjur/data &>/dev/null; then
     $cli exec $master_pod_name -- bash -c "evoke seed standby > /opt/conjur/data/standby-seed.tar"
