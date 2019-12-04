@@ -7,7 +7,7 @@ main() {
 
   configure_master_pod
 
-  sleep 10
+  wait_for_master
 
   configure_cli_pod
 }
@@ -15,7 +15,7 @@ main() {
 configure_master_pod() {
   announce "Configuring master pod."
 
-  master_pod_name=$(get_master_pod_name)
+  local master_pod_name=$(get_master_pod_name)
 
   if [ $CONJUR_VERSION = '4' ]; then
     # Move database to persistent storage if /opt/conjur/dbdata is mounted
@@ -55,12 +55,33 @@ configure_master_pod() {
   fi
 }
 
+wait_for_master() {
+  local conjur_url="https://conjur-master.$CONJUR_NAMESPACE_NAME.svc.cluster.local"
+  local conjur_cli_pod=$(get_conjur_cli_pod_name)
+
+  echo "Waiting for DAP Master to be ready..."
+
+  # Wait for 10 successful connections in a row
+  local COUNTER=0
+  while [  $COUNTER -lt 10 ]; do
+      local response=$($cli exec $conjur_cli_pod -- bash -c "curl -k --silent --head $conjur_url/health")
+      if [ -z "$(echo $response | grep "Conjur-Health: OK")" ]; then
+        sleep 5
+        COUNTER=0
+      else
+        let COUNTER=COUNTER+1
+      fi
+      sleep 1
+      echo "Successful Health Checks: $COUNTER"
+  done
+}
+
 configure_cli_pod() {
   announce "Configuring Conjur CLI."
 
-  conjur_url="https://conjur-master.$CONJUR_NAMESPACE_NAME.svc.cluster.local"
+  local conjur_url="https://conjur-master.$CONJUR_NAMESPACE_NAME.svc.cluster.local"
 
-  conjur_cli_pod=$(get_conjur_cli_pod_name)
+  local conjur_cli_pod=$(get_conjur_cli_pod_name)
 
   if [ $CONJUR_VERSION = '4' ]; then
     $cli exec $conjur_cli_pod -- bash -c "yes yes | conjur init -a $CONJUR_ACCOUNT -h $conjur_url"
