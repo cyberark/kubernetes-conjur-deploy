@@ -94,6 +94,11 @@ get_conjur_cli_pod_name() {
   echo $pod_list | awk '{print $1}'
 }
 
+get_follower_pod_name() {
+  pod_list=$($cli get pods -l role=follower --no-headers | awk '{ print $1 }')
+  echo $pod_list | awk '{print $1}'
+}
+
 set_namespace() {
   if [[ $# != 1 ]]; then
     printf "Error in %s/%s - expecting 1 arg.\n" $(pwd) $0
