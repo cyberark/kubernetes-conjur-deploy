@@ -80,7 +80,10 @@ add_server_certificate_to_configmap() {
 
 enable_conjur_authenticate() {
   if [[ "${FOLLOWER_SEED}" =~ ^http[s]?:// ]]; then
-    announce "Creating conjur service account and authenticator role binding."
+    announce "Creating conjur-cluster service account and authenticator role binding."
+
+    sed -e "s#{{ CONJUR_NAMESPACE_NAME }}#$CONJUR_NAMESPACE_NAME#g" "./$PLATFORM/conjur-cluster-service-account.yaml" |
+        $cli create -f -
 
     sed -e "s#{{ CONJUR_NAMESPACE_NAME }}#$CONJUR_NAMESPACE_NAME#g" "./$PLATFORM/conjur-authenticator-role-binding.yaml" |
         $cli create -f -
