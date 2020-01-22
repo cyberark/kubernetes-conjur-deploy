@@ -158,3 +158,12 @@ is_minienv() {
     true
   fi
 }
+
+set_conjur_pod_log_level() {
+  pod_name=$1
+  conjur_log_level=${CONJUR_LOG_LEVEL:-}
+  if [ -n "$conjur_log_level" ]; then
+    echo "Setting CONJUR_LOG_LEVEL to $conjur_log_level in $pod_name"
+    $cli exec $pod_name -- evoke variable set CONJUR_LOG_LEVEL $conjur_log_level
+  fi
+}

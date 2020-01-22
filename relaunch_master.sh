@@ -44,6 +44,8 @@ $cli exec $master_pod_name -- evoke configure master \
 
 echo "Master pod configured."
 
+set_conjur_pod_log_level $master_pod_name
+
 if $cli get statefulset &>/dev/null && [[ $PLATFORM != openshift ]]; then  # this returns non-0 if platform doesn't support statefulset
   $cli exec haproxy-conjur-master -- kill -s HUP 1  # haproxy runs as PID 1, see Reloading Config here: https://hub.docker.com/_/haproxy/
   echo 'HAProxy restarted'
