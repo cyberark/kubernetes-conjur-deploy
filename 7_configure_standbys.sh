@@ -52,6 +52,8 @@ configure_standby() {
 
   $cli exec $pod_name -- evoke unpack seed /tmp/standby-seed.tar
   $cli exec $pod_name -- evoke configure standby -i $master_pod_ip
+
+  set_conjur_pod_log_level $pod_name
 }
 
 delete_standby_seed() {
