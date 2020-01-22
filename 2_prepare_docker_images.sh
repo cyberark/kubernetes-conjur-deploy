@@ -71,7 +71,7 @@ prepare_conjur_oss_cluster() {
 
   # Allow using local conjur images for deployment
   if [[ -z "${LOCAL_CONJUR_IMAGE}" ]]; then
-    conjur_image_name="cyberark/conjur"
+    conjur_image_name="registry.tld/conjur:1-stable"
     docker pull $conjur_image_name
   else
     conjur_image_name="${LOCAL_CONJUR_IMAGE}"
