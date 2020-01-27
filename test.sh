@@ -36,7 +36,7 @@ function setupTestEnvironment() {
   local suffix="$(uuidgen | tr "[:upper:]" "[:lower:]" | head -c 10)"
   export CONJUR_NAMESPACE_NAME="conjur-deploy-test-$suffix"
   export CONJUR_ACCOUNT=admin
-  export CONJUR_ADMIN_PASSWORD=secret
+  export CONJUR_ADMIN_PASSWORD=ADmin123!!!!
   export AUTHENTICATOR_ID=conjur/k8s-test
   export MINI_ENV=false
 
