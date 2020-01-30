@@ -11,8 +11,8 @@ main() {
   fi
 
   create_conjur_namespace
-  create_service_account
-  create_cluster_role
+  #create_service_account
+  #create_cluster_role
 
   if [[ "$PLATFORM" == "openshift" ]]; then
     configure_oc_rbac
@@ -43,22 +43,23 @@ create_conjur_namespace() {
   fi
 }
 
-create_service_account() {
-    readonly CONJUR_SERVICEACCOUNT_NAME='conjur-cluster'
+## Service Account is created in kubernetes/conjur-authenticator-role-binding.yaml thus this should be REMOVED.
+#create_service_account() {
+#
+#    if has_serviceaccount $CONJUR_SERVICEACCOUNT_NAME; then
+#        echo "Service account '$CONJUR_SERVICEACCOUNT_NAME' exists, not going to create it."
+#    else
+#        $cli create serviceaccount $CONJUR_SERVICEACCOUNT_NAME -n $CONJUR_NAMESPACE_NAME
+#    fi
+#}
 
-    if has_serviceaccount $CONJUR_SERVICEACCOUNT_NAME; then
-        echo "Service account '$CONJUR_SERVICEACCOUNT_NAME' exists, not going to create it."
-    else
-        $cli create serviceaccount $CONJUR_SERVICEACCOUNT_NAME -n $CONJUR_NAMESPACE_NAME
-    fi
-}
-
-create_cluster_role() {
-  $cli delete --ignore-not-found clusterrole conjur-authenticator-$CONJUR_NAMESPACE_NAME
-
-  sed -e "s#{{ CONJUR_NAMESPACE_NAME }}#$CONJUR_NAMESPACE_NAME#g" ./$PLATFORM/conjur-authenticator-role.yaml |
-    $cli apply -f -
-}
+## Moved to 4_deploy_conjur_followers.sh. Since the Role is a Cluster role it makes more sense to be created by 4_deploy_conjur_followers.sh. This should be REMOVED from this script.
+#create_cluster_role() {
+#  $cli delete --ignore-not-found clusterrole conjur-authenticator-$CONJUR_NAMESPACE_NAME
+#
+#  sed -e "s#{{ CONJUR_NAMESPACE_NAME }}#$CONJUR_NAMESPACE_NAME#g" ./$PLATFORM/conjur-authenticator-role.yaml |
+#    $cli apply -f -
+#}
 
 configure_oc_rbac() {
   echo "Configuring OpenShift admin permissions."

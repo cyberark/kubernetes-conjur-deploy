@@ -8,15 +8,45 @@ main() {
 
   docker_login
 
+  create_cluster_role
+
+  enable_conjur_authenticate
+
   add_server_certificate_to_configmap
 
   deploy_conjur_followers
 
-  enable_conjur_authenticate
-
   sleep 10
 
-  echo "Followers created."
+  if [[ "${DEPLOY_MASTER_CLUSTER}" = "false" && "${PLATFORM}" = "kubernetes" ]]; then
+
+    echo " 
+    ######################################################################################################
+    #                                           FOLOWERS CREATED                                         #                                                 
+    ######################################################################################################
+    Followers created. Please in order to finish the followers setup run ./kubernetes/config/config.sh
+    ######################################################################################################
+
+    # You will need a conjur-cli container running locally or Conjur CLI installed locally. 
+    # We recommend to use conjur-cli container.
+
+    # docker run -d --name conjur-cli --restart=always --entrypoint "" cyberark/conjur-cli:5 sleep infinity 
+    
+    # Connect to conjur-cli container and log in to Conjur Master:
+    # docker exec -it conjur-cli /bin/bash
+    #  > conjur init -u https://<conjur-master-url> -a <conjur-account>
+    #  > conjur authn login -u admin -p <password>
+    #  > exit
+
+    # Run the following script to add some needed values into conjur and restart followers:
+    # ./kubernetes/config/config.sh
+
+    # Check logs:
+    # kubectl logs <pod_follower_name> -c authenticator
+    ########################################################################################################
+    ########################################################################################################
+    "
+   fi
 }
 
 docker_login() {
@@ -43,8 +73,39 @@ docker_login() {
          --docker-password=$($cli whoami -t) \
          --docker-email=_
 
-    $cli secrets add serviceaccount/conjur-cluster secrets/dockerpullsecret --for=pull
+    $cli secrets add serviceaccount/${CONJUR_SERVICEACCOUNT_NAME} secrets/dockerpullsecret --for=pull
   fi
+}
+
+create_cluster_role() {
+  $cli delete --ignore-not-found clusterrole conjur-authenticator-$CONJUR_NAMESPACE_NAME
+
+  sed -e "s#{{ CONJUR_NAMESPACE_NAME }}#$CONJUR_NAMESPACE_NAME#g" ./$PLATFORM/conjur-authenticator-role.yaml |
+    $cli apply -f -
+}
+
+enable_conjur_authenticate() {
+  if [[ "${FOLLOWER_SEED}" =~ ^http[s]?:// ]]; then
+    announce "Creating conjur service account and authenticator role binding."
+
+    sed -e "s#{{ CONJUR_NAMESPACE_NAME }}#$CONJUR_NAMESPACE_NAME#g" "./$PLATFORM/conjur-authenticator-role-binding.yaml" |
+    sed -e "s#{{ CONJUR_SERVICEACCOUNT_NAME }}#$CONJUR_SERVICEACCOUNT_NAME#g" |
+    $cli create -f -
+  fi
+}
+
+add_server_certificate_to_configmap() {
+  SERVER_CERTIFICATE="./server_certificate.cert"
+  ./_save_server_cert.sh $SERVER_CERTIFICATE
+  if [[ -f "${SERVER_CERTIFICATE}" ]]; then
+    announce "Saving server certificate to configmap."
+    $cli create configmap server-certificate --from-file=ssl-certificate=<(cat "${SERVER_CERTIFICATE}")
+  else
+    echo "WARN: no server certificate was provided saving empty configmap"
+    $cli create configmap server-certificate --from-file=ssl-certificate=<(echo "")
+  fi
+  
+  rm server_certificate.cert
 }
 
 deploy_conjur_followers() {
@@ -63,28 +124,9 @@ deploy_conjur_followers() {
     sed -e "s#{{ CONJUR_SEED_FETCHER_IMAGE }}#$seedfetcher_image#g" |
     sed -e "s#{{ CONJUR_ACCOUNT }}#$CONJUR_ACCOUNT#g" |
     sed -e "s#{{ CONJUR_AUTHN_LOGIN_PREFIX }}#$conjur_authn_login_prefix#g" |
+    sed -e "s#{{ CONJUR_SERVICEACCOUNT_NAME }}#$CONJUR_SERVICEACCOUNT_NAME#g" |
+    sed -e "s#{{ CONJUR_VERSION }}#$CONJUR_VERSION#g" |
     $cli create -f -
-}
-
-add_server_certificate_to_configmap() {
-  SERVER_CERTIFICATE="./server_certificate.cert"
-  ./_save_server_cert.sh $SERVER_CERTIFICATE
-  if [[ -f "${SERVER_CERTIFICATE}" ]]; then
-    announce "Saving server certificate to configmap."
-    $cli create configmap server-certificate --from-file=ssl-certificate=<(cat "${SERVER_CERTIFICATE}")
-  else
-    echo "WARN: no server certificate was provided saving empty configmap"
-    $cli create configmap server-certificate --from-file=ssl-certificate=<(echo "")
-  fi
-}
-
-enable_conjur_authenticate() {
-  if [[ "${FOLLOWER_SEED}" =~ ^http[s]?:// ]]; then
-    announce "Creating conjur service account and authenticator role binding."
-
-    sed -e "s#{{ CONJUR_NAMESPACE_NAME }}#$CONJUR_NAMESPACE_NAME#g" "./$PLATFORM/conjur-authenticator-role-binding.yaml" |
-        $cli create -f -
-  fi
 }
 
 main $@

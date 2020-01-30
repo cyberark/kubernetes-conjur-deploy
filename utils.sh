@@ -57,7 +57,11 @@ has_namespace() {
 }
 
 has_serviceaccount() {
-  $cli get serviceaccount "$1" &> /dev/null;
+ if $cli get serviceaccount "$1" &> /dev/null; then
+    true
+ else
+    false
+ fi
 }
 
 copy_file_to_container() {

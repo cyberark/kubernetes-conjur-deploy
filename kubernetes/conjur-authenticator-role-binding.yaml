@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: conjur
+  name: {{ CONJUR_SERVICEACCOUNT_NAME }}
   namespace: {{ CONJUR_NAMESPACE_NAME }}
 ---
 kind: RoleBinding
@@ -11,10 +11,9 @@ metadata:
   name: conjur-authenticator-role-binding-{{ CONJUR_NAMESPACE_NAME }}
 subjects:
   - kind: ServiceAccount
-    name: conjur
+    name: {{ CONJUR_SERVICEACCOUNT_NAME }}
     namespace: {{ CONJUR_NAMESPACE_NAME }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: conjur-authenticator-{{ CONJUR_NAMESPACE_NAME }}
-
