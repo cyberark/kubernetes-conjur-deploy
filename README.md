@@ -35,7 +35,7 @@ Ensure that:
 2- On the Conjur Master, [Initialize](https://docs.cyberark.com/Product-Doc/OnlineHelp/AAM-DAP/Latest/en/Content/Integrations/ConjurDeployFollowers.htm?Highlight=Initialize%20the%20Conjur%20CA%20for%20the%20Kubernetes%20Authenticator) the Conjur CA for the Kubernetes Authenticator and add the Kubernetes Authenticator to the DAP authenticators.
 
 
-Here a `bootstrap.env` example for Kubernetes Platform:
+Here is a `bootstrap.env` example for Kubernetes Platform:
 
 ```
 # For more details on the required environment
@@ -406,4 +406,3 @@ useful reference when setting up your own applications to integrate with Conjur.
 # License
 
 This repository is licensed under Apache License 2.0 - see [`LICENSE`](LICENSE) for more details.
-
