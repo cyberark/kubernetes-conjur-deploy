@@ -35,15 +35,11 @@ Ensure that:
 2- On the Conjur Master, [Initialize](https://docs.cyberark.com/Product-Doc/OnlineHelp/AAM-DAP/Latest/en/Content/Integrations/ConjurDeployFollowers.htm?Highlight=Initialize%20the%20Conjur%20CA%20for%20the%20Kubernetes%20Authenticator) the Conjur CA for the Kubernetes Authenticator and add the Kubernetes Authenticator to the DAP authenticators.
 
 
-Here is a `bootstrap.env` example for Kubernetes Platform:
+Here a `bootstrap.env` example for Kubernetes Platform:
 
 ```
 # For more details on the required environment
 # variables, please see the README
-
-# Make sure you comment out the section for the
-# platform you're not using, and fill in the
-# appropriate values for each env var
 
 export CONJUR_VERSION=5
 export CONJUR_APPLIANCE_IMAGE=conjur-appliance:5.4.3
@@ -58,14 +54,6 @@ export CONJUR_NAMESPACE_NAME=dap
 export CONJUR_SERVICEACCOUNT_NAME=conjur-cluster
 export AUTHENTICATOR_ID=k8s-follower
 export CONJUR_FOLLOWER_COUNT=2
-
-#######
-# OPENSHIFT CONFIG (comment out all lines in this section if not using this platform)
-#######
-#export PLATFORM=openshift
-#export OSHIFT_CLUSTER_ADMIN_USERNAME=[username of cluster admin]
-#export OSHIFT_CONJUR_ADMIN_USERNAME=[username of Conjur namespace admin]
-#export DOCKER_REGISTRY_PATH=docker-registry-<registry-namespace>.<routing-domain>
 
 #######
 # KUBERNETES CONFIG (comment out all lines in this section if not using this platform)
@@ -384,7 +372,7 @@ oc exec -it <cli-pod-name> bash
 Once inside the CLI container, use the admin credentials to connect to Conjur:
 
 ```
-conjur init -h conjur-master
+conjur init -a https://<conjur-master> -a <account_conjur>
 ```
 
 Follow our [CLI usage instructions](https://developer.conjur.net/cli#quickstart)
@@ -406,3 +394,4 @@ useful reference when setting up your own applications to integrate with Conjur.
 # License
 
 This repository is licensed under Apache License 2.0 - see [`LICENSE`](LICENSE) for more details.
+
