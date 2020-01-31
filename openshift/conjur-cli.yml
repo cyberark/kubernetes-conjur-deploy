@@ -16,7 +16,7 @@ spec:
       labels:
         app: conjur-cli
     spec:
-      serviceAccountName: conjur-cluster
+      serviceAccountName: {{ CONJUR_SERVICEACCOUNT_NAME }}
       containers:
       - name: conjur-cli
         image: {{ DOCKER_IMAGE }}

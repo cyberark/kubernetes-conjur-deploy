@@ -49,6 +49,38 @@ main() {
    fi
 }
 
+
+if [[ "${DEPLOY_MASTER_CLUSTER}" = "false" && "${PLATFORM}" = "openshift" ]]; then
+
+    echo " 
+    ######################################################################################################
+    #                                           FOLOWERS CREATED                                         #                                                 
+    ######################################################################################################
+    Followers created. Please in order to finish the followers setup run ./openshift/config/config.sh
+    ######################################################################################################
+
+    # You will need a conjur-cli container running locally or Conjur CLI installed locally.
+    # For the purpose of finishing followers setup, we recommend to use conjur-cli container locally:
+
+    # docker run -d --name conjur-cli --restart=always --entrypoint "" cyberark/conjur-cli:5 sleep infinity 
+    
+    # Use conjur-cli to log in Conjur Master:
+    # docker exec -it conjur-cli /bin/bash
+    #  > conjur init -u https://<conjur-master-url> -a <conjur-account>
+    #  > conjur authn login -u admin -p <password>
+    #  > exit
+
+    # Run the following script to add some needed values into conjur and restart followers:
+    # ./openshift/config/config.sh
+
+    # Check logs:
+    # oc logs <pod_follower_name> -c authenticator
+    ########################################################################################################
+    ########################################################################################################
+    "
+   fi
+}
+
 docker_login() {
   if [ $PLATFORM = 'kubernetes' ]; then
     if ! [ "${DOCKER_EMAIL}" = "" ]; then

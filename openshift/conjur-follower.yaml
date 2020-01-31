@@ -27,7 +27,7 @@ spec:
         name: conjur-follower
         role: follower
     spec:
-      serviceAccountName: conjur-cluster
+      serviceAccountName: {{ CONJUR_SERVICEACCOUNT_NAME }}
 
       volumes:
       - name: seedfile
@@ -72,7 +72,7 @@ spec:
               fieldRef:
                 fieldPath: status.podIP
           - name: CONJUR_AUTHN_LOGIN
-            value: "{{ CONJUR_AUTHN_LOGIN_PREFIX }}/conjur-cluster"
+            value: "{{ CONJUR_AUTHN_LOGIN_PREFIX }}/{{ CONJUR_SERVICEACCOUNT_NAME }}"
         volumeMounts:
           - name: seedfile
             mountPath: /tmp/seedfile

@@ -13,6 +13,7 @@ main() {
   create_conjur_namespace
 
   if [[ "$PLATFORM" == "openshift" ]]; then
+    create_service_account
     configure_oc_rbac
   fi
 }
@@ -39,6 +40,16 @@ create_conjur_namespace() {
 
     set_namespace $CONJUR_NAMESPACE_NAME
   fi
+}
+
+create_service_account() {
+    readonly CONJUR_SERVICEACCOUNT_NAME=${CONJUR_SERVICEACCOUNT_NAME}
+
+    if has_serviceaccount $CONJUR_SERVICEACCOUNT_NAME; then
+        echo "Service account '$CONJUR_SERVICEACCOUNT_NAME' exists, not going to create it."
+    else
+        $cli create serviceaccount $CONJUR_SERVICEACCOUNT_NAME -n $CONJUR_NAMESPACE_NAME
+    fi
 }
 
 configure_oc_rbac() {

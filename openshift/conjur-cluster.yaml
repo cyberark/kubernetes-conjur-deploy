@@ -17,7 +17,7 @@ spec:
         name: conjur-node
         role: unset # set to master or standby when configured
     spec:
-      serviceAccountName: conjur-cluster
+      serviceAccountName: {{ CONJUR_SERVICEACCOUNT_NAME }}
       containers:
       - name: conjur-appliance
         image: {{ CONJUR_APPLIANCE_IMAGE }}
