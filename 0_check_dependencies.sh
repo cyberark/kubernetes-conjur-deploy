@@ -6,6 +6,7 @@ set -eo pipefail
 check_env_var "CONJUR_APPLIANCE_IMAGE"
 check_env_var "CONJUR_NAMESPACE_NAME"
 check_env_var "AUTHENTICATOR_ID"
+check_env_var "CONJUR_APPLIANCE_URL"
 
 if [ ! is_minienv ]; then
   check_env_var "DOCKER_REGISTRY_PATH"
@@ -36,16 +37,7 @@ fi
 if [[ "${DEPLOY_MASTER_CLUSTER}" = "false" ]]; then
   check_env_var "FOLLOWER_SEED"
 
-if [[ ! -f "${CONJUR_APPLIANCE_URL}" ]] && [[ ! "${CONJUR_APPLIANCE_URL}" =~ ^http[s]?:// ]]; then
-    echo "ERROR! Conjur appliance URL '${CONJUR_APPLIANCE_UR}' does not point to a conjur master url!"
-    exit 1
-fi
-
 if [[ ! -f "${FOLLOWER_SEED}" ]] && [[ ! "${FOLLOWER_SEED}" =~ ^http[s]?:// ]]; then
     echo "ERROR! Follower seed '${FOLLOWER_SEED}' does not point to a file or a seed service!"
     exit 1
-fi
-
-  
-
 fi
