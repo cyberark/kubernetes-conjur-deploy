@@ -41,3 +41,4 @@ if [[ ! -f "${FOLLOWER_SEED}" ]] && [[ ! "${FOLLOWER_SEED}" =~ ^http[s]?:// ]]; 
     echo "ERROR! Follower seed '${FOLLOWER_SEED}' does not point to a file or a seed service!"
     exit 1
 fi
+fi
