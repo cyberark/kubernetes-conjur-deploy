@@ -24,6 +24,7 @@ Edit the values per instructions below, source the appropriate file and run
 `0_check_dependencies.sh` to verify.
 
 The Conjur appliance image can be loaded with `_load_conjur_tarfile.sh`. The script uses environment variables to locate the tarfile image and the value to use as a tag once it's loaded.
+
 # Usage
 
 ## Deploying Conjur Follower
@@ -197,8 +198,11 @@ Conjur's Kubernetes authenticator requires the following privileges:
 
 The deploy scripts include a manifest that defines the `conjur-authenticator`
 cluster role, which grants these privileges. It will be created by the script 
-[4_deploy_conjur_followers.sh](4_deploy_conjur_follower.sh) (note that your user will need to have the 
-`cluster-admin` role to do so):
+[4_deploy_conjur_followers.sh](4_deploy_conjur_follower.sh) 
+
+**NOTE:** For demo purposes, you will run `./start` with `cluster-admin` permissions, however, best practices and our recommendation is to create a `RoleBinding` with an `cluster-admin` user and define a new `k8s-dap-user` with least priviledge on the `dap-namespace` in order to be able to deploy the conjur followers
+
+If you want to follow best practices you will need to run the folllowing manifests with `cluster-admin` user and remove the script automation for creating the `ClusterRole` in [4_deploy_conjur_followers.sh](4_deploy_conjur_follower.sh) file (`create_cluster_role` function).
 
 ```
 # Kubernetes

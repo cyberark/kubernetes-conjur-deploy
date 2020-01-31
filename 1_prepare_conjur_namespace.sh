@@ -11,7 +11,6 @@ main() {
   fi
 
   create_conjur_namespace
-  create_cluster_role
 
   if [[ "$PLATFORM" == "openshift" ]]; then
     configure_oc_rbac
@@ -40,13 +39,6 @@ create_conjur_namespace() {
 
     set_namespace $CONJUR_NAMESPACE_NAME
   fi
-}
-
-create_cluster_role() {
-  $cli delete --ignore-not-found clusterrole conjur-authenticator-$CONJUR_NAMESPACE_NAME
-
-  sed -e "s#{{ CONJUR_NAMESPACE_NAME }}#$CONJUR_NAMESPACE_NAME#g" ./$PLATFORM/conjur-authenticator-role.yaml |
-  $cli apply -f -
 }
 
 configure_oc_rbac() {

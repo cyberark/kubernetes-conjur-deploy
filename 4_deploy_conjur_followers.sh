@@ -8,6 +8,8 @@ main() {
 
   docker_login
 
+  create_cluster_role
+
   enable_conjur_authenticate
 
   add_server_certificate_to_configmap
@@ -25,8 +27,7 @@ main() {
     Followers created. Please in order to finish the followers setup run ./kubernetes/config/config.sh
     ######################################################################################################
 
-    # You will need a conjur-cli container running locally, Conjur CLI installed locally or deploying it 
-    # on the K8s cluster itself following the README instructions in the section "Conjur CLI"
+    # You will need a conjur-cli container running locally or Conjur CLI installed locally.
     # For the purpose of finishing followers setup, we recommend to use conjur-cli container locally:
 
     # docker run -d --name conjur-cli --restart=always --entrypoint "" cyberark/conjur-cli:5 sleep infinity 
@@ -74,6 +75,13 @@ docker_login() {
 
     $cli secrets add serviceaccount/${CONJUR_SERVICEACCOUNT_NAME} secrets/dockerpullsecret --for=pull
   fi
+}
+
+create_cluster_role() {
+  $cli delete --ignore-not-found clusterrole conjur-authenticator-$CONJUR_NAMESPACE_NAME
+
+  sed -e "s#{{ CONJUR_NAMESPACE_NAME }}#$CONJUR_NAMESPACE_NAME#g" ./$PLATFORM/conjur-authenticator-role.yaml |
+  $cli apply -f -
 }
 
 enable_conjur_authenticate() {
