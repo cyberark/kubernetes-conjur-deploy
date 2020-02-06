@@ -203,8 +203,14 @@ Steps to startup Minishift:
 Ensure that `bootstrap.env` has the `FOLLOWER_SEED` variable set to the seed
 file created [here](#follower-seed) or a URL to the seed service.
 
-If master key encryption is used in the cluster, `CONJUR_DATA_KEY` must be set to the path to a file that contains the
-encryption key to use when configuring the follower.
+If master key encryption is used in the cluster, `CONJUR_DATA_KEY` must be set to
+the path to a file that contains the encryption key to use when configuring the
+follower.
+
+By default, the follower will store all data within the container.  If
+`FOLLOWER_USE_VOLUMES` is set to `true`, the follower will use host volumes (not
+persistent volumes) for `/var/log/conjur`, `/var/log/nginx` and
+`/var/lib/postgresql/9.4`.
 
 After verifying this setting, source `./bootstrap.env` and then run `./start` to
 execute the scripts necessary to have the follower deployed in your environment.

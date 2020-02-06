@@ -54,6 +54,30 @@ deploy_conjur_followers() {
   seedfetcher_image=$(platform_image "seed-fetcher")
   conjur_authn_login_prefix=host/conjur/authn-k8s/$AUTHENTICATOR_ID/apps/$CONJUR_NAMESPACE_NAME/service_account
 
+  FOLLOWER_VOLUMES=""
+  FOLLOWER_VOLUME_MOUNTS=""
+
+  if [ $FOLLOWER_USE_VOLUMES = 'true' ]; then
+    # This is substituting into yaml, the leading whitespace of the content must match indention
+    # level in the yaml file
+    FOLLOWER_VOLUMES='\
+      - name: db-storage\
+        emptyDir: {}\
+      - name: log-storage\
+        emptyDir: {}\
+      - name: nginx-storage\
+        emptyDir: {}'
+    FOLLOWER_VOLUME_MOUNTS='\
+          - name: db-storage\
+            mountPath: /var/lib/postgresql/9.4/\
+            readOnly: false\
+          - name: log-storage\
+            mountPath: /var/log/conjur/\
+            readOnly: false\
+          - name: nginx-storage\
+            mountPath: /var/log/nginx/\
+            readOnly: false'
+  fi
 
   sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/conjur-follower.yaml" |
     sed -e "s#{{ AUTHENTICATOR_ID }}#$AUTHENTICATOR_ID#g" |
@@ -63,6 +87,8 @@ deploy_conjur_followers() {
     sed -e "s#{{ CONJUR_SEED_FETCHER_IMAGE }}#$seedfetcher_image#g" |
     sed -e "s#{{ CONJUR_ACCOUNT }}#$CONJUR_ACCOUNT#g" |
     sed -e "s#{{ CONJUR_AUTHN_LOGIN_PREFIX }}#$conjur_authn_login_prefix#g" |
+    sed -e "s#{{ FOLLOWER_VOLUMES }}#$FOLLOWER_VOLUMES#g" |
+    sed -e "s#{{ FOLLOWER_VOLUME_MOUNTS }}#$FOLLOWER_VOLUME_MOUNTS#g" |
     $cli create -f -
 }
 
