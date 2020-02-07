@@ -23,9 +23,9 @@ docker_login() {
     if ! [ "${DOCKER_EMAIL}" = "" ]; then
       announce "Creating image pull secret."
 
-      $cli delete --ignore-not-found secret dockerpullsecret
+      kubectl delete --ignore-not-found secret dockerpullsecret
 
-      $cli create secret docker-registry dockerpullsecret \
+      kubectl create secret docker-registry dockerpullsecret \
            --docker-server=$DOCKER_REGISTRY_URL \
            --docker-username=$DOCKER_USERNAME \
            --docker-password=$DOCKER_PASSWORD \
@@ -34,15 +34,15 @@ docker_login() {
   elif [ $PLATFORM = 'openshift' ]; then
     announce "Creating image pull secret."
 
-    $cli delete --ignore-not-found secrets dockerpullsecret
+    kubectl delete --ignore-not-found secrets dockerpullsecret
 
-    $cli secrets new-dockercfg dockerpullsecret \
+    oc secrets new-dockercfg dockerpullsecret \
          --docker-server=${DOCKER_REGISTRY_PATH} \
          --docker-username=_ \
-         --docker-password=$($cli whoami -t) \
+         --docker-password=$(oc whoami -t) \
          --docker-email=_
 
-    $cli secrets add serviceaccount/conjur-cluster secrets/dockerpullsecret --for=pull
+    oc secrets add serviceaccount/conjur-cluster secrets/dockerpullsecret --for=pull
   fi
 }
 
@@ -52,7 +52,7 @@ deploy_conjur_master_cluster() {
   conjur_appliance_image=$(platform_image "conjur-appliance")
 
   if [ $CONJUR_VERSION = '4' ]; then
-    if $cli get statefulset &>/dev/null && [[ $PLATFORM != openshift ]]; then  # this returns non-0 if platform doesn't support statefulset
+    if kubectl get statefulset &>/dev/null && [[ $PLATFORM != openshift ]]; then  # this returns non-0 if platform doesn't support statefulset
       conjur_cluster_template="./$PLATFORM/conjur-cluster-stateful.yaml"
     else
       conjur_cluster_template="./$PLATFORM/conjur-cluster.yaml"
@@ -82,7 +82,7 @@ deploy_conjur_cli() {
 wait_for_conjur() {
   echo "Waiting for Conjur pods to launch..."
   conjur_pod_count=${CONJUR_POD_COUNT:-3}
-  wait_for_it 600 "$cli describe po conjur-cluster | grep Status: | grep -c Running | grep -q $conjur_pod_count"
+  wait_for_it 600 "kubectl describe po conjur-cluster | grep Status: | grep -c Running | grep -q $conjur_pod_count"
 }
 
 main $@

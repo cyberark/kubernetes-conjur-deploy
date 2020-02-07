@@ -32,11 +32,11 @@ prepare_follower_seed() {
 
   FOLLOWER_SEED="./$seed_dir/follower-seed.tar"
 
-  $cli exec $master_pod_name evoke seed follower conjur-follower > $FOLLOWER_SEED
+  kubectl exec $master_pod_name evoke seed follower conjur-follower > $FOLLOWER_SEED
 }
 
 configure_followers() {
-  pod_list=$($cli get pods -l role=follower --no-headers | awk '{ print $1 }')
+  pod_list=$(kubectl get pods -l role=follower --no-headers | awk '{ print $1 }')
 
   for pod_name in $pod_list; do
     configure_follower $pod_name &
@@ -60,10 +60,10 @@ configure_follower() {
   fi
 
   echo "Unpacking seed..."
-  $cli exec $pod_name -- evoke unpack seed /tmp/follower-seed.tar
+  kubectl exec $pod_name -- evoke unpack seed /tmp/follower-seed.tar
 
   echo "Configuring follower with evoke..."
-  $cli exec $pod_name -- $KEYS_COMMAND evoke configure follower
+  kubectl exec $pod_name -- $KEYS_COMMAND evoke configure follower
 }
 
 delete_follower_seed() {

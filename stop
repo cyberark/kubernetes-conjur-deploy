@@ -5,13 +5,13 @@ set -euo pipefail
 
 if [[ $PLATFORM == openshift ]]; then
   OPENSHIFT_USERNAME="${OPENSHIFT_USERNAME:-$OSHIFT_CLUSTER_ADMIN_USERNAME}"
-  $cli login -u $OPENSHIFT_USERNAME
+  oc login -u $OPENSHIFT_USERNAME
 fi
 
 set_namespace default
 
 if has_namespace $CONJUR_NAMESPACE_NAME; then
-  $cli delete namespace $CONJUR_NAMESPACE_NAME
+  kubectl delete namespace $CONJUR_NAMESPACE_NAME
 
   printf "Waiting for $CONJUR_NAMESPACE_NAME namespace deletion to complete"
 
@@ -24,6 +24,6 @@ if has_namespace $CONJUR_NAMESPACE_NAME; then
 fi
 
 echo "Deleting cluster role"
-$cli delete --ignore-not-found clusterrole conjur-authenticator-$CONJUR_NAMESPACE_NAME
+kubectl delete --ignore-not-found clusterrole conjur-authenticator-$CONJUR_NAMESPACE_NAME
 
 echo "Conjur environment purged."

@@ -23,16 +23,16 @@ else
 fi
 
 if [ $PLATFORM == openshift ]; then
-  $cli delete --ignore-not-found deploymentconfig conjur-cluster
+  kubectl delete --ignore-not-found deploymentconfig conjur-cluster
 fi
 
-$cli delete --ignore-not-found deploy/conjur-cluster
+kubectl delete --ignore-not-found deploy/conjur-cluster
 sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" $conjur_cluster_template |
   sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
   $cli delete --ignore-not-found -f -
 
 announce "Deleting CLI pod."
-$cli delete --ignore-not-found deploy/conjur-cli
+kubectl delete --ignore-not-found deploy/conjur-cli
 
 announce "Deleting load balancer pod."
 docker_image=$(platform_image haproxy)
@@ -41,12 +41,14 @@ sed -e "s#{{ DOCKER_IMAGE }}#$docker_image#g" "./$PLATFORM/haproxy-conjur-master
   sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
   $cli delete --ignore-not-found -f -
 
+# XXX: This seems to be only valid in OC envs as `kubectl routes` provides
+#      a different output format
 announce "Deleting Master route."
 conjur_master_route=$($cli get routes | grep -s conjur-master | awk '{ print $3 }')
 $cli delete --ignore-not-found route $conjur_master_route
 
 echo "Waiting for Conjur pods to terminate..."
-while [[ "$($cli get pods 2>&1)" != "No resources found." ]]; do
+while [[ "$(kubectl get pods 2>&1)" != "No resources found." ]]; do
   echo -n '.'
   sleep 3
 done 

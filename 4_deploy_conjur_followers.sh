@@ -24,9 +24,9 @@ docker_login() {
     if ! [ "${DOCKER_EMAIL}" = "" ]; then
       announce "Creating image pull secret."
 
-      $cli delete --ignore-not-found secret dockerpullsecret
+      kubectl delete --ignore-not-found secret dockerpullsecret
 
-      $cli create secret docker-registry dockerpullsecret \
+      kubectl create secret docker-registry dockerpullsecret \
            --docker-server=$DOCKER_REGISTRY_URL \
            --docker-username=$DOCKER_USERNAME \
            --docker-password=$DOCKER_PASSWORD \
@@ -35,15 +35,15 @@ docker_login() {
   elif [ $PLATFORM = 'openshift' ]; then
     announce "Creating image pull secret."
 
-    $cli delete --ignore-not-found secrets dockerpullsecret
+    kubectl delete --ignore-not-found secrets dockerpullsecret
 
-    $cli secrets new-dockercfg dockerpullsecret \
+    oc secrets new-dockercfg dockerpullsecret \
          --docker-server=${DOCKER_REGISTRY_PATH} \
          --docker-username=_ \
-         --docker-password=$($cli whoami -t) \
+         --docker-password=$(oc whoami -t) \
          --docker-email=_
 
-    $cli secrets add serviceaccount/conjur-cluster secrets/dockerpullsecret --for=pull
+    oc secrets add serviceaccount/conjur-cluster secrets/dockerpullsecret --for=pull
   fi
 }
 
@@ -71,10 +71,10 @@ add_server_certificate_to_configmap() {
   ./_save_server_cert.sh $SERVER_CERTIFICATE
   if [[ -f "${SERVER_CERTIFICATE}" ]]; then
     announce "Saving server certificate to configmap."
-    $cli create configmap server-certificate --from-file=ssl-certificate=<(cat "${SERVER_CERTIFICATE}")
+    kubectl create configmap server-certificate --from-file=ssl-certificate=<(cat "${SERVER_CERTIFICATE}")
   else
     echo "WARN: no server certificate was provided saving empty configmap"
-    $cli create configmap server-certificate --from-file=ssl-certificate=<(echo "")
+    kubectl create configmap server-certificate --from-file=ssl-certificate=<(echo "")
   fi
 }
 

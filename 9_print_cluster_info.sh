@@ -18,7 +18,7 @@ print_cluster_info() {
       ui_url="https://$(get_master_service_ip)"
     fi
   elif [ $PLATFORM = 'openshift' ]; then
-    conjur_master_route=$($cli get routes | grep conjur-master | awk '{ print $2 }')
+    conjur_master_route=$(oc get routes | grep conjur-master | awk '{ print $2 }')
     ui_url="https://$conjur_master_route"
   fi
 

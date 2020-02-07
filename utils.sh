@@ -49,7 +49,7 @@ platform_image() {
 }
 
 has_namespace() {
-  if $cli get namespace "$1" &> /dev/null; then
+  if kubectl get namespace "$1" &> /dev/null; then
     true
   else
     false
@@ -57,7 +57,7 @@ has_namespace() {
 }
 
 has_serviceaccount() {
-  $cli get serviceaccount "$1" &> /dev/null;
+  kubectl get serviceaccount "$1" &> /dev/null;
 }
 
 copy_file_to_container() {
@@ -65,32 +65,32 @@ copy_file_to_container() {
   local to=$2
   local pod_name=$3
 
-  $cli cp "$from" $pod_name:"$to"
+  kubectl cp "$from" $pod_name:"$to"
 }
 
 get_master_pod_name() {
-  pod_list=$($cli get pods -l app=conjur-node --no-headers | awk '{ print $1 }')
+  pod_list=$(kubectl get pods -l app=conjur-node --no-headers | awk '{ print $1 }')
   echo $pod_list | awk '{print $1}'
 }
 
 get_master_service_ip() {
-  echo $($cli get service conjur-master -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+  echo $(kubectl get service conjur-master -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 }
 
 mastercmd() {
-  local master_pod=$($cli get pod -l role=master --no-headers | awk '{ print $1 }')
+  local master_pod=$(kubectl get pod -l role=master --no-headers | awk '{ print $1 }')
   local interactive=$1
 
   if [ $interactive = '-i' ]; then
     shift
-    $cli exec -i $master_pod -- $@
+    kubectl exec -i $master_pod -- $@
   else
-    $cli exec $master_pod -- $@
+    kubectl exec $master_pod -- $@
   fi
 }
 
 get_conjur_cli_pod_name() {
-  pod_list=$($cli get pods -l app=conjur-cli --no-headers | awk '{ print $1 }')
+  pod_list=$(kubectl get pods -l app=conjur-cli --no-headers | awk '{ print $1 }')
   echo $pod_list | awk '{print $1}'
 }
 
@@ -100,15 +100,15 @@ set_namespace() {
     exit -1
   fi
 
-  $cli config set-context $($cli config current-context) --namespace="$1" > /dev/null
+  kubectl config set-context $(kubectl config current-context) --namespace="$1" > /dev/null
 }
 
 wait_for_node() {
-  wait_for_it -1 "$cli describe pod $1 | grep Status: | grep -q Running"
+  wait_for_it -1 "kubectl describe pod $1 | grep Status: | grep -q Running"
 }
 
 wait_for_service() {
-  wait_for_it -1 "$cli get service $1 --no-headers | grep -q -v pending"
+  wait_for_it -1 "kubectl get service $1 --no-headers | grep -q -v pending"
 }
 
 wait_for_it() {
@@ -144,9 +144,9 @@ rotate_api_key() {
 
   master_pod_name=$(get_master_pod_name)
 
-  $cli exec $master_pod_name -- conjur authn login -u admin -p $CONJUR_ADMIN_PASSWORD > /dev/null
-  api_key=$($cli exec $master_pod_name -- conjur user rotate_api_key)
-  $cli exec $master_pod_name -- conjur authn logout > /dev/null
+  kubectl exec $master_pod_name -- conjur authn login -u admin -p $CONJUR_ADMIN_PASSWORD > /dev/null
+  api_key=$(kubectl exec $master_pod_name -- conjur user rotate_api_key)
+  kubectl exec $master_pod_name -- conjur authn logout > /dev/null
 
   echo $api_key
 }
@@ -164,6 +164,6 @@ set_conjur_pod_log_level() {
   conjur_log_level=${CONJUR_LOG_LEVEL:-}
   if [ -n "$conjur_log_level" ]; then
     echo "Setting CONJUR_LOG_LEVEL to $conjur_log_level in $pod_name"
-    $cli exec $pod_name -- evoke variable set CONJUR_LOG_LEVEL $conjur_log_level
+    kubectl exec $pod_name -- evoke variable set CONJUR_LOG_LEVEL $conjur_log_level
   fi
 }
