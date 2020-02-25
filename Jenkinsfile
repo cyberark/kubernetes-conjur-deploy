@@ -23,7 +23,7 @@ pipeline {
         }*/
         stage('Test v5 on GKE') {
           steps {
-            sh 'summon ./test.sh gke 5'
+            sh 'summon --environment kubernetes ./test.sh gke 5'
           }
         }
         stage('Test on OpenShift 3.9 in AWS') {
