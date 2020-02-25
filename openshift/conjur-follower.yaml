@@ -36,6 +36,7 @@ spec:
       - name: conjur-token
         emptyDir:
           medium: Memory
+      {{ FOLLOWER_VOLUMES }}
 
       initContainers:
       - name: authenticator
@@ -109,5 +110,6 @@ spec:
           - name: seedfile
             mountPath: /tmp/seedfile
             readOnly: true
+          {{ FOLLOWER_VOLUME_MOUNTS }}
       imagePullSecrets:
         - name: dockerpullsecret
