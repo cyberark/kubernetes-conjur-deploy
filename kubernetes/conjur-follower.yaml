@@ -18,14 +18,17 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: conjur-follower
+  labels:
+    app: conjur-follower
 spec:
   replicas: {{ CONJUR_FOLLOWER_COUNT }}
+  selector:
+    matchLabels:
+      app: conjur-follower
   template:
     metadata:
       labels:
         app: conjur-follower
-        name: conjur-follower
-        role: follower
     spec:
       serviceAccountName: conjur-cluster
 
