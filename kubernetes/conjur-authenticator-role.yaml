@@ -1,5 +1,5 @@
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1 # TODO: change this to match your k8s version
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: conjur-authenticator-{{ CONJUR_NAMESPACE_NAME }}
