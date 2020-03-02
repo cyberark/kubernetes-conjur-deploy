@@ -29,6 +29,8 @@ spec:
     metadata:
       labels:
         app: conjur-follower
+        name: conjur-follower
+        role: follower
     spec:
       serviceAccountName: conjur-cluster
 
