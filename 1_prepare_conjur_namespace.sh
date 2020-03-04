@@ -44,6 +44,7 @@ create_conjur_namespace() {
 }
 
 create_service_account() {
+    announce "Creating Conjur serviceaccount."
     readonly CONJUR_SERVICEACCOUNT_NAME='conjur-cluster'
 
     if has_serviceaccount $CONJUR_SERVICEACCOUNT_NAME; then
@@ -54,6 +55,7 @@ create_service_account() {
 }
 
 create_cluster_role() {
+  announce "Creating Conjur clusterrole."
   $cli delete --ignore-not-found clusterrole conjur-authenticator-$CONJUR_NAMESPACE_NAME
 
   sed -e "s#{{ CONJUR_NAMESPACE_NAME }}#$CONJUR_NAMESPACE_NAME#g" ./$PLATFORM/conjur-authenticator-role.yaml |
@@ -71,6 +73,10 @@ configure_oc_rbac() {
   oc adm policy add-role-to-user system:image-builder $OPENSHIFT_USERNAME
   oc adm policy add-role-to-user admin $OPENSHIFT_USERNAME -n default
   oc adm policy add-role-to-user admin $OPENSHIFT_USERNAME -n $CONJUR_NAMESPACE_NAME
+  announce "Adding conjur authen role to user conjur serviceaccount"
+  echo Conjur authen role: conjur-authenticator-$CONJUR_NAMESPACE_NAME
+  echo Conjur serviceaccount: $CONJUR_NAMESPACE_NAME:$CONJUR_SERVICEACCOUNT_NAME
+  oc adm policy add-role-to-user conjur-authenticator-$CONJUR_NAMESPACE_NAME system:serviceaccount:$CONJUR_NAMESPACE_NAME:$CONJUR_SERVICEACCOUNT_NAME
 
   echo "Logging in as Conjur admin user, provide password as needed..."
   oc login -u $OPENSHIFT_USERNAME
