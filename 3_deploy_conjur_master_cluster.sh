@@ -106,13 +106,13 @@ wait_for_conjur() {
 
   if [[ $CONJUR_DEPLOYMENT == oss ]]; then
     echo "Waiting for Conjur pod to launch..."
-    wait_for_it 50 "$cli describe pod conjur-cluster | grep State: | grep -c Running | grep -q 2"
+    wait_for_it 600 "$cli describe pod conjur-cluster | grep State: | grep -c Running | grep -q 2"
 
     echo "Waiting for Conjur cli pod to launch..."
-    wait_for_it 50 "$cli describe pod conjur-cli | grep State: | grep -c Running | grep -q 1"
+    wait_for_it 600 "$cli describe pod conjur-cli | grep State: | grep -c Running | grep -q 1"
 
     echo "Waiting for postgres pod to launch..."
-    wait_for_it 50 "$cli describe pod conjur-postgres | grep State: | grep -c Running | grep -q 1"
+    wait_for_it 600 "$cli describe pod conjur-postgres | grep State: | grep -c Running | grep -q 1"
   else
     echo "Waiting for Conjur pods to launch..."
     conjur_pod_count=${CONJUR_POD_COUNT:-3}
