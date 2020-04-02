@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
+. utils.sh
+
 function print_help() {
   cat << EOF
 Deploys a Conjur OSS deployment. One pod includes the conjur server & nginx,
