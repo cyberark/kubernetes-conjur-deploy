@@ -41,7 +41,7 @@ fi
 
 if [[ $PLATFORM == openshift ]]; then
   export OPENSHIFT_USERNAME="${OPENSHIFT_USERNAME:-$OSHIFT_CLUSTER_ADMIN_USERNAME}"
-  oc login -u $OPENSHIFT_USERNAME
+  wait_for_it 600 "oc login -u $OPENSHIFT_USERNAME"
 fi
 
 ./0_check_dependencies.sh

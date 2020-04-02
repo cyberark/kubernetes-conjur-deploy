@@ -24,7 +24,7 @@ docker_login() {
     if ! [ "${DOCKER_EMAIL}" = "" ]; then
       announce "Creating image pull secret."
 
-      $cli delete --ignore-not-found secret dockerpullsecret
+      wait_for_it 600 "$cli delete --ignore-not-found secret dockerpullsecret"
 
       $cli create secret docker-registry dockerpullsecret \
            --docker-server=$DOCKER_REGISTRY_URL \
