@@ -6,7 +6,7 @@ main() {
   set_namespace $CONJUR_NAMESPACE_NAME
 
   # wait for conjur server to be ready
-  sleep 45
+  sleep 145
 
   configure_cli_pod
 }
