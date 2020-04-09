@@ -5,8 +5,8 @@ set -euo pipefail
 main() {
   set_namespace $CONJUR_NAMESPACE_NAME
 
-  # wait for conjur server to be ready
-  sleep 145
+  echo "wait for conjur server to be ready"
+  sleep 600
 
   configure_cli_pod
 }
