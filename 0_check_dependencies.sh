@@ -19,11 +19,8 @@ if [ "${PLATFORM}" = "openshift" ]; then
   check_env_var "OPENSHIFT_USERNAME"
 fi
 
-# check if CONJUR_VERSION is consistent with CONJUR_APPLIANCE_IMAGE
-appliance_tag=${CONJUR_APPLIANCE_IMAGE//[A-Za-z.]*:/}
-appliance_version=${appliance_tag//[.-][0-9A-Za-z.-]*/}
-if [ "${appliance_version}" != "$CONJUR_VERSION" ]; then
-  echo "ERROR! Your appliance does not match the specified Conjur version."
+if [ "${CONJUR_VERSION}" != "5" ] || [ "${CONJUR_VERSION}" != "4"  ]; then
+  echo "ERROR! CONJUR_VERSION is invalid. CONJUR_VERSION must be 4 or 5"
   exit 1
 fi
 
