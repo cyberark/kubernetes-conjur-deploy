@@ -51,23 +51,11 @@ deploy_conjur_master_cluster() {
 
   conjur_appliance_image=$(platform_image "conjur-appliance")
 
-  if [ $CONJUR_VERSION = '4' ]; then
-    if $cli get statefulset &>/dev/null && [[ $PLATFORM != openshift ]]; then  # this returns non-0 if platform doesn't support statefulset
-      conjur_cluster_template="./$PLATFORM/conjur-cluster-stateful.yaml"
-    else
-      conjur_cluster_template="./$PLATFORM/conjur-cluster.yaml"
-    fi
-
-    sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" $conjur_cluster_template |
-      sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
-      $cli create -f -
-  else
-    sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/conjur-cluster.yaml" |
-      sed -e "s#{{ AUTHENTICATOR_ID }}#$AUTHENTICATOR_ID#g" |
-      sed -e "s#{{ CONJUR_DATA_KEY }}#$(openssl rand -base64 32)#g" |
-      sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
-      $cli create -f -
-  fi
+  sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/conjur-cluster.yaml" |
+    sed -e "s#{{ AUTHENTICATOR_ID }}#$AUTHENTICATOR_ID#g" |
+    sed -e "s#{{ CONJUR_DATA_KEY }}#$(openssl rand -base64 32)#g" |
+    sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
+    $cli create -f -
 }
 
 deploy_conjur_cli() {
