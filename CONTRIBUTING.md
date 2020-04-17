@@ -31,14 +31,16 @@ export DEPLOY_MASTER_CLUSTER=true
 ```
 
 You will also need to set a few environment variable that are only used when
-configuring the Conjur master. If you are working with Conjur v4, you will need to set:
-
+configuring the Conjur master. If you are working with Conjur that is not v5,
 ```
-export CONJUR_VERSION=4
+export CONJUR_VERSION=<conjur_version>
 ```
 along with any other changes you might want.
 
 Otherwise, this variable will default to `5`.
+
+_Note: If you are using Conjur v4, please use [v4_support](https://github.com/cyberark/kubernetes-conjur-deploy/tree/v4_support)
+branch of this repo!_
 
 You must also provide an account name and password for the Conjur admin account:
 

@@ -5,7 +5,8 @@ followers to a Kubernetes or OpenShift environment. These scripts can also be
 used to deploy a full cluster with Master and Standbys for testing and demo
 purposes but this is not recommended for a production deployment of Conjur.
 
-**Enterprise Only**. To deploy Conjur OSS, please use the [Conjur OSS helm chart](https://github.com/cyberark/conjur-oss-helm-chart).
+**This repo supports CyberArk DAP v10+**. To deploy Conjur OSS, please use
+the [Conjur OSS helm chart](https://github.com/cyberark/conjur-oss-helm-chart).
 
 ---
 
@@ -26,6 +27,9 @@ Edit the values per instructions below, source the appropriate file and run
 The Conjur appliance image can be loaded with `_load_conjur_tarfile.sh`. The script uses environment variables to locate the tarfile image and the value to use as a tag once it's loaded.
 
 ### Conjur Configuration
+
+_Note: If you are using Conjur v4, please use [v4_support](https://github.com/cyberark/kubernetes-conjur-deploy/tree/v4_support)
+branch of this repo!_
 
 #### Appliance Image
 

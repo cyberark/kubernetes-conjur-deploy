@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONJUR_VERSION=${CONJUR_VERSION:-$CONJUR_MAJOR_VERSION} # default to CONJUR_MAJOR_VERSION if not set
+CONJUR_VERSION=${CONJUR_VERSION:-5} # default to v5 if not set
 PLATFORM="${PLATFORM:-kubernetes}" # default to kubernetes if not set
 DEPLOY_MASTER_CLUSTER="${DEPLOY_MASTER_CLUSTER:-false}"
 FOLLOWER_USE_VOLUMES="${FOLLOWER_USE_VOLUMES:-false}"

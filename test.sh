@@ -51,11 +51,8 @@ function setupTestEnvironment() {
 }
 
 function buildDockerImages() {
-  if [[ "$CONJUR_VERSION" == "4" ]]; then
-    export CONJUR_APPLIANCE_IMAGE="registry.tld/conjur-appliance:4.9-stable"
-  else
-    export CONJUR_APPLIANCE_IMAGE="registry.tld/conjur-appliance:5.0-stable"
-  fi
+  export CONJUR_APPLIANCE_IMAGE="registry.tld/conjur-appliance:5.0-stable"
+
   docker pull $CONJUR_APPLIANCE_IMAGE
 
   # Test image w/ kubectl and oc CLIs installed to drive scripts.
