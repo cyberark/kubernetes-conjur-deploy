@@ -10,8 +10,14 @@ main() {
     docker login -u _ -p $(oc whoami -t) $DOCKER_REGISTRY_PATH
   fi
 
-  prepare_conjur_appliance_image
-  prepare_seed_fetcher_image
+  if [[ $CONJUR_DEPLOYMENT == oss ]]; then
+    echo "Prepare Conjur OSS cluster"
+    prepare_conjur_oss_cluster
+  else
+    echo "Prepare DAP cluster"
+    prepare_conjur_appliance_image
+    prepare_seed_fetcher_image
+  fi
 
   if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
     prepare_conjur_cli_image
@@ -28,7 +34,6 @@ prepare_conjur_appliance_image() {
   # Try to pull the image if we can
   docker pull $CONJUR_APPLIANCE_IMAGE || true
   docker tag $CONJUR_APPLIANCE_IMAGE $conjur_appliance_image
-
 
   if [ ! is_minienv ] || [ "${DEV}" = "false" ] ; then
     docker push $conjur_appliance_image
@@ -60,6 +65,38 @@ prepare_seed_fetcher_image() {
   if [ ! is_minienv ] || [ "${DEV}" = "false" ]; then
     docker push $seedfetcher_image
   fi
+}
+
+prepare_conjur_oss_cluster() {
+  announce "Pulling and pushing Conjur OSS image."
+
+  # Allow using local conjur images for deployment
+  conjur_oss_src_image="${LOCAL_CONJUR_IMAGE:-}"
+  if [[ -z "$conjur_oss_src_image" ]]; then
+    conjur_oss_src_image="cyberark/conjur:latest"
+    docker pull $conjur_oss_src_image
+  fi
+
+  conjur_oss_dest_image=$(platform_image "conjur")
+  docker tag "$conjur_oss_src_image" $conjur_oss_dest_image
+
+  if [ "${DEV}" = "false" ]; then
+    echo "Pushing Conjur image ${conjur_oss_dest_image} to repo..."
+    docker push $conjur_oss_dest_image
+  fi
+
+  announce "Pulling and pushing Nginx image."
+
+  nginx_image=$(platform_image "nginx")
+  # Push nginx image to openshift repo
+  pushd oss/nginx_base
+    sed -i -e "s#{{ CONJUR_NAMESPACE_NAME }}#$CONJUR_NAMESPACE_NAME#g" ./proxy/ssl.conf
+    docker build -t $nginx_image .
+
+    if [ "${DEV}" = "false" ]; then
+      docker push $nginx_image
+    fi
+  popd
 }
 
 main $@

@@ -1,12 +1,42 @@
 #!/bin/bash
 set -euo pipefail
 
+function print_help() {
+  cat << EOF
+Deploys a Conjur OSS / DAP deployment.
+
+Usage: ./start[options]
+    --dap         Deploy a DAP environment (default)
+    --oss         Deploy an OSS environment
+    -h, --help    Shows this help message.
+EOF
+  exit
+}
+
 # XXX: Prevents `set -u` from breaking out of the checks if this
 #      variable is not defined
 export DEPLOY_MASTER_CLUSTER="${DEPLOY_MASTER_CLUSTER:-false}"
 export FOLLOWER_SEED="${FOLLOWER_SEED:-}"
+export DOCKER_EMAIL="${DOCKER_EMAIL:-}"
+export LOCAL_CONJUR_IMAGE="${LOCAL_CONJUR_IMAGE:-}"
 STOP_RUNNING_ENV="${STOP_RUNNING_ENV:-true}"
 
+CONJUR_DEPLOYMENT=dap
+
+while true ; do
+  case "${1:-}" in
+    --dap ) CONJUR_DEPLOYMENT=dap ; shift ;;
+    --oss ) CONJUR_DEPLOYMENT=oss ; shift ;;
+    -h | --help ) print_help ; shift ;;
+     * ) if [ -z "${1:-}" ]; then break; else echo "'${1:-}' is not a valid option"; exit 1; fi;;
+  esac
+done
+
+export CONJUR_DEPLOYMENT
+
+if [[ $CONJUR_DEPLOYMENT == oss ]]; then
+  export DEPLOY_MASTER_CLUSTER=true
+fi
 
 if [[ $PLATFORM == openshift ]]; then
   export OPENSHIFT_USERNAME="${OPENSHIFT_USERNAME:-$OSHIFT_CLUSTER_ADMIN_USERNAME}"
@@ -27,11 +57,19 @@ if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
   ./3_deploy_conjur_master_cluster.sh
 fi
 
+if [[ $CONJUR_DEPLOYMENT == oss ]]; then
+  export CONJUR_NODE_NAME="conjur-oss"
+  ./6.5_configure_cli_pod.sh
+  exit 0
+fi
+
+export CONJUR_NODE_NAME="conjur-master"
 ./4_deploy_conjur_followers.sh
 
 if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
   ./5_create_load_balancer.sh
   ./6_configure_master.sh
+  ./6.5_configure_cli_pod.sh
   ./7_configure_standbys.sh
 fi
 
@@ -42,3 +80,4 @@ fi
 if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
   ./9_print_cluster_info.sh
 fi
+

@@ -46,7 +46,11 @@ function initialize() {
 function runScripts() {
   echo 'Running Scripts'
 
-  ./start
+  cmd="./start"
+  if [ $CONJUR_DEPLOYMENT == "oss" ]; then
+      cmd="$cmd --oss"
+  fi
+  $cmd
 }
 
 function relaunchMaster() {
