@@ -150,7 +150,7 @@ Docker Desktop provides a convenient way to deploy and develop from your machine
    
    1. Navigate to Docker preferences
    
-   1. Click on "Advanced" and slide the "Memory" bar to 6
+   1. Click on "Advanced" under "Resources" and slide the "Memory" bar to 6
    
 ### Deploy
 
@@ -166,7 +166,7 @@ To deploy locally, perform the following:
 
 1. Run `source dev-bootstrap.env`
 
-1. Run `./start`
+1. Run `./start` appending `--oss` or `--dap` according to the environment that needs to be deployed (the default is dap)
 
 ### Clean-up
 
@@ -174,7 +174,9 @@ To remove K8s resources from your local environment perform the following:
 
 Run `kubectl get all --all-namespaces` to list all resources across all namespaces in your cluster
 
-Run `kubectl delete <resource-type> <name-of-resource> --namespace <namespace>`
+Run `kubectl delete <resource-type> <name-of-resource> --namespace <namespace>` 
+
+or `kubectl delete all --all -n <namespace>` to delete the whole namespace.
 
 Note that for Deployments, you must first delete the Deployment and then the Pod. Otherwise the Pod will terminate and another will start it its place.
 

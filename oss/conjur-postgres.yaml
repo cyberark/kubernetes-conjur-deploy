@@ -1,0 +1,42 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: conjur-postgres
+  labels:
+    app: conjur-postgres
+spec:
+  ports:
+  - port: 5432
+  selector:
+    app: conjur-postgres
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: conjur-postgres
+  labels:
+    app: conjur-postgres
+spec:
+  selector:
+    matchLabels:
+      app: conjur-postgres
+      name: conjur-postgres
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: conjur-postgres
+        name: conjur-postgres
+    spec:
+      serviceAccountName: conjur-cluster
+      containers:
+        - name: postgres
+          image: postgres:9.4
+          imagePullPolicy: {{ IMAGE_PULL_POLICY }}
+          env:
+            - name: POSTGRES_HOST_AUTH_METHOD
+              value: password
+            - name: POSTGRES_PASSWORD
+              value: {{ POSTGRES_PASSWORD }}

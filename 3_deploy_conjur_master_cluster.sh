@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eo pipefail
+set -euo pipefail
 
 . utils.sh
 
@@ -49,13 +49,38 @@ docker_login() {
 deploy_conjur_master_cluster() {
   announce "Deploying Conjur Master cluster pods."
 
-  conjur_appliance_image=$(platform_image "conjur-appliance")
+  if [[ $CONJUR_DEPLOYMENT == oss ]]; then
+    postgres_password=$(openssl rand -base64 16)
+    # deploy conjur & nginx pod
+    conjur_image=$(platform_image "conjur")
+    nginx_image=$(platform_image "nginx")
+    conjur_log_level=${CONJUR_LOG_LEVEL:-info}
+    if [ "${DEV}" = "true" ]; then
+      conjur_log_level=${CONJUR_LOG_LEVEL:-debug}
+    fi
+    sed -e "s#{{ CONJUR_IMAGE }}#$conjur_image#g" "./oss/conjur-cluster.yaml" |
+      sed -e "s#{{ AUTHENTICATOR_ID }}#$AUTHENTICATOR_ID#g" |
+      sed -e "s#{{ CONJUR_ACCOUNT }}#$CONJUR_ACCOUNT#g" |
+      sed -e "s#{{ CONJUR_DATA_KEY }}#$(openssl rand -base64 32)#g" |
+      sed -e "s#{{ CONJUR_LOG_LEVEL }}#$conjur_log_level#g" |
+      sed -e "s#{{ CONJUR_NAMESPACE_NAME }}#$CONJUR_NAMESPACE_NAME#g" |
+      sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
+      sed -e "s#{{ NGINX_IMAGE }}#$nginx_image#g" |
+      sed -e "s#{{ POSTGRES_PASSWORD }}#$postgres_password#g" |
+      $cli create -f -
 
-  sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/conjur-cluster.yaml" |
-    sed -e "s#{{ AUTHENTICATOR_ID }}#$AUTHENTICATOR_ID#g" |
-    sed -e "s#{{ CONJUR_DATA_KEY }}#$(openssl rand -base64 32)#g" |
-    sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
-    $cli create -f -
+    # Deploy postgress pod
+    sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" "./oss/conjur-postgres.yaml" |
+      sed -e "s#{{ POSTGRES_PASSWORD }}#$postgres_password#g" |
+      $cli create -f -
+  else
+    conjur_appliance_image=$(platform_image "conjur-appliance")
+    sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/conjur-cluster.yaml" |
+      sed -e "s#{{ AUTHENTICATOR_ID }}#$AUTHENTICATOR_ID#g" |
+      sed -e "s#{{ CONJUR_DATA_KEY }}#$(openssl rand -base64 32)#g" |
+      sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
+      $cli create -f -
+  fi
 }
 
 deploy_conjur_cli() {
@@ -68,9 +93,14 @@ deploy_conjur_cli() {
 }
 
 wait_for_conjur() {
-  echo "Waiting for Conjur pods to launch..."
-  conjur_pod_count=${CONJUR_POD_COUNT:-3}
-  wait_for_it 600 "$cli describe po conjur-cluster | grep Status: | grep -c Running | grep -q $conjur_pod_count"
+  announce "Waiting for Conjur pods to launch"
+
+  if [[ $CONJUR_DEPLOYMENT == oss ]]; then
+    wait_for_it 600 "$cli describe pods | grep State: | grep -c Running | grep -q 4"
+  else
+    conjur_pod_count=${CONJUR_POD_COUNT:-3}
+    wait_for_it 600 "$cli describe po conjur-cluster | grep Status: | grep -c Running | grep -q $conjur_pod_count"
+  fi
 }
 
 main $@
