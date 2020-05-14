@@ -35,6 +35,11 @@ pipeline {
             sh 'summon --environment openshift311 ./test.sh openshift311 5'
           }
         }
+        stage('Test on OpenShift 4.1 in AWS') {
+          steps {
+            sh 'summon --environment openshift41 ./test.sh openshift41 5'
+          }
+        }
       }
       post { always {
         archiveArtifacts artifacts: 'output/*'
