@@ -5,6 +5,7 @@ set -euo pipefail
 #      variable is not defined
 export DEPLOY_MASTER_CLUSTER="${DEPLOY_MASTER_CLUSTER:-false}"
 export FOLLOWER_SEED="${FOLLOWER_SEED:-}"
+export CONJUR_LOG_LEVEL="${CONJUR_LOG_LEVEL:-}"
 STOP_RUNNING_ENV="${STOP_RUNNING_ENV:-true}"
 
 
