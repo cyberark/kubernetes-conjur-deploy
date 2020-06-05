@@ -10,18 +10,18 @@ fi
 
 set_namespace default
 
-if has_namespace $CONJUR_NAMESPACE_NAME; then
-  $cli delete namespace $CONJUR_NAMESPACE_NAME
+#if has_namespace $CONJUR_NAMESPACE_NAME; then
+#  $cli delete namespace $CONJUR_NAMESPACE_NAME
+#
+#  printf "Waiting for $CONJUR_NAMESPACE_NAME namespace deletion to complete"
+#
+#  while has_namespace "$CONJUR_NAMESPACE_NAME"; do
+#    printf "."
+#    sleep 5
+#  done
 
-  printf "Waiting for $CONJUR_NAMESPACE_NAME namespace deletion to complete"
-
-  while has_namespace "$CONJUR_NAMESPACE_NAME"; do
-    printf "."
-    sleep 5
-  done
-
-  echo ""
-fi
+#  echo ""
+#fi
 
 echo "Deleting cluster role"
 $cli delete --ignore-not-found clusterrole conjur-authenticator-$CONJUR_NAMESPACE_NAME
