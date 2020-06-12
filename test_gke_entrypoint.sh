@@ -1,6 +1,7 @@
 #!/bin/bash -ex
 
 set -o pipefail
+set -x
 
 # expects
 # TEST_PLATFORM GCLOUD_CLUSTER_NAME GCLOUD_ZONE GCLOUD_PROJECT_NAME GCLOUD_SERVICE_KEY

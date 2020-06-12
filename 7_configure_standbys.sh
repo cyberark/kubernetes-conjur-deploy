@@ -1,5 +1,6 @@
 #!/bin/bash 
 set -euo pipefail
+set -x
 
 . utils.sh
 
@@ -32,6 +33,8 @@ prepare_standby_seed() {
 
 configure_standbys() {
   pod_list=$($cli get pods -l role=unset --no-headers | awk '{ print $1 }')
+  echo "master pod description:"
+  $cli describe pod $master_pod_name
   master_pod_ip=$($cli describe pod $master_pod_name | awk '/IP:/ { print $2 }')
 
   for pod_name in $pod_list; do
