@@ -15,24 +15,9 @@ pipeline {
   stages {
     stage('Run Scripts') {
       parallel {
-        stage('Test v5 on GKE') {
+        stage('Test on OpenShift 4.3 in AWS') {
           steps {
-            sh 'summon --environment kubernetes ./test.sh gke 5'
-          }
-        }
-        stage('Test on OpenShift 3.9 in AWS') {
-          steps {
-            sh 'summon --environment openshift39 ./test.sh openshift39 5'
-          }
-        }
-        stage('Test on OpenShift 3.10 in AWS') {
-          steps {
-            sh 'summon --environment openshift310 ./test.sh openshift310 5'
-          }
-        }
-        stage('Test on OpenShift 3.11 in AWS') {
-          steps {
-            sh 'summon --environment openshift311 ./test.sh openshift311 5'
+            sh 'summon --environment openshift43 ./test.sh openshift43 5'
           }
         }
       }
