@@ -5,7 +5,6 @@
 
 #!/bin/bash -euf
 set -o pipefail
-set -x
 
 TEST_PLATFORM="$1"
 export TEST_PLATFORM

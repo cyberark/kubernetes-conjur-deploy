@@ -1,6 +1,5 @@
 #!/bin/bash
 set -euo pipefail
-set -x
 
 # XXX: Prevents `set -u` from breaking out of the checks if this
 #      variable is not defined

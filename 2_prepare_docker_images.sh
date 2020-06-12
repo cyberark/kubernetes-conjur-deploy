@@ -1,6 +1,6 @@
 #!/bin/bash 
 set -euo pipefail
-set -x
+
 . utils.sh
 
 : "${SEEDFETCHER_IMAGE:=cyberark/dap-seedfetcher}"
