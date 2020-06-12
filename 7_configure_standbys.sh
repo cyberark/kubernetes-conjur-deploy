@@ -32,7 +32,7 @@ prepare_standby_seed() {
 
 configure_standbys() {
   pod_list=$($cli get pods -l role=unset --no-headers | awk '{ print $1 }')
-  master_pod_ip=$($cli describe pod $master_pod_name | awk '/IP:/ { print $2 }')
+  master_pod_ip=$($cli get pod $master_pod_name -o jsonpath='{.status.podIP}')
 
   for pod_name in $pod_list; do
     configure_standby $pod_name &
