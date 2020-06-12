@@ -10,7 +10,7 @@ STOP_RUNNING_ENV="${STOP_RUNNING_ENV:-true}"
 
 if [[ $PLATFORM == openshift ]]; then
   export OPENSHIFT_USERNAME="${OPENSHIFT_USERNAME:-$OSHIFT_CLUSTER_ADMIN_USERNAME}"
-  oc login -u $OPENSHIFT_USERNAME
+  oc login -u $OPENSHIFT_USERNAME -p $OPENSHIFT_PASSWORD
 fi
 
 ./0_check_dependencies.sh

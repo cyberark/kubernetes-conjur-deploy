@@ -5,7 +5,7 @@ set -euo pipefail
 
 if [[ $PLATFORM == openshift ]]; then
   OPENSHIFT_USERNAME="${OPENSHIFT_USERNAME:-$OSHIFT_CLUSTER_ADMIN_USERNAME}"
-  $cli login -u $OPENSHIFT_USERNAME
+  $cli login -u $OPENSHIFT_USERNAME -p $OPENSHIFT_PASSWORD
 fi
 
 set_namespace default
