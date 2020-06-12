@@ -32,26 +32,14 @@ docker_login() {
            --docker-password=$DOCKER_PASSWORD \
            --docker-email=$DOCKER_EMAIL
     fi
-  elif [ $PLATFORM = 'openshift' ]; then
-    announce "Creating image pull secret."
-
-    $cli delete --ignore-not-found secrets dockerpullsecret
-
-    $cli secrets new-dockercfg dockerpullsecret \
-         --docker-server=${DOCKER_REGISTRY_PATH} \
-         --docker-username=_ \
-         --docker-password=$($cli whoami -t) \
-         --docker-email=_
-
-    $cli secrets add serviceaccount/conjur-cluster secrets/dockerpullsecret --for=pull
   fi
 }
 
 deploy_conjur_followers() {
   announce "Deploying Conjur Follower pods."
 
-  conjur_appliance_image=$(platform_image "conjur-appliance")
-  seedfetcher_image=$(platform_image "seed-fetcher")
+  conjur_appliance_image=$(platform_image "conjur-appliance" true)
+  seedfetcher_image=$(platform_image "seed-fetcher" true)
   conjur_authn_login_prefix=host/conjur/authn-k8s/$AUTHENTICATOR_ID/apps/$CONJUR_NAMESPACE_NAME/service_account
 
   FOLLOWER_VOLUMES=""

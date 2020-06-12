@@ -116,5 +116,3 @@ spec:
             mountPath: /tmp/seedfile
             readOnly: true
           {{ FOLLOWER_VOLUME_MOUNTS }}
-      imagePullSecrets:
-        - name: dockerpullsecret
