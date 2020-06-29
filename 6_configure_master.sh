@@ -24,6 +24,9 @@ configure_master_pod() {
   if [ $PLATFORM = 'openshift' ]; then
     $cli create route passthrough --service=conjur-master
     echo "Created passthrough route for conjur-master service."
+
+    route_path=$(oc get routes | grep conjur-master | awk '{print $2}')
+    MASTER_ALTNAMES="$MASTER_ALTNAMES,$route_path"
   fi
 
   # Configure Conjur master server using evoke.
