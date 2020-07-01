@@ -52,7 +52,7 @@ deploy_conjur_followers() {
 
   conjur_appliance_image=$(platform_image "conjur-appliance")
   seedfetcher_image=$(platform_image "seed-fetcher")
-  conjur_authn_login=host/conjur/authn-k8s/$AUTHENTICATOR_ID/apps/$CONJUR_NAMESPACE_NAME/service_account/conjur-cluster
+  conjur_authn_login=${CONJUR_AUTHN_LOGIN:-host/conjur/authn-k8s/$AUTHENTICATOR_ID/apps/$CONJUR_NAMESPACE_NAME/service_account/conjur-cluster}
 
   FOLLOWER_VOLUMES=""
   FOLLOWER_VOLUME_MOUNTS=""
