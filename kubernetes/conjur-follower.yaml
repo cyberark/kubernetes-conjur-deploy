@@ -78,7 +78,7 @@ spec:
               fieldRef:
                 fieldPath: status.podIP
           - name: CONJUR_AUTHN_LOGIN
-            value: "{{ CONJUR_AUTHN_LOGIN_PREFIX }}/conjur-cluster"
+            value: "{{ CONJUR_AUTHN_LOGIN }}"
         volumeMounts:
           - name: seedfile
             mountPath: /tmp/seedfile
