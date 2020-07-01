@@ -52,7 +52,7 @@ deploy_conjur_followers() {
 
   conjur_appliance_image=$(platform_image "conjur-appliance")
   seedfetcher_image=$(platform_image "seed-fetcher")
-  conjur_authn_login_prefix=host/conjur/authn-k8s/$AUTHENTICATOR_ID/apps/$CONJUR_NAMESPACE_NAME/service_account
+  conjur_authn_login=${CONJUR_AUTHN_LOGIN:-host/conjur/authn-k8s/$AUTHENTICATOR_ID/apps/$CONJUR_NAMESPACE_NAME/service_account/conjur-cluster}
 
   FOLLOWER_VOLUMES=""
   FOLLOWER_VOLUME_MOUNTS=""
@@ -86,7 +86,7 @@ deploy_conjur_followers() {
     sed -e "s#{{ CONJUR_SEED_FILE_URL }}#$FOLLOWER_SEED#g" |
     sed -e "s#{{ CONJUR_SEED_FETCHER_IMAGE }}#$seedfetcher_image#g" |
     sed -e "s#{{ CONJUR_ACCOUNT }}#$CONJUR_ACCOUNT#g" |
-    sed -e "s#{{ CONJUR_AUTHN_LOGIN_PREFIX }}#$conjur_authn_login_prefix#g" |
+    sed -e "s#{{ CONJUR_AUTHN_LOGIN }}#$conjur_authn_login#g" |
     sed -e "s#{{ FOLLOWER_VOLUMES }}#$FOLLOWER_VOLUMES#g" |
     sed -e "s#{{ FOLLOWER_VOLUME_MOUNTS }}#$FOLLOWER_VOLUME_MOUNTS#g" |
     $cli create -f -
