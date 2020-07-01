@@ -16,6 +16,7 @@ fi
 ./0_check_dependencies.sh
 
 if [[ "${STOP_RUNNING_ENV}" = "true" ]]; then
+    echo "Environment variable STOP_RUNNING_ENV is set to 'true', stopping running env"
     ./stop
 fi
 
