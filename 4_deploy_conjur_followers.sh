@@ -12,8 +12,6 @@ main() {
 
   deploy_conjur_followers
 
-  enable_conjur_authenticate
-
   sleep 10
 
   echo "Followers created."
@@ -101,15 +99,6 @@ add_server_certificate_to_configmap() {
   else
     echo "WARN: no server certificate was provided saving empty configmap"
     $cli create configmap server-certificate --from-file=ssl-certificate=<(echo "")
-  fi
-}
-
-enable_conjur_authenticate() {
-  if [[ "${FOLLOWER_SEED}" =~ ^http[s]?:// ]]; then
-    announce "Creating conjur service account and authenticator role binding."
-
-    sed -e "s#{{ CONJUR_NAMESPACE_NAME }}#$CONJUR_NAMESPACE_NAME#g" "./$PLATFORM/conjur-authenticator-role-binding.yaml" |
-        $cli create -f -
   fi
 }
 
