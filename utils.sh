@@ -166,5 +166,7 @@ set_conjur_pod_log_level() {
   if [ -n "$conjur_log_level" ]; then
     echo "Setting CONJUR_LOG_LEVEL to $conjur_log_level in $pod_name"
     $cli exec $pod_name -- evoke variable set CONJUR_LOG_LEVEL $conjur_log_level
+  else
+    echo "Not setting log level as CONJUR_LOG_LEVEL is not set in the env"
   fi
 }
