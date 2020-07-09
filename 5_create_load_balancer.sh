@@ -15,6 +15,9 @@ deploy_load_balancer() {
 
   set_namespace $CONJUR_NAMESPACE_NAME
 
+  $cli delete --ignore-not-found service conjur-master-ext
+  $cli delete --ignore-not-found service conjur-master
+
   $cli create -f "./$PLATFORM/conjur-cluster-service.yaml"
 }
 

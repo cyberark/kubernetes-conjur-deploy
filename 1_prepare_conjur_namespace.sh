@@ -62,7 +62,7 @@ create_cluster_role() {
 }
 
 create_cluster_role_binding() {
-  $cli delete --ignore-not-found clusterrolebinding conjur-authenticator-role-binding-$CONJUR_NAMESPACE_NAME
+  $cli delete --ignore-not-found rolebinding conjur-authenticator-role-binding-$CONJUR_NAMESPACE_NAME
 
   sed -e "s#{{ CONJUR_NAMESPACE_NAME }}#$CONJUR_NAMESPACE_NAME#g" "./$PLATFORM/conjur-authenticator-role-binding.yaml" |
     $cli create -f -

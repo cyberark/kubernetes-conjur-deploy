@@ -26,11 +26,12 @@ prepare_conjur_appliance_image() {
   conjur_appliance_image=$(platform_image conjur-appliance)
 
   # Try to pull the image if we can
-  docker pull $CONJUR_APPLIANCE_IMAGE || true
-
+  if [ ! is_dev_env ]; then
+    docker pull $CONJUR_APPLIANCE_IMAGE || true
+  fi
   docker tag $CONJUR_APPLIANCE_IMAGE $conjur_appliance_image
 
-  if ! is_minienv; then
+  if [ ! is_minienv ] && [ ! is_dev_env ]; then
     docker push $conjur_appliance_image
   fi
 }
@@ -44,7 +45,8 @@ prepare_conjur_cli_image() {
   cli_app_image=$(platform_image conjur-cli)
   docker tag conjur-cli:$CONJUR_NAMESPACE_NAME $cli_app_image
 
-  if ! is_minienv; then
+  if [ ! is_minienv ] && [ ! is_dev_env ]; then
+    echo "HI"
     docker push $cli_app_image
   fi
 }
@@ -54,10 +56,10 @@ prepare_seed_fetcher_image() {
 
   docker pull $SEEDFETCHER_IMAGE
 
-  seedfetcher_image=$(platform_image seed-fetcher)
+  seedfetcher_image=seed-fetcher:$CONJUR_NAMESPACE_NAME
   docker tag $SEEDFETCHER_IMAGE $seedfetcher_image
 
-  if ! is_minienv; then
+  if [ ! is_minienv ] && [ ! is_dev_env ]; then
     docker push $seedfetcher_image
   fi
 }

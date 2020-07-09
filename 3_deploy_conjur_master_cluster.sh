@@ -6,7 +6,9 @@ set -eo pipefail
 main() {
   set_namespace $CONJUR_NAMESPACE_NAME
 
-  docker_login
+  if ! is_dev_env; then
+    docker_login
+  fi
 
   deploy_conjur_master_cluster
   deploy_conjur_cli
@@ -62,6 +64,9 @@ deploy_conjur_cli() {
   announce "Deploying Conjur CLI pod."
 
   cli_app_image=$(platform_image conjur-cli)
+
+  $cli delete --ignore-not-found deployment conjur-cli
+
   sed -e "s#{{ DOCKER_IMAGE }}#$cli_app_image#g" ./$PLATFORM/conjur-cli.yml |
     sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
     $cli create -f -

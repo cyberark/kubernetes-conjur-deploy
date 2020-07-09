@@ -48,6 +48,9 @@ docker_login() {
 deploy_conjur_followers() {
   announce "Deploying Conjur Follower pods."
 
+  $cli delete --ignore-not-found deployment conjur-follower
+  $cli delete --ignore-not-found service conjur-follower
+
   conjur_appliance_image=$(platform_image "conjur-appliance")
   seedfetcher_image=$(platform_image "seed-fetcher")
   conjur_authn_login=${CONJUR_AUTHN_LOGIN:-host/conjur/authn-k8s/$AUTHENTICATOR_ID/apps/$CONJUR_NAMESPACE_NAME/service_account/conjur-cluster}
@@ -93,6 +96,9 @@ deploy_conjur_followers() {
 add_server_certificate_to_configmap() {
   SERVER_CERTIFICATE="./server_certificate.cert"
   ./_save_server_cert.sh $SERVER_CERTIFICATE
+
+  $cli delete --ignore-not-found configmap server-certificate
+
   if [[ -f "${SERVER_CERTIFICATE}" ]]; then
     announce "Saving server certificate to configmap."
     $cli create configmap server-certificate --from-file=ssl-certificate=<(cat "${SERVER_CERTIFICATE}")
