@@ -64,6 +64,8 @@ configure_follower() {
 
   echo "Configuring follower with evoke..."
   $cli exec $pod_name -- $KEYS_COMMAND evoke configure follower
+
+  set_conjur_pod_log_level $pod_name
 }
 
 delete_follower_seed() {
