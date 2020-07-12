@@ -6,8 +6,9 @@ DEPLOY_MASTER_CLUSTER="${DEPLOY_MASTER_CLUSTER:-false}"
 FOLLOWER_USE_VOLUMES="${FOLLOWER_USE_VOLUMES:-false}"
 
 MINI_ENV="${MINI_ENV:-false}"
+DEV="${DEV:-false}"
 
-if [[ "$MINI_ENV" == "true" ]]; then
+if [[ "$MINI_ENV" == "true" || "$DEV" == "true" ]]; then
   IMAGE_PULL_POLICY='Never'
 else
   IMAGE_PULL_POLICY='Always'
@@ -42,7 +43,7 @@ announce() {
 platform_image() {
   if [ $PLATFORM = "openshift" ]; then
     echo "$DOCKER_REGISTRY_PATH/$CONJUR_NAMESPACE_NAME/$1:$CONJUR_NAMESPACE_NAME"
-  elif ! is_minienv; then
+  elif [ ! is_minienv ]  || [ "${DEV}" = "false" ]; then
     echo "$DOCKER_REGISTRY_PATH/$1:$CONJUR_NAMESPACE_NAME"
   else
     echo "$1:$CONJUR_NAMESPACE_NAME"
