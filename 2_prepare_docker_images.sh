@@ -26,12 +26,15 @@ prepare_conjur_appliance_image() {
   conjur_appliance_image=$(platform_image conjur-appliance)
 
   # Try to pull the image if we can
-  if [ ! is_dev_env ]; then
+  if [ $(is_dev_env) = "true" ]; then
+    docker pull registry.tld/conjur-appliance:5.0-stable
+    docker tag registry.tld/conjur-appliance:5.0-stable $conjur_appliance_image
+  else
     docker pull $CONJUR_APPLIANCE_IMAGE || true
+    docker tag $CONJUR_APPLIANCE_IMAGE $conjur_appliance_image
   fi
-  docker tag $CONJUR_APPLIANCE_IMAGE $conjur_appliance_image
 
-  if [ ! is_minienv ] && [ ! is_dev_env ]; then
+  if [ ! is_minienv ] && [ $(is_dev_env) = "false" ]; then
     docker push $conjur_appliance_image
   fi
 }
@@ -45,8 +48,7 @@ prepare_conjur_cli_image() {
   cli_app_image=$(platform_image conjur-cli)
   docker tag conjur-cli:$CONJUR_NAMESPACE_NAME $cli_app_image
 
-  if [ ! is_minienv ] && [ ! is_dev_env ]; then
-    echo "HI"
+  if [ ! is_minienv ] && [ $(is_dev_env) = "false" ]; then
     docker push $cli_app_image
   fi
 }
@@ -59,7 +61,7 @@ prepare_seed_fetcher_image() {
   seedfetcher_image=seed-fetcher:$CONJUR_NAMESPACE_NAME
   docker tag $SEEDFETCHER_IMAGE $seedfetcher_image
 
-  if [ ! is_minienv ] && [ ! is_dev_env ]; then
+  if [ ! is_minienv ] && [ $(is_dev_env) = "false" ]; then
     docker push $seedfetcher_image
   fi
 }

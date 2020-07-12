@@ -7,11 +7,11 @@ check_env_var "CONJUR_APPLIANCE_IMAGE"
 check_env_var "CONJUR_NAMESPACE_NAME"
 check_env_var "AUTHENTICATOR_ID"
 
-if [ ! is_minienv ] || [ ! is_dev_env ]; then
+if [ ! is_minienv ] || [ $(is_dev_env) = "false" ]; then
   check_env_var "DOCKER_REGISTRY_PATH"
 fi
 
-if [ "${PLATFORM}" = "kubernetes" ] && [ ! is_minienv ] || [ ! is_dev_env ]; then
+if [ "${PLATFORM}" = "kubernetes" ] && [ ! is_minienv ] || [ $(is_dev_env) = "false" ]; then
   check_env_var "DOCKER_REGISTRY_URL"
 fi
 

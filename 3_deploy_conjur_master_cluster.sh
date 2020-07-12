@@ -6,7 +6,7 @@ set -eo pipefail
 main() {
   set_namespace $CONJUR_NAMESPACE_NAME
 
-  if ! is_dev_env; then
+  if [ $(is_dev_env) = "false" ]; then
     docker_login
   fi
 
@@ -50,6 +50,8 @@ docker_login() {
 
 deploy_conjur_master_cluster() {
   announce "Deploying Conjur Master cluster pods."
+
+  $cli delete --ignore-not-found deployment conjur-cluster
 
   conjur_appliance_image=$(platform_image "conjur-appliance")
 
