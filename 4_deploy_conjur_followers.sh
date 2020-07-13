@@ -35,13 +35,13 @@ docker_login() {
 
     $cli delete --ignore-not-found secrets dockerpullsecret
 
-    $cli secrets new-dockercfg dockerpullsecret \
-         --docker-server=${DOCKER_REGISTRY_PATH} \
+    $cli create secret docker-registry dockerpullsecret \
+         --docker-server=$DOCKER_REGISTRY_PATH \
          --docker-username=_ \
          --docker-password=$($cli whoami -t) \
          --docker-email=_
 
-    $cli secrets add serviceaccount/conjur-cluster secrets/dockerpullsecret --for=pull
+    $cli secrets link serviceaccount/conjur-cluster secrets/dockerpullsecret --for=pull
   fi
 }
 
