@@ -168,6 +168,11 @@ export DOCKER_EMAIL=<your-email>
 
 Please make sure that you are logged in to the registry before deploying.
 
+### Running Kubernetes locally
+
+You can now deploy a local development environment for Kubernetes using [Docker Desktop](https://www.docker.com/products/docker-desktop).
+See our [contributing guide][CONTRIBUTING.md] to learn how!
+
 #### OpenShift
 
 OpenShift users should make sure the [integrated Docker registry](https://docs.okd.io/latest/install_config/registry/deploy_registry_existing_clusters.html)
