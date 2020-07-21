@@ -138,12 +138,12 @@ Docker Desktop provides a convenient way to deploy and develop on Conjur from yo
 
 1. Run `source dev-bootstrap.env`
 
-1. Run `./script.sh`
+1. Run `./start`
 
 ### Helpful hints
 
 By default, 2.0 Gib of memory is allocated to Docker. To successfully deploy a DAP Cluster (Master + Followers + Standbys), 
-you will need to increase this to 4 Gib of memory. 
+you will need to increase this to 6 Gib of memory. 
 
 1. Navigate to Docker preferences
 
