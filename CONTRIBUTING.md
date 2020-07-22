@@ -75,7 +75,7 @@ To configure the Conjur master to persist data, run these commands in the Conjur
 # evoke seed standby > /opt/conjur/data/standby-seed.tar
 ```
 
-Note that setup is done as part of script [`4_configure_master.sh`](4_configure_master.sh).
+Note that setup is done as part of script [`6_configure_master.sh`](6_configure_master.sh).
 
 ### Restore
 
@@ -128,5 +128,30 @@ to get started with the Conjur CLI.
 
 Visit the Conjur UI URL in your browser and login with the admin credentials to
 access the Conjur UI.
+
+## Deploying Conjur Master and Followers (*Local Dev Environment*)
+
+You can now deploy a local development environment for Kubernetes using [Docker Desktop](https://www.docker.com/products/docker-desktop).
+Docker Desktop provides a convenient way to deploy and develop on Conjur from your local machine. To enable this, perform the following:
+
+1. In `dev-bootstrap.env` uncomment the "LOCAL DEV CONFIG" section and adjust the configurations in `dev-bootstrap.env` as needed
+
+1. Run `source dev-bootstrap.env`
+
+1. Run `./start`
+
+### Helpful hints
+
+By default, 2.0 Gib of memory is allocated to Docker. To successfully deploy a DAP Cluster (Master + Followers + Standbys), 
+you will need to increase this to 6 Gib of memory. 
+
+1. Navigate to Docker preferences
+
+1. Click on "Advanced" and slide the "Memory" bar to 4
+
+Before deploying locally using Docker Desktop, ensure you are in the proper `docker-desktop` context. 
+Otherwise, the deployment will not run successfully.
+
+To switch contexts: `kubectl config use-context docker-desktop`
 
 ---

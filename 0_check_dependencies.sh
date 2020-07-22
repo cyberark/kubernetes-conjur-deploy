@@ -7,12 +7,14 @@ check_env_var "CONJUR_APPLIANCE_IMAGE"
 check_env_var "CONJUR_NAMESPACE_NAME"
 check_env_var "AUTHENTICATOR_ID"
 
-if [ ! is_minienv ]; then
+if [ ! is_minienv ] || [ "${DEV}" = "false" ]; then
   check_env_var "DOCKER_REGISTRY_PATH"
 fi
 
-if [ "${PLATFORM}" = "kubernetes" ] && [ ! is_minienv ]; then
-  check_env_var "DOCKER_REGISTRY_URL"
+if [ "${PLATFORM}" = "kubernetes" ]; then
+  if [ ! is_minienv ] || [ "${DEV}" = "false" ]; then
+    check_env_var "DOCKER_REGISTRY_URL"
+  fi
 fi
 
 if [ "${PLATFORM}" = "openshift" ]; then
