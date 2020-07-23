@@ -132,9 +132,9 @@ access the Conjur UI.
 ## Deploying Conjur Master and Followers (*Local Dev Environment*)
 
 You can now deploy a local development environment for Kubernetes using [Docker Desktop](https://www.docker.com/products/docker-desktop).
-Docker Desktop provides a convenient way to deploy and develop on Conjur from your local machine. To enable this, perform the following:
+Docker Desktop provides a convenient way to deploy and develop from your local machine. To enable this, perform the following:
 
-1. In `dev-bootstrap.env` uncomment the "LOCAL DEV CONFIG" section and adjust the configurations in `dev-bootstrap.env` as needed
+1. In `dev-bootstrap.env` uncomment the `LOCAL DEV CONFIG` section and adjust the configurations in `dev-bootstrap.env` as needed
 
 1. Run `source dev-bootstrap.env`
 
@@ -147,11 +147,11 @@ you will need to increase this to 6 Gib of memory.
 
 1. Navigate to Docker preferences
 
-1. Click on "Advanced" and slide the "Memory" bar to 4
+1. Click on "Advanced" and slide the "Memory" bar to 6
 
 Before deploying locally using Docker Desktop, ensure you are in the proper `docker-desktop` context. 
 Otherwise, the deployment will not run successfully.
 
-To switch contexts: `kubectl config use-context docker-desktop`
+To switch to a local context: `kubectl config use-context docker-desktop`
 
 ---
