@@ -129,10 +129,38 @@ to get started with the Conjur CLI.
 Visit the Conjur UI URL in your browser and login with the admin credentials to
 access the Conjur UI.
 
-## Deploying Conjur Master and Followers (*Local Dev Environment*)
+## Deploying Conjur Master and Followers (*Local Environment*)
 
 You can now deploy a local development environment for Kubernetes using [Docker Desktop](https://www.docker.com/products/docker-desktop).
-Docker Desktop provides a convenient way to deploy and develop from your local machine. To enable this, perform the following:
+Docker Desktop provides a convenient way to deploy and develop from your machine against a locally deployed cluster.
+
+### Prerequisites
+
+1. [Docker Desktop](https://www.docker.com/products/docker-desktop) installed
+
+1. Kubernetes enabled in Docker Desktop
+
+    1. Navigate to Docker Preferences
+
+    1. Click on the Kubernetes tab and "Enable Kubernetes"
+
+1. By default, 2.0 Gib of memory is allocated to Docker on your computer. 
+
+   To successfully deploy a DAP cluster (Master + Followers + Standbys), you will need to increase the memory limit to 6 Gib. To do so, perform the following:
+   
+   1. Navigate to Docker preferences
+   
+   1. Click on "Advanced" and slide the "Memory" bar to 6
+   
+### Deploy
+
+To deploy locally, perform the following:
+
+1. Ensure you are in the proper local context. Otherwise, the deployment will not run successfully
+   
+   Run `kubectl config current-context` to verify which context you are currently in so if needed, you can switch back to it easily
+   
+   Run `kubectl config use-context docker-desktop` to switch to a local context. This is the context you will need to run locally
 
 1. In `dev-bootstrap.env` uncomment the `LOCAL DEV CONFIG` section and adjust the configurations in `dev-bootstrap.env` as needed
 
@@ -140,18 +168,14 @@ Docker Desktop provides a convenient way to deploy and develop from your local m
 
 1. Run `./start`
 
-### Helpful hints
+### Clean-up
 
-By default, 2.0 Gib of memory is allocated to Docker. To successfully deploy a DAP Cluster (Master + Followers + Standbys), 
-you will need to increase this to 6 Gib of memory. 
+To remove K8s resources from your local environment perform the following:
 
-1. Navigate to Docker preferences
+Run `kubectl get all --all-namespaces` to list all resources across all namespaces in your cluster
 
-1. Click on "Advanced" and slide the "Memory" bar to 6
+Run `kubectl delete <resource-type> <name-of-resource> --namespace <namespace>`
 
-Before deploying locally using Docker Desktop, ensure you are in the proper `docker-desktop` context. 
-Otherwise, the deployment will not run successfully.
-
-To switch to a local context: `kubectl config use-context docker-desktop`
+Note that for Deployments, you must first delete the Deployment and then the Pod. Otherwise the Pod will terminate and another will start it its place.
 
 ---
