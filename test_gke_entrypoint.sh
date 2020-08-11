@@ -18,7 +18,10 @@ function finish {
   echo 'Finishing'
   echo '-----'
 
-  kubectl logs "$(kubectl get pods -l role=master --no-headers | awk '{print $1}')" > "output/$TEST_PLATFORM-authn-k8s-logs.txt"
+  kubectl get events
+
+  kubectl logs "$(kubectl get pods -l role=unset --no-headers | awk '{print $1}')" > "output/$TEST_PLATFORM-authn-k8s-logs.txt" ||:
+  kubectl logs "$(kubectl get pods -l role=master --no-headers | awk '{print $1}')" >> "output/$TEST_PLATFORM-authn-k8s-logs.txt" ||:
 
   ./stop
 

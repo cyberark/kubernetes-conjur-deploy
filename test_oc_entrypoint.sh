@@ -19,6 +19,8 @@ function finish {
   echo 'Finishing'
   echo '-----'
 
+  oc get events
+
   {
     pod_name="$(oc get pods -l role=master --no-headers | awk '{print $1}')"
     oc logs $pod_name > "output/$TEST_PLATFORM-authn-k8s-logs.txt"
