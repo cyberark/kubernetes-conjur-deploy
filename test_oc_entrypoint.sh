@@ -19,8 +19,12 @@ function finish {
   echo 'Finishing'
   echo '-----'
 
+  oc get events
   {
     pod_name="$(oc get pods -l role=master --no-headers | awk '{print $1}')"
+    if [[ -z "$pod_name" ]]; then
+      pod_name="$(oc get pods -l role=unset --no-headers | awk '{print $1}')"
+    fi
     oc logs $pod_name > "output/$TEST_PLATFORM-authn-k8s-logs.txt"
   } || {
     echo "Logs could not be extracted from pod '$pod_name'"
