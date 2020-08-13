@@ -18,8 +18,17 @@ function finish {
   echo 'Finishing'
   echo '-----'
 
-  kubectl logs "$(kubectl get pods -l role=master --no-headers | awk '{print $1}')" > "output/$TEST_PLATFORM-authn-k8s-logs.txt"
-
+  kubectl get events
+  {
+    pod_name="$(kubectl get pods -l role=master --no-headers | awk '{print $1}')"
+    if [[ -z "$pod_name" ]]; then
+      pod_name="$(kubectl get pods -l role=unset --no-headers | awk '{print $1}')"
+    fi
+    kubectl logs $pod_name > "output/$TEST_PLATFORM-authn-k8s-logs.txt"
+  } || {
+    echo "Logs could not be extracted from pod '$pod_name'"
+    touch "output/$TEST_PLATFORM-authn-k8s-logs.txt"  # so Jenkins artifact collection doesn't fail
+  }
   ./stop
 
   deleteRegistryImage "$DOCKER_REGISTRY_PATH/haproxy:$CONJUR_NAMESPACE_NAME"
