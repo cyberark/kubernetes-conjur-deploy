@@ -96,7 +96,7 @@ wait_for_conjur() {
   announce "Waiting for Conjur pods to launch"
 
   if [[ $CONJUR_DEPLOYMENT == oss ]]; then
-    wait_for_it 600 "$cli describe pods | grep State: | grep -c Running | grep -q 4"
+    wait_for_it 600 "$cli describe pods | grep ContainersReady | grep -c True | grep -q 3"
   else
     conjur_pod_count=${CONJUR_POD_COUNT:-3}
     wait_for_it 600 "$cli describe po conjur-cluster | grep Status: | grep -c Running | grep -q $conjur_pod_count"
