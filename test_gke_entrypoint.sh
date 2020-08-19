@@ -37,6 +37,7 @@ function finish {
 trap finish EXIT
 
 function main() {
+  getGKEVersion
   initialize
   runScripts
 
@@ -53,7 +54,6 @@ function initialize() {
 }
 
 function runScripts() {
-  echo 'Running Scripts'
 
   cmd="./start"
   if [ $CONJUR_DEPLOYMENT == "oss" ]; then
@@ -81,6 +81,11 @@ function deleteRegistryImage() {
   if gcloud container images list-tags $image | grep $tag; then
     gcloud container images delete --force-delete-tags -q $image_and_tag
   fi
+}
+
+function getGKEVersion() {
+  echo "GKE version"
+  kubectl version --client=true
 }
 
 main
