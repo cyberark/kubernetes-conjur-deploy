@@ -78,11 +78,12 @@ prepare_conjur_oss_cluster() {
   fi
 
   conjur_oss_dest_image=$(platform_image "conjur")
-  docker tag "$conjur_oss_src_image" $conjur_oss_dest_image
+  echo "Tagging Conjur image $conjur_oss_src_image as $conjur_oss_dest_image"
+  docker tag "$conjur_oss_src_image" "$conjur_oss_dest_image"
 
   if [ "${DEV}" = "false" ]; then
     echo "Pushing Conjur image ${conjur_oss_dest_image} to repo..."
-    docker push $conjur_oss_dest_image
+    docker push "$conjur_oss_dest_image"
   fi
 
   announce "Pulling and pushing Nginx image."
