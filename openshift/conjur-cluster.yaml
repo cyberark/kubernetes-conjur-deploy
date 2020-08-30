@@ -41,6 +41,3 @@ spec:
             path: /health
             port: https
             scheme: HTTPS
-
-      imagePullSecrets:
-        - name: dockerpullsecret

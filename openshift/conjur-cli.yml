@@ -23,5 +23,3 @@ spec:
         imagePullPolicy: {{ IMAGE_PULL_POLICY }}
         command: ["sleep"]
         args: ["infinity"]
-      imagePullSecrets:
-        - name: dockerpullsecret

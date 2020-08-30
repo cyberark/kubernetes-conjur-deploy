@@ -20,11 +20,6 @@ main() {
   fi
 }
 
-oc_login() {
-  echo "Logging in as cluster admin..."
-  oc login -u $OPENSHIFT_USERNAME
-}
-
 create_conjur_namespace() {
   announce "Creating Conjur namespace."
 
@@ -80,8 +75,7 @@ configure_oc_rbac() {
   oc adm policy add-role-to-user admin $OPENSHIFT_USERNAME -n default
   oc adm policy add-role-to-user admin $OPENSHIFT_USERNAME -n $CONJUR_NAMESPACE_NAME
 
-  echo "Logging in as Conjur admin user, provide password as needed..."
-  oc login -u $OPENSHIFT_USERNAME
+  oc_login
 }
 
 main $@

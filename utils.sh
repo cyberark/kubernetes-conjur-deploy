@@ -40,9 +40,16 @@ announce() {
   echo "++++++++++++++++++++++++++++++++++++++"
 }
 
+# Internal is used as an indicator for OC4 to pull images from internal docker registry path
+# instead of the external path, used in the push images stage, thus reducing the need to be set in "insecure-registries"
 platform_image() {
+  local internal=${2:-false}
   if [ $PLATFORM = "openshift" ]; then
-    echo "$DOCKER_REGISTRY_PATH/$CONJUR_NAMESPACE_NAME/$1:$CONJUR_NAMESPACE_NAME"
+    if [[ $TEST_PLATFORM =~ ^openshift4 ]] && [[ "$internal" == "true" ]]; then
+      echo "image-registry.openshift-image-registry.svc:5000/$CONJUR_NAMESPACE_NAME/$1:$CONJUR_NAMESPACE_NAME"
+    else
+      echo "$DOCKER_REGISTRY_PATH/$CONJUR_NAMESPACE_NAME/$1:$CONJUR_NAMESPACE_NAME"
+    fi
   elif [ ! is_minienv ]  || [ "${DEV}" = "false" ]; then
     echo "$DOCKER_REGISTRY_PATH/$1:$CONJUR_NAMESPACE_NAME"
   else
@@ -170,4 +177,9 @@ set_conjur_pod_log_level() {
   else
     echo "Not setting log level as CONJUR_LOG_LEVEL is not set in the env"
   fi
+}
+
+oc_login() {
+  echo "Logging in as cluster admin..."
+  oc login -u $OPENSHIFT_USERNAME -p $OPENSHIFT_PASSWORD
 }
