@@ -64,7 +64,9 @@ spec:
               value: {{ CONJUR_ACCOUNT }}
             - name: CONJUR_LOG_LEVEL
               value: {{ CONJUR_LOG_LEVEL }}
-
+          volumeMounts:
+            - mountPath: /opt/conjur-server
+              name: local-code-base
         - name: nginx
           image: {{ NGINX_IMAGE }}
           imagePullPolicy: {{ IMAGE_PULL_POLICY }}
@@ -87,6 +89,10 @@ spec:
               port: https
             initialDelaySeconds: 30
             periodSeconds: 10
+      volumes:
+        - name: local-code-base
+          hostPath:
+            path: /Users/orenb/git/conjur
 
       imagePullSecrets:
         - name: dockerpullsecret
