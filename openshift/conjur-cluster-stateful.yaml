@@ -53,8 +53,6 @@ spec:
           mountPath: /opt/conjur/dbdata
         - name: conjur-data
           mountPath: /opt/conjur/data
-      imagePullSecrets:
-        - name: dockerpullsecret
   volumeClaimTemplates:
   - metadata:
       name: conjur-dbdata
