@@ -45,7 +45,7 @@ announce() {
 platform_image() {
   local internal=${2:-false}
   if [ $PLATFORM = "openshift" ]; then
-    if [[ $TEST_PLATFORM =~ ^openshift4 ]] && [[ "$internal" == "true" ]]; then
+    if ! [ -z ${TEST_PLATFORM+x} ] && [[ $TEST_PLATFORM =~ ^openshift4 ]] && [[ "$internal" == "true" ]]; then
       echo "image-registry.openshift-image-registry.svc:5000/$CONJUR_NAMESPACE_NAME/$1:$CONJUR_NAMESPACE_NAME"
     else
       echo "$DOCKER_REGISTRY_PATH/$CONJUR_NAMESPACE_NAME/$1:$CONJUR_NAMESPACE_NAME"
@@ -181,5 +181,9 @@ set_conjur_pod_log_level() {
 
 oc_login() {
   echo "Logging in as cluster admin..."
-  oc login -u $OPENSHIFT_USERNAME -p $OPENSHIFT_PASSWORD
+  if [ -z ${OPENSHIFT_PASSWORD+x} ]; then
+    oc login -u $OPENSHIFT_USERNAME
+  else
+    oc login -u $OPENSHIFT_USERNAME -p $OPENSHIFT_PASSWORD
+  fi
 }
