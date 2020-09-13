@@ -50,7 +50,8 @@ deploy_conjur_master_cluster() {
   announce "Deploying Conjur Master cluster pods."
 
   if [[ $CONJUR_DEPLOYMENT == oss ]]; then
-    postgres_password=$(openssl rand -base64 16)
+    postgres_password="postgres_secret"
+
     # deploy conjur & nginx pod
     conjur_image=$(platform_image "conjur")
     nginx_image=$(platform_image "nginx")

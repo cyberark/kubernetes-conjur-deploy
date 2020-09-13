@@ -24,3 +24,6 @@ RUN mkdir -p ocbin && \
     tar xvf oc.tar.gz --transform='s/.*\///' --wildcards -C ocbin *oc && \
     mv ocbin/oc /usr/local/bin/oc && \
     rm -rf ocbin oc.tar.gz
+
+# Install git
+RUN apt-get install git
