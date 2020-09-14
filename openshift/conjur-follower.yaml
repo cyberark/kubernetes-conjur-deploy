@@ -93,6 +93,8 @@ spec:
         env:
           - name: CONJUR_AUTHENTICATORS
             value: authn-k8s/{{ AUTHENTICATOR_ID }}
+          - name: CONJUR_LOG_LEVEL
+            value: debug
           - name: SEEDFILE_DIR
             value: /tmp/seedfile
         ports:

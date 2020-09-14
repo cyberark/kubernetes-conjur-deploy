@@ -100,7 +100,12 @@ wait_for_conjur() {
     wait_for_it 600 "$cli describe pods | grep ContainersReady | grep -c True | grep -q 3"
   else
     conjur_pod_count=${CONJUR_POD_COUNT:-3}
-    wait_for_it 600 "$cli describe po conjur-cluster | grep Status: | grep -c Running | grep -q $conjur_pod_count"
+    #wait_for_it 600 "$cli describe po conjur-cluster | grep Status: | grep -c Running | grep -q $conjur_pod_count"
+    $cli describe po conjur-cluster
+    @cli get pods
+    sleep 200
+    $cli describe po conjur-cluster
+    @cli get pods
   fi
 }
 
