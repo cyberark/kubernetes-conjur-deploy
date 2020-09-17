@@ -54,7 +54,7 @@ function setupTestEnvironment() {
 }
 
 function buildDockerImages() {
-  export CONJUR_APPLIANCE_IMAGE="registry.tld/conjur-appliance:5.0-stable"
+  export CONJUR_APPLIANCE_IMAGE="registry.tld/conjur-appliance:5.11.0-20200917173708-1cd3e85"
 
   docker pull $CONJUR_APPLIANCE_IMAGE
 
