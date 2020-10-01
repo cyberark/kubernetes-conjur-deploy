@@ -5,13 +5,16 @@ metadata:
   name: conjur-authenticator-{{ CONJUR_NAMESPACE_NAME }}
 rules:
 - apiGroups: [""] # "" indicates the core API group
-  resources: ["pods", "serviceaccounts"]
+  resources: ["pods", "serviceaccounts", "replicationcontrollers", "deploymentconfigs"]
   verbs: ["get", "list"]
 - apiGroups: ["extensions"]
   resources: [ "deployments", "replicasets"]
   verbs: ["get", "list"]
-- apiGroups: ["apps"]  # needed on OpenShift 3.7+
+- apiGroups: ["apps"] # OpenShift 3.7+
   resources: [ "deployments", "statefulsets", "replicasets"]
+  verbs: ["get", "list"]
+- apiGroups: ["apps.openshift.io"] # OpenShift 4.3+
+  resources: [ "deploymentconfigs"]
   verbs: ["get", "list"]
 - apiGroups: [""]
   resources: ["pods/exec"]
