@@ -87,8 +87,6 @@ function test_gke() {
     -e LOCAL_CONJUR_IMAGE \
     -e DOCKER_EMAIL \
     -e FOLLOWER_SEED="" \
-    -v "${DHPARAMS}:/tmp/dhparam.pem" \
-    -e DHPARAMS=/tmp/dhparam.pem \
     -v $GCLOUD_SERVICE_KEY:/tmp$GCLOUD_SERVICE_KEY \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$PWD":/src \
@@ -116,8 +114,6 @@ function test_openshift() {
     -e LOCAL_CONJUR_IMAGE \
     -e DOCKER_EMAIL \
     -e FOLLOWER_SEED="" \
-    -v "${DHPARAMS}:/tmp/dhparam.pem" \
-    -e DHPARAMS=/tmp/dhparam.pem \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$PWD":/src \
     $K8S_CONJUR_DEPLOY_TESTER_IMAGE bash -c "./test_oc_entrypoint.sh"

@@ -30,10 +30,6 @@ configure_master_pod() {
     MASTER_ALTNAMES="$MASTER_ALTNAMES,$master_route"
   fi
 
-  echo "Copying $DHPARAMS to /etc/ssl/dhparam.pem in pod ${master_pod_name}..."
-
-  copy_file_to_container "$DHPARAMS" "/etc/ssl/dhparam.pem" "$master_pod_name"
-
   # Configure Conjur master server using evoke.
   $cli exec $master_pod_name -- evoke configure master \
      --accept-eula \
