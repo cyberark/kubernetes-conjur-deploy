@@ -67,7 +67,7 @@ deploy_conjur_followers() {
         emptyDir: {}'
     FOLLOWER_VOLUME_MOUNTS='\
           - name: db-storage\
-            mountPath: /var/lib/postgresql/9.4/\
+            mountPath: /var/lib/postgresql/10/\
             readOnly: false\
           - name: log-storage\
             mountPath: /var/log/conjur/\
