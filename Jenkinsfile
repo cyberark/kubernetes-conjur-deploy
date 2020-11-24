@@ -14,6 +14,9 @@ pipeline {
 
   stages {
     stage('Run Scripts') {
+      environment {
+        CONJUR_APPLIANCE_IMAGE_TAG = "5.12.3"
+      }
       parallel {
         stage('Test v5 on GKE') {
           steps {
