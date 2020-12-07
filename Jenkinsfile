@@ -35,6 +35,11 @@ pipeline {
            sh 'summon --environment openshift43-fips ./test.sh openshift43-fips 5'
          }
         }
+        stage('Test on current OpenShift in AWS') {
+          steps {
+            sh 'summon --environment openshift_current ./test.sh openshift_current 5'
+          }
+        }
       }
       post { always {
         archiveArtifacts artifacts: 'output/*'
