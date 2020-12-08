@@ -61,9 +61,21 @@ function buildDockerImages() {
   # Test image w/ kubectl and oc CLIs installed to drive scripts.
   export K8S_CONJUR_DEPLOY_TESTER_IMAGE="k8s-conjur-deploy-tester:$CONJUR_NAMESPACE_NAME"
   docker build --tag $K8S_CONJUR_DEPLOY_TESTER_IMAGE --file Dockerfile.test \
-    --build-arg OPENSHIFT_CLI_URL=$OPENSHIFT_CLI_URL \
+    --build-arg OPENSHIFT_CLI_URL=${OPENSHIFT_CLI_URL:-$(openshift_cli_url_from_version)} \
     --build-arg KUBECTL_CLI_URL=$KUBECTL_CLI_URL \
     .
+}
+
+function openshift_cli_url_from_version() {
+  case "$OPENSHIFT_VERSION" in
+    4.*)
+      echo "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-$OPENSHIFT_VERSION/openshift-client-linux.tar.gz"
+      ;;
+    *)
+      # Print a message to stderr and exit
+      >&2 echo "Generating the CLI URL for OpenShift $OPENSHIFT_VERSION is not supported."
+      exit 1
+  esac
 }
 
 function test_gke() {
@@ -97,11 +109,11 @@ function test_openshift() {
   docker run --rm \
     -e DEPLOY_MASTER_CLUSTER=true \
     -e TEST_PLATFORM \
+    -e OPENSHIFT_VERSION \
     -e OPENSHIFT_URL \
     -e OPENSHIFT_REGISTRY_URL \
     -e OPENSHIFT_USERNAME \
     -e OPENSHIFT_PASSWORD \
-    -e K8S_VERSION \
     -e CONJUR_APPLIANCE_IMAGE \
     -e CONJUR_NAMESPACE_NAME \
     -e DOCKER_REGISTRY_PATH \

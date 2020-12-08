@@ -2,10 +2,15 @@
 
 set -o pipefail
 
-# expects
-# TEST_PLATFORM OPENSHIFT_URL OPENSHIFT_REGISTRY_URL OPENSHIFT_USERNAME OPENSHIFT_PASSWORD K8S_VERSION
-# CONJUR_NAMESPACE_NAME CONJUR_APPLIANCE_IMAGE
-# to exist
+# expects the following environment variables to be defined:
+# - TEST_PLATFORM
+# - OPENSHIFT_VERSION
+# - OPENSHIFT_URL
+# - OPENSHIFT_REGISTRY_URL
+# - OPENSHIFT_USERNAME
+# - OPENSHIFT_PASSWORD
+# - CONJUR_NAMESPACE_NAME
+# - CONJUR_APPLIANCE_IMAGE
 
 export PLATFORM=openshift
 export TEMPLATE_TAG="$TEST_PLATFORM."
@@ -37,9 +42,6 @@ trap finish EXIT
 function main() {
   initialize
   runScripts
-  #if [[ "$K8S_VERSION" != "1.3" ]]; then  # 1.3 does not support stateful sets
-  #  relaunchMaster
-  #fi
 }
 
 function initialize() {

@@ -30,7 +30,7 @@ docker_login() {
            --docker-password=$DOCKER_PASSWORD \
            --docker-email=$DOCKER_EMAIL
     fi
-  elif [[ $PLATFORM = 'openshift' ]] && ([ -z ${TEST_PLATFORM+x} ] || (! [ -z ${TEST_PLATFORM+x} ] && ! [[ $TEST_PLATFORM =~ ^openshift4 ]])); then
+  elif [[ $PLATFORM = 'openshift' ]] && ([ -z ${OPENSHIFT_VERSION+x} ] || (! [ -z ${OPENSHIFT_VERSION+x} ] && ! [[ $OPENSHIFT_VERSION =~ ^4 ]])); then
     announce "Creating image pull secret."
 
     $cli delete --ignore-not-found secrets dockerpullsecret
