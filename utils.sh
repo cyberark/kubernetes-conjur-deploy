@@ -181,9 +181,11 @@ set_conjur_pod_log_level() {
 
 oc_login() {
   echo "Logging in as cluster admin..."
+  set +x
   if [ -z ${OPENSHIFT_PASSWORD+x} ]; then
     oc login -u $OPENSHIFT_USERNAME
   else
     oc login -u $OPENSHIFT_USERNAME -p $OPENSHIFT_PASSWORD
   fi
+  set -x
 }

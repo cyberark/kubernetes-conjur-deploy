@@ -7,7 +7,9 @@ set -euo pipefail
 
 main() {
   if [[ "${PLATFORM}" = "openshift" ]]; then
+    set +x
     docker login -u _ -p $(oc whoami -t) $DOCKER_REGISTRY_PATH
+    set -x
   fi
 
   if [[ $CONJUR_DEPLOYMENT == oss ]]; then
