@@ -26,23 +26,23 @@ docker_login() {
       $cli delete --ignore-not-found secret dockerpullsecret
 
       $cli create secret docker-registry dockerpullsecret \
-           --docker-server=$DOCKER_REGISTRY_URL \
-           --docker-username=$DOCKER_USERNAME \
-           --docker-password=$DOCKER_PASSWORD \
-           --docker-email=$DOCKER_EMAIL
+         --docker-server=$DOCKER_REGISTRY_URL \
+         --docker-username=$DOCKER_USERNAME \
+         --docker-password=$DOCKER_PASSWORD \
+         --docker-email=$DOCKER_EMAIL
     fi
   elif [[ $PLATFORM = 'openshift' ]] && ([ -z ${OPENSHIFT_VERSION+x} ] || (! [ -z ${OPENSHIFT_VERSION+x} ] && ! [[ $OPENSHIFT_VERSION =~ ^4 ]])); then
     announce "Creating image pull secret."
 
     $cli delete --ignore-not-found secrets dockerpullsecret
 
-    $cli secrets new-dockercfg dockerpullsecret \
-         --docker-server=${DOCKER_REGISTRY_PATH} \
-         --docker-username=_ \
-         --docker-password=$($cli whoami -t) \
-         --docker-email=_
+    $cli create secret docker-registry dockerpullsecret \
+      --docker-server=${DOCKER_REGISTRY_PATH} \
+      --docker-username=_ \
+      --docker-password=$($cli whoami -t) \
+      --docker-email=_
 
-    $cli secrets add serviceaccount/conjur-cluster secrets/dockerpullsecret --for=pull
+    $cli secrets link serviceaccount/conjur-cluster dockerpullsecret --for=pull
   fi
 }
 
