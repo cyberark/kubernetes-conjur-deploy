@@ -30,11 +30,6 @@ pipeline {
             sh 'summon --environment openshift43 ./test.sh openshift43 5'
           }
         }
-        stage('Test on OpenShift 4.3-fips in AWS') {
-         steps {
-           sh 'summon --environment openshift43-fips ./test.sh openshift43-fips 5'
-         }
-        }
         stage('Test on current OpenShift in AWS') {
           steps {
             sh 'summon --environment openshift_current ./test.sh openshift_current 5'
