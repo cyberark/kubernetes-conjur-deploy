@@ -45,8 +45,17 @@ function main() {
 }
 
 function initialize() {
-  oc login $OPENSHIFT_URL --username=$OPENSHIFT_USERNAME --password=$OPENSHIFT_PASSWORD --insecure-skip-tls-verify=true
-  docker login -u _ -p $(oc whoami -t) $OPENSHIFT_REGISTRY_URL
+  set +x
+  oc login "$OPENSHIFT_URL" \
+    --username="$OPENSHIFT_USERNAME" \
+    --password="$OPENSHIFT_PASSWORD" \
+    --insecure-skip-tls-verify=true
+
+  docker login \
+    -u _ \
+    -p $(oc whoami -t) \
+    "$OPENSHIFT_REGISTRY_URL"
+  set -x
 }
 
 function runScripts() {
