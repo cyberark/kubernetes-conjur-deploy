@@ -183,9 +183,14 @@ oc_login() {
   echo "Logging in as cluster admin..."
   set +x
   if [ -z ${OPENSHIFT_PASSWORD+x} ]; then
-    oc login -u $OPENSHIFT_USERNAME
+    oc login "$OPENSHIFT_URL" \
+      --username="$OPENSHIFT_USERNAME" \
+      --insecure-skip-tls-verify=true
   else
-    oc login -u $OPENSHIFT_USERNAME -p $OPENSHIFT_PASSWORD
+    oc login "$OPENSHIFT_URL" \
+      --username="$OPENSHIFT_USERNAME" \
+      --password="$OPENSHIFT_PASSWORD" \
+      --insecure-skip-tls-verify=true
   fi
   set -x
 }
