@@ -7,9 +7,12 @@ set -euo pipefail
 
 main() {
   if [[ "${PLATFORM}" = "openshift" ]]; then
+    announce "***TEMP*** Logging into Docker"
+    echo "***TEMP*** DOCKER_REGISTRY_PATH: $DOCKER_REGISTRY_PATH"
     set +x
     docker login -u _ -p $(oc whoami -t) $DOCKER_REGISTRY_PATH
     set -x
+    echo "***TEMP*** Done logging into Docker"
   fi
 
   if [[ $CONJUR_DEPLOYMENT == oss ]]; then
