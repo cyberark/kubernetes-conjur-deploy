@@ -22,6 +22,7 @@ export FOLLOWER_SEED="${FOLLOWER_SEED:-}"
 export DOCKER_EMAIL="${DOCKER_EMAIL:-}"
 export LOCAL_CONJUR_IMAGE="${LOCAL_CONJUR_IMAGE:-}"
 STOP_RUNNING_ENV="${STOP_RUNNING_ENV:-true}"
+export DEPLOY_CONJUR_LOADBALANCER="${DEPLOY_CONJUR_LOADBALANCER:-true}"
 
 CONJUR_DEPLOYMENT=dap
 
@@ -69,7 +70,10 @@ export CONJUR_NODE_NAME="conjur-master"
 ./4_deploy_conjur_followers.sh
 
 if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
-  ./5_create_load_balancer.sh
+  if [[ "${DEPLOY_CONJUR_LOADBALANCER}" = "true" ]]; then
+    ./5_create_load_balancer.sh
+  fi
+  ./5.5_create_internal_service.sh
   ./6_configure_master.sh
   ./6.5_configure_cli_pod.sh
   ./7_configure_standbys.sh

@@ -98,6 +98,7 @@ function test_gke() {
     -e MINI_ENV \
     -e LOCAL_CONJUR_IMAGE \
     -e DOCKER_EMAIL \
+    -e DEPLOY_CONJUR_LOADBALANCER \
     -e FOLLOWER_SEED="" \
     -v $GCLOUD_SERVICE_KEY:/tmp$GCLOUD_SERVICE_KEY \
     -v /var/run/docker.sock:/var/run/docker.sock \
@@ -125,6 +126,7 @@ function test_openshift() {
     -e MINI_ENV \
     -e LOCAL_CONJUR_IMAGE \
     -e DOCKER_EMAIL \
+    -e DEPLOY_CONJUR_LOADBALANCER \
     -e FOLLOWER_SEED="" \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$PWD":/src \

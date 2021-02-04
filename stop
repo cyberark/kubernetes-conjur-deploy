@@ -11,17 +11,6 @@ fi
 set_namespace default
 
 if has_namespace $CONJUR_NAMESPACE_NAME; then
-  if [[ "$PLATFORM" == "openshift" && "$OPENSHIFT_VERSION" == "4.3" ]]; then
-    # Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=1798282
-    for svc in `$cli get svc -n "$CONJUR_NAMESPACE_NAME" -o name`; do
-      echo "Deleting finalizers from Kubernetes service $svc"
-      "$cli" patch "$svc" \
-          --namespace "$CONJUR_NAMESPACE_NAME" \
-          --type=json \
-          --patch='[{"op":"replace","path":"/metadata/finalizers","value":[]}]'
-    done
-  fi
-
   $cli delete namespace $CONJUR_NAMESPACE_NAME
 
   printf "Waiting for $CONJUR_NAMESPACE_NAME namespace deletion to complete"

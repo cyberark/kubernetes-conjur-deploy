@@ -21,7 +21,7 @@ configure_master_pod() {
 
   MASTER_ALTNAMES="localhost,conjur-master"
 
-  if [ $PLATFORM = 'openshift' ]; then
+  if [ $PLATFORM = 'openshift' ] && [ $DEPLOY_CONJUR_LOADBALANCER = 'true' ]; then
     $cli create route passthrough --service=conjur-master-ext
     echo "Created passthrough route for conjur-master-ext service."
 

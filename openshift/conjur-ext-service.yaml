@@ -2,13 +2,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: conjur-master
+  name: conjur-master-ext
   labels:
-    app: conjur-cluster-svc
+    app: conjur-cluster-svc-ext
 spec:
-  # This service allows other in-cluster services to reach the master since
-  # LoadBalancer doesn't expose internal routing.
-  type: ClusterIP
+  # LoadBalancer is enabling our external-to-cluster ingress into
+  # the master. This allows it to be usable from the outside of K8s.
+  type: LoadBalancer
   selector:
     app: conjur-node
   ports:

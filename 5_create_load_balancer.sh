@@ -3,28 +3,10 @@ set -euo pipefail
 
 . utils.sh
 
-main() {
-  deploy_load_balancer
-  wait_for_service_ip
+announce "Creating load balancer for master and standbys."
 
-  echo "Load balancer created and configured."
-}
+set_namespace $CONJUR_NAMESPACE_NAME
 
-deploy_load_balancer() {
-  announce "Creating load balancer for master and standbys."
+$cli create -f "./$PLATFORM/conjur-ext-service.yaml"
 
-  set_namespace $CONJUR_NAMESPACE_NAME
-
-  $cli create -f "./$PLATFORM/conjur-cluster-service.yaml"
-}
-
-wait_for_service_ip() {
-  if [[ $PLATFORM == openshift ]]; then
-    wait_for_service 'conjur-master'
-  else
-    # External IP always pending w/ k8s
-    sleep 5
-  fi
-}
-
-main $@
+echo "Load balancer created and configured."
