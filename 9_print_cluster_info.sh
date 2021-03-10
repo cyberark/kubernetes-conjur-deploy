@@ -4,22 +4,17 @@ set -euo pipefail
 . utils.sh
 
 main() {
-  set_namespace $CONJUR_NAMESPACE_NAME
+  set_namespace "$CONJUR_NAMESPACE_NAME"
 
   print_cluster_info
 }
 
 print_cluster_info() {
-  if [ $PLATFORM = 'kubernetes' ]; then
-    if is_minienv; then
-      master_nodeport=$(kubectl describe service conjur-master | grep NodePort: | grep https | awk '{print $3}' | cut -d'/' -f 1)
-      ui_url="https://$(minikube ip):$master_nodeport"
-    else
-      ui_url="https://$(get_master_service_ip)"
-    fi
-  elif [ $PLATFORM = 'openshift' ]; then
-    conjur_master_route=$($cli get routes | grep conjur-master | awk '{ print $2 }')
-    ui_url="https://$conjur_master_route"
+  if [ "$PLATFORM" = 'kubernetes' ] && is_minienv; then
+    master_nodeport=$(kubectl describe service conjur-master | grep NodePort: | grep https | awk '{print $3}' | cut -d'/' -f 1)
+    ui_url="https://$(minikube ip):$master_nodeport"
+  else
+    ui_url="No external access for Conjur cluster created"
   fi
 
   password=$CONJUR_ADMIN_PASSWORD
@@ -35,4 +30,4 @@ print_cluster_info() {
   "
 }
 
-main $@
+main "$@"

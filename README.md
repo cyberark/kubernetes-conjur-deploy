@@ -232,6 +232,14 @@ The [kubernetes-conjur-demo repo](https://github.com/conjurdemos/kubernetes-conj
 deploys test applications that retrieve secrets from Conjur and serves as a
 useful reference when setting up your own applications to integrate with Conjur.
 
+# Conjur cluster load balancer
+If a Conjur cluster is deployed within the kubernetes/openshift cluster, by default an external facing load balancer will
+not be deployed with it.  For convenience, `(kubernetes|openshift)/conjur-cluster-ext-service.yaml` are provided for 
+creating and mapping the load balancer.  It can be applied with:
+
+```
+kubectl create -f "./$PLATFORM/conjur-cluster-ext-service.yaml"
+```
 
 # Contributing
 
