@@ -10,24 +10,24 @@ fi
 
 set_namespace default
 
-if has_namespace $CONJUR_NAMESPACE_NAME; then
-  if [[ "$PLATFORM" == "openshift" && "$OPENSHIFT_VERSION" == "4.3" ]]; then
-    # Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=1798282
-    for svc in `$cli get svc -n "$CONJUR_NAMESPACE_NAME" -o name`; do
-      echo "Deleting finalizers from Kubernetes service $svc"
-      "$cli" patch "$svc" \
-          --namespace "$CONJUR_NAMESPACE_NAME" \
-          --type=json \
-          --patch='[{"op":"replace","path":"/metadata/finalizers","value":[]}]'
-    done
-  fi
+result=0
 
-  $cli delete namespace $CONJUR_NAMESPACE_NAME
+if has_namespace $CONJUR_NAMESPACE_NAME; then
+  $cli --request-timeout=5m delete namespace $CONJUR_NAMESPACE_NAME
 
   printf "Waiting for $CONJUR_NAMESPACE_NAME namespace deletion to complete"
 
+  # Wait up to 10 minutes for namespace deletion to complete
+  wait_time=600
   while has_namespace "$CONJUR_NAMESPACE_NAME"; do
     printf "."
+    wait_time=$(( wait_time - 5 ))
+    if [ "$wait_time" -lt 0 ]; then
+      echo ""
+      echo "Timeout deleting namespace ${CONJUR_NAMESPACE_NAME}"
+      result=1
+      break
+    fi
     sleep 5
   done
 
@@ -37,4 +37,10 @@ fi
 echo "Deleting cluster role"
 $cli delete --ignore-not-found clusterrole conjur-authenticator-$CONJUR_NAMESPACE_NAME
 
-echo "Conjur environment purged."
+if [ "$result" -ne 0 ]; then
+  echo "Failed to purge conjur environment"
+else
+  echo "Conjur environment purged."
+fi
+
+exit $result
