@@ -3,6 +3,13 @@
 pipeline {
   agent { label 'executor-v2' }
 
+  parameters {
+    booleanParam(
+      name: 'TEST_OCP_NEXT', defaultValue: false,
+      description: 'Whether or not to run the pipeline against the next OCP version'
+    )
+  }
+
   options {
     timestamps()
     buildDiscarder(logRotator(numToKeepStr: '30'))
@@ -20,22 +27,33 @@ pipeline {
             sh 'summon --environment kubernetes ./test.sh gke 5'
           }
         }
+
         stage('Test on OpenShift 3.11 in AWS') {
           steps {
             sh 'summon --environment openshift311 ./test.sh openshift311 5'
           }
         }
-        stage('Test on OpenShift 4.3 in AWS') {
+
+        stage('OpenShift Oldest 4.x') {
           steps {
-            sh 'summon --environment openshift43 ./test.sh openshift43 5'
+            sh 'summon --environment openshift_oldest ./test.sh openshift_oldest 5'
           }
         }
-        stage('Test on current OpenShift in AWS') {
+
+        stage('OpenShift Current 4.x') {
           steps {
             sh 'summon --environment openshift_current ./test.sh openshift_current 5'
           }
         }
+
+        stage('OpenShift Next 4.x') {
+          when { expression { return params.TEST_OCP_NEXT } }
+          steps {
+            sh 'summon --environment openshift_next ./test.sh openshift_next 5'
+          }
+        }
       }
+
       post { always {
         archiveArtifacts artifacts: 'output/*'
       }}
