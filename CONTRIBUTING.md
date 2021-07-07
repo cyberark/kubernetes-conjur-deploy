@@ -146,7 +146,7 @@ Docker Desktop provides a convenient way to deploy and develop from your machine
 
 1. By default, 2.0 Gib of memory is allocated to Docker on your computer. 
 
-   To successfully deploy a DAP cluster (Master + Followers + Standbys), you will need to increase the memory limit to 6 Gib. To do so, perform the following:
+   To successfully deploy a Conjur Enterprise cluster (Master + Followers + Standbys), you will need to increase the memory limit to 6 Gib. To do so, perform the following:
    
    1. Navigate to Docker preferences
    

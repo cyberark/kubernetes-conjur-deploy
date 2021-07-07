@@ -5,8 +5,8 @@ followers to a Kubernetes or OpenShift environment. These scripts can also be
 used to deploy a full cluster with Master and Standbys for testing and demo
 purposes but this is not recommended for a production deployment of Conjur.
 
-**This repo supports CyberArk DAP v10+**. To deploy Conjur OSS, please use
-the [Conjur OSS helm chart](https://github.com/cyberark/conjur-oss-helm-chart).
+**This repo supports CyberArk Conjur Enterprise (formerly DAP) v10+**. To deploy Conjur Open Source, please use
+the [Conjur Open Source helm chart](https://github.com/cyberark/conjur-oss-helm-chart).
 
 ---
 
