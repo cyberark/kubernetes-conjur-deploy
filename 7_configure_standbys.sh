@@ -11,16 +11,35 @@ main() {
 
   master_pod_name=$(get_master_pod_name)
 
+  ls -la
+  chmod -R a+rwx .
+  ls -la
+
   prepare_standby_seed
+
+  ls -la
+  chmod -R a+rwx .
+  ls -la
 
   configure_standbys
 
-  delete_standby_seed
-  enable_synchronous_replication
-
-  echo "Standbys configured."
   ls -la
   chmod -R a+rwx .
+  ls -la
+
+  delete_standby_seed
+
+  ls -la
+  chmod -R a+rwx .
+  ls -la
+
+  enable_synchronous_replication
+
+  ls -la
+  chmod -R a+rwx .
+  ls -la
+
+  echo "Standbys configured."
 }
 
 prepare_standby_seed() {
