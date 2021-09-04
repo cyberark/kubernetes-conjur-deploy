@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -euox pipefail
 
 . utils.sh
 
@@ -76,6 +76,8 @@ if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
 fi
 
 if [[ -f "${FOLLOWER_SEED}" ]] || [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
+    pwd
+    ls -la
     ./8_configure_followers.sh
 fi
 
