@@ -1,9 +1,10 @@
 #!/bin/bash 
-set -euo pipefail
+set -euox pipefail
 
 . utils.sh
 
 main() {
+  ls -la
   set_namespace $CONJUR_NAMESPACE_NAME
 
   announce "Configuring standbys."
@@ -18,6 +19,8 @@ main() {
   enable_synchronous_replication
 
   echo "Standbys configured."
+  ls -la
+  chmod -R a+rwx .
 }
 
 prepare_standby_seed() {
