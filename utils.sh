@@ -113,11 +113,11 @@ set_namespace() {
 }
 
 wait_for_node() {
-  wait_for_it -1 "$cli describe pod $1 | grep Status: | grep -q Running"
+  wait_for_it 900 "$cli describe pod $1 | grep Status: | grep -q Running"
 }
 
 wait_for_service() {
-  wait_for_it -1 "$cli get service $1 --no-headers | grep -q -v pending"
+  wait_for_it 900 "$cli get service $1 --no-headers | grep -q -v pending"
 }
 
 wait_for_it() {
@@ -125,27 +125,17 @@ wait_for_it() {
   local spacer=2
   shift
 
-  if ! [ $timeout = '-1' ]; then
-    local times_to_run=$((timeout / spacer))
+  local times_to_run=$((timeout / spacer))
 
-    echo "Waiting for '$@' up to $timeout s"
-    for i in $(seq $times_to_run); do
-      eval $@ > /dev/null && echo 'Success!' && return 0
-      echo -n .
-      sleep $spacer
-    done
+  echo "Waiting for '$@' up to $timeout s"
+  for i in $(seq $times_to_run); do
+    eval $@ > /dev/null && echo 'Success!' && return 0
+    echo -n .
+    sleep $spacer
+  done
 
-    # Last run evaluated. If this fails we return an error exit code to caller
-    eval $@
-  else
-    echo "Waiting for '$@' forever"
-
-    while ! eval $@ > /dev/null; do
-      echo -n .
-      sleep $spacer
-    done
-    echo 'Success!'
-  fi
+  # Last run evaluated. If this fails we return an error exit code to caller
+  eval $@
 }
 
 rotate_api_key() {
