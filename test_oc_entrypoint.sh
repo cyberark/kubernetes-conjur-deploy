@@ -46,10 +46,10 @@ function main() {
 
 function initialize() {
   set +x
-  oc login "$OPENSHIFT_URL" \
-    --username="$OPENSHIFT_USERNAME" \
-    --password="$OPENSHIFT_PASSWORD" \
-    --insecure-skip-tls-verify=true
+  wait_for_it 60 "oc login \"$OPENSHIFT_URL\" \
+    --username=\"$OPENSHIFT_USERNAME\" \
+    --password=\"$OPENSHIFT_PASSWORD\" \
+    --insecure-skip-tls-verify=true"
 
   docker login \
     -u _ \
@@ -72,6 +72,24 @@ function relaunchMaster() {
   echo 'Relaunching master to test persistent volume restore'
 
   ./relaunch_master.sh
+}
+
+wait_for_it() {
+  local timeout=$1
+  local spacer=2
+  shift
+
+  local times_to_run=$((timeout / spacer))
+
+  echo "Waiting for '$@' up to $timeout s"
+  for i in $(seq $times_to_run); do
+    eval $@ > /dev/null && echo 'Success!' && return 0
+    echo -n .
+    sleep $spacer
+  done
+
+  # Last run evaluated. If this fails we return an error exit code to caller
+  eval $@
 }
 
 main
