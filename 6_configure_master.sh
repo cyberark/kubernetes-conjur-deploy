@@ -3,6 +3,10 @@ set -euo pipefail
 
 . utils.sh
 
+# ***TEMP*** Add in anticipated DNS hostnames
+MASTER_DNS_HOSTNAME="${MASTER_DNS_HOSTNAME:-conjur-master.ux-test.itd-google.conjur.net}"
+FOLLOWER_DNS_HOSTNAME="${FOLLOWER_DNS_HOSTNAME:-conjur-follower.ux-test.itd-google.conjur.net}"
+
 main() {
   set_namespace $CONJUR_NAMESPACE_NAME
 
@@ -19,14 +23,22 @@ configure_master_pod() {
   local master_pod_name=$(get_master_pod_name)
   $cli label --overwrite pod $master_pod_name role=master
 
+  # ***TEMP*** Add in anticipated DNS hostnames
   MASTER_ALTNAMES="localhost,conjur-master"
+  if [ -n "$MASTER_DNS_HOSTNAME" ]; then
+    MASTER_ALTNAMES="$MASTER_ALTNAMES,$MASTER_DNS_HOSTNAME"
+  fi
+  FOLLOWER_ALTNAMES="conjur-follower,conjur-follower.$CONJUR_NAMESPACE_NAME.svc.cluster.local"
+  if [ -n "$FOLLOWER_DNS_HOSTNAME" ]; then
+    FOLLOWER_ALTNAMES="$FOLLOWER_ALTNAMES,$FOLLOWER_DNS_HOSTNAME"
+  fi
 
   # Configure Conjur master server using evoke.
   $cli exec $master_pod_name -- evoke configure master \
      --accept-eula \
      -h conjur-master.$CONJUR_NAMESPACE_NAME.svc.cluster.local \
      --master-altnames "$MASTER_ALTNAMES" \
-     --follower-altnames conjur-follower,conjur-follower.$CONJUR_NAMESPACE_NAME.svc.cluster.local \
+     --follower-altnames "$FOLLOWER_ALTNAMES" \
      -p $CONJUR_ADMIN_PASSWORD \
      $CONJUR_ACCOUNT
   echo "Master pod configured."

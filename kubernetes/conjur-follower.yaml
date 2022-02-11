@@ -13,6 +13,8 @@ spec:
     name: ldaps
   selector:
     app: conjur-follower
+  # ***TEMP*** Use LoadBalancer
+  type: LoadBalancer
 ---
 apiVersion: apps/v1
 kind: Deployment
