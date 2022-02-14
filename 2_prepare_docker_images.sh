@@ -75,7 +75,7 @@ prepare_conjur_oss_cluster() {
   # Allow using local conjur images for deployment
   conjur_oss_src_image="${LOCAL_CONJUR_IMAGE:-}"
   if [[ -z "$conjur_oss_src_image" ]]; then
-    conjur_oss_src_image="cyberark/conjur:latest"
+    conjur_oss_src_image="cyberark/conjur:1.15.0"
     docker pull $conjur_oss_src_image
   fi
 
