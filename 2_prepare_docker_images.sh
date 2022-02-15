@@ -88,6 +88,16 @@ prepare_conjur_oss_cluster() {
     docker push "$conjur_oss_dest_image"
   fi
 
+  announce "Pulling and pushing postgres image"
+  
+  postgres_src_image="postgres:10"
+  docker pull "$postgres_src_image"
+  if [ "${DEV}" = "false" ]; then
+    postgres_dest_image=$(platform_image "postgres")
+    docker tag "$postgres_src_image" "$postgres_dest_image"
+    docker push "$postgres_dest_image"
+  fi
+
   announce "Pulling and pushing Nginx image."
 
   nginx_image=$(platform_image "nginx")
