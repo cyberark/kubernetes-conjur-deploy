@@ -28,12 +28,6 @@ pipeline {
           }
         }
 
-        stage('Test on OpenShift 3.11 in AWS') {
-          steps {
-            sh 'summon --environment openshift311 ./test.sh openshift311 5'
-          }
-        }
-
         stage('OpenShift Oldest 4.x') {
           steps {
             sh 'summon --environment openshift_oldest ./test.sh openshift_oldest 5'
