@@ -25,5 +25,5 @@ fi
 
 echo ""
 echo "IMPORTANT!  IMPORTANT!  IMPORTANT!  IMPORTANT!"
-echo "You need to source _minishift-boot.env again to reference docker daemon in Minishift..."
+echo "You need to source minishift.env again to reference docker daemon in Minishift..."
 echo ""
