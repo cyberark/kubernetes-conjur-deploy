@@ -11,10 +11,10 @@ You will need to install VirtualBox and the minishift executable.
 
 In this directory:
 
-1) edit _minishift-boot.env to set environment variables
-2) source _minishift-boot.env - to setup OpenShift version & VM RAM
-3) run _minishift-start.sh
-4) source _minishift-boot.env - to reference OpenShift environment
+1) edit minishift.env to set environment variables
+2) source minishift.env - to setup OpenShift version & VM RAM
+3) run minishift-start.sh
+4) source minishift.env - to reference OpenShift environment
 5) check docker images - you should see openshift images only.
 6) login as cluster admin (oc login -u system:admin)
 7) run "oc get pods --namespace=default" - confirm all pods are Running or Completed

@@ -189,8 +189,8 @@ Please make sure that you are logged in to the registry before deploying.
 ### Running OpenShift in Minishift
 
 You can use Minishift to run OpenShift locally in a single-node cluster. Minishift provides a convenient way to test out Conjur deployments on a laptop or local machine and also provides an integrated Docker daemon from which to stage and push images into the OpenShift registry. The `./openshift` subdirectory contains two files:
- * `_minishift-boot.env` that defines environment variables to configure Minishift, and
- * `_minishift-start.sh` to startup Minishift.
+ * `minishift.env` that defines environment variables to configure Minishift, and
+ * `minishift-start.sh` to startup Minishift.
 The script assumes VirtualBox as the hypervisor but others are supported. See https://github.com/minishift/minishift for more information.
 
 Steps to startup Minishift:
