@@ -32,7 +32,7 @@ prepare_follower_seed() {
 
   FOLLOWER_SEED="./$seed_dir/follower-seed.tar"
 
-  $cli exec $master_pod_name evoke seed follower conjur-follower > $FOLLOWER_SEED
+  $cli exec $master_pod_name -- evoke seed follower conjur-follower > $FOLLOWER_SEED
 }
 
 configure_followers() {
