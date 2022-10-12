@@ -108,11 +108,11 @@ the CLI pod and SSH into it:
 ```
 # Kubernetes
 kubectl create -f ./kubernetes/conjur-cli.yaml
-kubectl exec -it [cli-pod-name] bash
+kubectl exec -it [cli-pod-name] -- bash
 
 # OpenShift
 oc create -f ./openshift/conjur-cli.yaml
-oc exec -it <cli-pod-name> bash
+oc exec -it <cli-pod-name> -- bash
 ```
 
 Once inside the CLI container, use the admin credentials to connect to Conjur:

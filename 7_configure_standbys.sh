@@ -27,7 +27,7 @@ prepare_standby_seed() {
   seed_dir="tmp-$CONJUR_NAMESPACE_NAME"
   mkdir -p $seed_dir
 
-  $cli exec $master_pod_name evoke seed standby conjur-standby > "./$seed_dir/standby-seed.tar"
+  $cli exec $master_pod_name -- evoke seed standby conjur-standby > "./$seed_dir/standby-seed.tar"
 }
 
 configure_standbys() {
