@@ -1,0 +1,25 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-curl
+  labels:
+    app: test-curl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-curl
+  template:
+    metadata:
+      name: test-curl
+      labels:
+        app: test-curl
+    spec:
+      serviceAccountName: conjur-cluster
+      containers:
+      - name: test-curl
+        image: {{ DOCKER_IMAGE }}
+        imagePullPolicy: {{ IMAGE_PULL_POLICY }}
+        command: ["/bin/sh", "-c", "apk --no-cache add curl; sleep infinity"]
+

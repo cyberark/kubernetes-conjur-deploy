@@ -22,28 +22,28 @@ pipeline {
   stages {
     stage('Run Scripts') {
       parallel {
-        stage('Test v5 on GKE') {
+        stage('Test on GKE') {
           steps {
-            sh 'summon --environment kubernetes ./test.sh gke 5'
+            sh 'summon --environment kubernetes ./test.sh gke'
           }
         }
 
         stage('OpenShift Oldest 4.x') {
           steps {
-            sh 'summon --environment openshift_oldest ./test.sh openshift_oldest 5'
+            sh 'summon --environment openshift_oldest ./test.sh openshift_oldest'
           }
         }
 
         stage('OpenShift Current 4.x') {
           steps {
-            sh 'summon --environment openshift_current ./test.sh openshift_current 5'
+            sh 'summon --environment openshift_current ./test.sh openshift_current'
           }
         }
 
         stage('OpenShift Next 4.x') {
           when { expression { return params.TEST_OCP_NEXT } }
           steps {
-            sh 'summon --environment openshift_next ./test.sh openshift_next 5'
+            sh 'summon --environment openshift_next ./test.sh openshift_next'
           }
         }
       }

@@ -22,7 +22,6 @@ if [ "${PLATFORM}" = "openshift" ]; then
 fi
 
 if [[ "${DEPLOY_MASTER_CLUSTER}" = "true" ]]; then
-  check_env_var "CONJUR_VERSION"
   check_env_var "CONJUR_ACCOUNT"
   check_env_var "CONJUR_ADMIN_PASSWORD"
 fi

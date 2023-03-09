@@ -10,6 +10,7 @@ main() {
 
   deploy_conjur_master_cluster
   deploy_conjur_cli
+  deploy_test_curl
 
   sleep 10
 
@@ -89,6 +90,15 @@ deploy_conjur_cli() {
 
   cli_app_image=$(platform_image conjur-cli true)
   sed -e "s#{{ DOCKER_IMAGE }}#$cli_app_image#g" ./$PLATFORM/conjur-cli.yml |
+    sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
+    $cli create -f -
+}
+
+deploy_test_curl() {
+  announce "Deploying Test curl pod."
+
+  alpine_image=$(platform_image alpine true)
+  sed -e "s#{{ DOCKER_IMAGE }}#$alpine_image#g" ./$PLATFORM/test-curl.yml |
     sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
     $cli create -f -
 }

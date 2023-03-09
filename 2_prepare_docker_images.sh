@@ -45,14 +45,21 @@ prepare_conjur_appliance_image() {
 prepare_conjur_cli_image() {
   announce "Pulling and pushing Conjur CLI image."
 
-  docker pull cyberark/conjur-cli:$CONJUR_VERSION-latest
-  docker tag cyberark/conjur-cli:$CONJUR_VERSION-latest conjur-cli:$CONJUR_NAMESPACE_NAME
+  docker pull cyberark/conjur-cli:8
+  docker tag cyberark/conjur-cli:8 conjur-cli:$CONJUR_NAMESPACE_NAME
+
+  docker pull alpine:latest
+  docker tag alpine:latest alpine:$CONJUR_NAMESPACE_NAME
 
   cli_app_image=$(platform_image conjur-cli)
   docker tag conjur-cli:$CONJUR_NAMESPACE_NAME $cli_app_image
 
+  alpine_image=$(platform_image alpine)
+  docker tag alpine:$CONJUR_NAMESPACE_NAME $alpine_image
+
   if [ ! is_minienv ] || [ "${DEV}" = "false" ]; then
     docker push $cli_app_image
+    docker push $alpine_image
   fi
 }
 

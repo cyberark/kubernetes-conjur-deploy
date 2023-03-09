@@ -40,11 +40,6 @@ function main() {
   getGKEVersion
   initialize
   runScripts
-
-  # Removed this since our current advice is to run the Conjur 4 master outside cluster. Dustin Collins, 2018.12.12.
-  # if [ $CONJUR_VERSION = '4' ]; then
-  #   relaunchMaster
-  # fi
 }
 
 function initialize() {
