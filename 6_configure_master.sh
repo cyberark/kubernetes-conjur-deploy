@@ -42,14 +42,14 @@ configure_master_pod() {
 
 wait_for_master() {
   local conjur_url="https://conjur-master.$CONJUR_NAMESPACE_NAME.svc.cluster.local"
-  local conjur_cli_pod=$(get_conjur_cli_pod_name)
+  local test_curl_pod=$(get_test_curl_pod_name)
 
   echo "Waiting for DAP Master to be ready..."
 
   # Wait for 10 successful connections in a row
   local COUNTER=0
   while [  $COUNTER -lt 10 ]; do
-      local response=$($cli exec $conjur_cli_pod -- bash -c "curl -k --silent --head $conjur_url/health")
+      local response=$($cli exec $test_curl_pod -- sh -c "curl -k --silent --head $conjur_url/health")
       if [ -z "$(echo $response | grep "Conjur-Health: OK")" ]; then
         sleep 5
         COUNTER=0
@@ -57,7 +57,7 @@ wait_for_master() {
         let COUNTER=COUNTER+1
       fi
       sleep 1
-      echo "Successful Health Checks: $COUNTER"
+      echo "Successful Health Checks: $COUNTER (waiting for 10)"
   done
 }
 
@@ -68,9 +68,9 @@ configure_cli_pod() {
 
   local conjur_cli_pod=$(get_conjur_cli_pod_name)
 
-  $cli exec $conjur_cli_pod -- bash -c "yes yes | conjur init -a $CONJUR_ACCOUNT -u $conjur_url"
+  $cli exec $conjur_cli_pod -- sh -c "echo y | conjur init -a $CONJUR_ACCOUNT -u $conjur_url --self-signed --force"
 
-  $cli exec $conjur_cli_pod -- conjur authn login -u admin -p $CONJUR_ADMIN_PASSWORD
+  $cli exec $conjur_cli_pod -- conjur login -i admin -p $CONJUR_ADMIN_PASSWORD
 }
 
 main $@

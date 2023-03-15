@@ -31,18 +31,8 @@ export DEPLOY_MASTER_CLUSTER=true
 ```
 
 You will also need to set a few environment variable that are only used when
-configuring the Conjur master. If you are working with Conjur that is not v5,
-```
-export CONJUR_VERSION=<conjur_version>
-```
-along with any other changes you might want.
-
-Otherwise, this variable will default to `5`.
-
-_Note: If you are using Conjur v4, please use [v4_support](https://github.com/cyberark/kubernetes-conjur-deploy/tree/v4_support)
-branch of this repo!_
-
-You must also provide an account name and password for the Conjur admin account:
+configuring the Conjur master. You must provide an account name and password
+for the Conjur admin account:
 
 ```
 export CONJUR_ACCOUNT=<my_account_name>
@@ -108,11 +98,11 @@ the CLI pod and SSH into it:
 ```
 # Kubernetes
 kubectl create -f ./kubernetes/conjur-cli.yaml
-kubectl exec -it [cli-pod-name] -- bash
+kubectl exec -it [cli-pod-name] -- sh
 
 # OpenShift
 oc create -f ./openshift/conjur-cli.yaml
-oc exec -it <cli-pod-name> -- bash
+oc exec -it <cli-pod-name> -- sh
 ```
 
 Once inside the CLI container, use the admin credentials to connect to Conjur:

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-CONJUR_VERSION=${CONJUR_VERSION:-5} # default to v5 if not set
 PLATFORM="${PLATFORM:-kubernetes}" # default to kubernetes if not set
 DEPLOY_MASTER_CLUSTER="${DEPLOY_MASTER_CLUSTER:-false}"
 FOLLOWER_USE_VOLUMES="${FOLLOWER_USE_VOLUMES:-false}"
@@ -100,6 +99,11 @@ mastercmd() {
 
 get_conjur_cli_pod_name() {
   pod_list=$($cli get pods -l app=conjur-cli --no-headers | awk '{ print $1 }')
+  echo $pod_list | awk '{print $1}'
+}
+
+get_test_curl_pod_name() {
+  pod_list=$($cli get pods -l app=test-curl --no-headers | awk '{ print $1 }')
   echo $pod_list | awk '{print $1}'
 }
 
