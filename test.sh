@@ -51,9 +51,11 @@ function setupTestEnvironment() {
 }
 
 function buildDockerImages() {
-  export CONJUR_APPLIANCE_IMAGE="registry.tld/conjur-appliance:${CONJUR_APPLIANCE_IMAGE_TAG:-5.0-stable}"
+  export CONJUR_APPLIANCE_IMAGE="registry.tld/conjur-appliance:PR-57"
+  export SEEDFETCHER_IMAGE="registry.tld/cyberark/dap-seedfetcher:0.6.4-7"
 
   docker pull $CONJUR_APPLIANCE_IMAGE
+  docker pull $SEEDFETCHER_IMAGE
 
   # Test image w/ kubectl and oc CLIs installed to drive scripts.
   export K8S_CONJUR_DEPLOY_TESTER_IMAGE="k8s-conjur-deploy-tester:$CONJUR_NAMESPACE_NAME"

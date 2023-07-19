@@ -3,7 +3,7 @@ set -euo pipefail
 
 . utils.sh
 
-: "${SEEDFETCHER_IMAGE:=cyberark/dap-seedfetcher}"
+: "${SEEDFETCHER_IMAGE:=registry.tld/cyberark/dap-seedfetcher:0.6.4-7}"
 
 main() {
   if [[ "${PLATFORM}" = "openshift" ]]; then
@@ -66,7 +66,7 @@ prepare_conjur_cli_image() {
 prepare_seed_fetcher_image() {
   announce "Pulling and pushing seed-fetcher image."
 
-  docker pull $SEEDFETCHER_IMAGE
+  docker pull $SEEDFETCHER_IMAGE || true
 
   seedfetcher_image=$(platform_image seed-fetcher)
   docker tag $SEEDFETCHER_IMAGE $seedfetcher_image
