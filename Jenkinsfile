@@ -1,5 +1,11 @@
 #!/usr/bin/env groovy
 
+// Automated release, promotion and dependencies
+properties([
+  // Include the automated release parameters for the build
+  release.addParams(),
+])
+
 // Performs release promotion.  No other stages will be run
 if (params.MODE == "PROMOTE") {
   release.promote(params.VERSION_TO_PROMOTE) { sourceVersion, targetVersion, assetDirectory ->
@@ -14,6 +20,7 @@ if (params.MODE == "PROMOTE") {
   release.copyEnterpriseRelease(params.VERSION_TO_PROMOTE)
   return
 }
+
 pipeline {
   agent { label 'conjur-enterprise-common-agent' }
 
