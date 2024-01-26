@@ -41,3 +41,6 @@ spec:
             path: /health
             port: https
             scheme: HTTPS
+        securityContext:
+          capabilities:
+            add: ["AUDIT_WRITE"]

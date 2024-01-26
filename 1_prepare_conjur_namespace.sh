@@ -69,6 +69,11 @@ configure_oc_rbac() {
   # allow pods with conjur-cluster serviceaccount to run as root
   oc adm policy add-scc-to-user anyuid "system:serviceaccount:$CONJUR_NAMESPACE_NAME:$CONJUR_SERVICEACCOUNT_NAME"
 
+  # appliance containers require AUDIT_WRITE capability
+  sed -e "s#{{ CONJUR_NAMESPACE_NAME }}#$CONJUR_NAMESPACE_NAME#g" ./openshift/conjur-custom-scc.yaml |
+    oc create -f -
+  oc adm policy add-scc-to-user "$CONJUR_NAMESPACE_NAME-audit-write" "system:serviceaccount:$CONJUR_NAMESPACE_NAME:$CONJUR_SERVICEACCOUNT_NAME"
+
   # add permissions for Conjur admin user on registry, default & Conjur cluster namespaces
   oc adm policy add-role-to-user system:registry $OPENSHIFT_USERNAME
   oc adm policy add-role-to-user system:image-builder $OPENSHIFT_USERNAME
