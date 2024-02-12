@@ -37,6 +37,11 @@ fi
 echo "Deleting cluster role"
 $cli delete --ignore-not-found clusterrole conjur-authenticator-$CONJUR_NAMESPACE_NAME
 
+if [[ $PLATFORM == openshift ]]; then
+  echo "Deleting custom AUDIT_WRITE SecurityContextConstraints"
+  $cli delete --ignore-not-found scc "$CONJUR_NAMESPACE_NAME-audit-write"
+fi
+
 if [ "$result" -ne 0 ]; then
   echo "Failed to purge conjur environment"
 else

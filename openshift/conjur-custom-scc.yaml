@@ -1,0 +1,10 @@
+kind: SecurityContextConstraints
+apiVersion: security.openshift.io/v1
+metadata:
+  name: {{ CONJUR_NAMESPACE_NAME }}-audit-write
+allowedCapabilities:
+- AUDIT_WRITE
+runAsUser:
+  type: RunAsAny
+seLinuxContext:
+  type: MustRunAs
