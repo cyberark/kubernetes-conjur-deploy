@@ -57,11 +57,12 @@ deploy_conjur_master_cluster() {
     conjur_image=$(platform_image "conjur")
     nginx_image=$(platform_image "nginx")
     conjur_log_level=${CONJUR_LOG_LEVEL:-info}
+    conjur_authenticators="${CONJUR_AUTHENTICATORS:-authn,authn-k8s/$AUTHENTICATOR_ID}"
     if [ "${DEV}" = "true" ]; then
       conjur_log_level=${CONJUR_LOG_LEVEL:-debug}
     fi
     sed -e "s#{{ CONJUR_IMAGE }}#$conjur_image#g" "./oss/conjur-cluster.yaml" |
-      sed -e "s#{{ AUTHENTICATOR_ID }}#$AUTHENTICATOR_ID#g" |
+      sed -e "s#{{ CONJUR_AUTHENTICATORS }}#$conjur_authenticators#g" |
       sed -e "s#{{ CONJUR_ACCOUNT }}#$CONJUR_ACCOUNT#g" |
       sed -e "s#{{ CONJUR_DATA_KEY }}#$(openssl rand -base64 32)#g" |
       sed -e "s#{{ CONJUR_LOG_LEVEL }}#$conjur_log_level#g" |

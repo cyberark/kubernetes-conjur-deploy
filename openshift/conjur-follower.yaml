@@ -92,7 +92,7 @@ spec:
         imagePullPolicy: {{ IMAGE_PULL_POLICY }}
         env:
           - name: CONJUR_AUTHENTICATORS
-            value: authn-k8s/{{ AUTHENTICATOR_ID }}
+            value: {{ CONJUR_AUTHENTICATORS }}
           - name: SEEDFILE_DIR
             value: /tmp/seedfile
         ports:

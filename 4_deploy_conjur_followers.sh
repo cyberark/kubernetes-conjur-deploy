@@ -51,6 +51,7 @@ deploy_conjur_followers() {
   conjur_appliance_image=$(platform_image "conjur-appliance" true)
   seedfetcher_image=$(platform_image "seed-fetcher" true)
   conjur_authn_login=${CONJUR_AUTHN_LOGIN:-host/conjur/authn-k8s/$AUTHENTICATOR_ID/apps/$CONJUR_NAMESPACE_NAME/service_account/conjur-cluster}
+  conjur_authenticators="${CONJUR_AUTHENTICATORS:-authn,authn-k8s/$AUTHENTICATOR_ID}"
 
   FOLLOWER_VOLUMES=""
   FOLLOWER_VOLUME_MOUNTS=""
@@ -79,6 +80,7 @@ deploy_conjur_followers() {
 
   sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/conjur-follower.yaml" |
     sed -e "s#{{ AUTHENTICATOR_ID }}#$AUTHENTICATOR_ID#g" |
+    sed -e "s#{{ CONJUR_AUTHENTICATORS }}#$conjur_authenticators#g" |
     sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
     sed -e "s#{{ CONJUR_FOLLOWER_COUNT }}#${CONJUR_FOLLOWER_COUNT:-1}#g" |
     sed -e "s#{{ CONJUR_SEED_FILE_URL }}#$FOLLOWER_SEED#g" |
