@@ -33,6 +33,14 @@ pipeline {
   }
 
   stages {
+    stage('Scan for internal URLs') {
+      steps {
+        script {
+          detectInternalUrls()
+        }
+      }
+    }
+    
     stage('Get InfraPool Agent') {
       steps {
         script {
