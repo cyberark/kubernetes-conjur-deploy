@@ -37,6 +37,8 @@ prepare_conjur_appliance_image() {
 
   if [ ! is_minienv ] || [ "${DEV}" = "false" ] ; then
     docker push $conjur_appliance_image
+  elif [ "${KIND}" = "true" ]; then
+    kind load docker-image $conjur_appliance_image
   fi
 }
 
@@ -58,6 +60,9 @@ prepare_conjur_cli_image() {
   if [ ! is_minienv ] || [ "${DEV}" = "false" ]; then
     docker push $cli_app_image
     docker push $alpine_image
+  elif [ "${KIND}" = "true" ]; then
+    kind load docker-image $cli_app_image
+    kind load docker-image $alpine_image
   fi
 }
 
@@ -71,6 +76,8 @@ prepare_seed_fetcher_image() {
 
   if [ ! is_minienv ] || [ "${DEV}" = "false" ]; then
     docker push $seedfetcher_image
+  elif [ "${KIND}" = "true" ]; then
+    kind load docker-image $seedfetcher_image
   fi
 }
 
@@ -91,16 +98,21 @@ prepare_conjur_oss_cluster() {
   if [ "${DEV}" = "false" ]; then
     echo "Pushing Conjur image ${conjur_oss_dest_image} to repo..."
     docker push "$conjur_oss_dest_image"
+  elif [ "${KIND}" = "true" ]; then
+    echo "Loading Conjur image ${conjur_oss_dest_image} into kind..."
+    kind load docker-image "$conjur_oss_dest_image"
   fi
 
   announce "Pulling and pushing postgres image"
   
   postgres_src_image="postgres:15"
+  postgres_dest_image=$(platform_image "postgres")
   docker pull "$postgres_src_image"
+  docker tag "$postgres_src_image" "$postgres_dest_image"
   if [ "${DEV}" = "false" ]; then
-    postgres_dest_image=$(platform_image "postgres")
-    docker tag "$postgres_src_image" "$postgres_dest_image"
     docker push "$postgres_dest_image"
+  elif [ "${KIND}" = "true" ]; then
+    kind load docker-image "$postgres_src_image"
   fi
 
   announce "Pulling and pushing Nginx image."
@@ -113,6 +125,8 @@ prepare_conjur_oss_cluster() {
 
     if [ "${DEV}" = "false" ]; then
       docker push $nginx_image
+    elif [ "${KIND}" = "true" ]; then
+      kind load docker-image $nginx_image
     fi
   popd
 }

@@ -8,6 +8,11 @@ if [[ $PLATFORM == openshift ]]; then
   oc_login
 fi
 
+if [ -z "$(kubectl config current-context)" ]; then
+    echo "'kubectl' current-context is not set - skipping teardown." >&2
+    exit 0
+fi
+
 set_namespace default
 
 result=0

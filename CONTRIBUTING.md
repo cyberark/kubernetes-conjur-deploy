@@ -146,7 +146,7 @@ Docker Desktop provides a convenient way to deploy and develop from your machine
 
 To deploy locally, perform the following:
 
-1. Ensure you are in the proper local context. Otherwise, the deployment will not run successfully
+1. (Docker Desktop only!) Ensure you are in the proper local context. Otherwise, the deployment will not run successfully
    
    Run `kubectl config current-context` to verify which context you are currently in so if needed, you can switch back to it easily
    

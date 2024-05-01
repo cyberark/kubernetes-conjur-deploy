@@ -6,6 +6,7 @@ FOLLOWER_USE_VOLUMES="${FOLLOWER_USE_VOLUMES:-false}"
 
 MINI_ENV="${MINI_ENV:-false}"
 DEV="${DEV:-false}"
+KIND="${KIND:-false}"
 
 if [[ "$MINI_ENV" == "true" || "$DEV" == "true" ]]; then
   IMAGE_PULL_POLICY='Never'

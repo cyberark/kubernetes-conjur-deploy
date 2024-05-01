@@ -4,6 +4,11 @@ set -euo pipefail
 . utils.sh
 
 main() {
+  # Create kind cluster (if needed)
+  if [[ "$KIND" == "true" ]]; then
+    kind create cluster || true
+  fi
+
   set_namespace default
 
   if [[ "$PLATFORM" == "openshift" ]]; then

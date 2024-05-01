@@ -34,3 +34,8 @@ if [[ "${DEPLOY_MASTER_CLUSTER}" = "false" ]]; then
     exit 1
   fi
 fi
+
+if [ "${KIND}" = "true" ] && [ ! $(command -v kind) ]; then
+    echo "Error: 'kind' is not installed. Please install 'kind' to proceed." >&2
+    exit 1
+fi
