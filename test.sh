@@ -106,6 +106,7 @@ function test_openshift() {
     -e DEPLOY_MASTER_CLUSTER=true \
     -e TEST_PLATFORM \
     -e OPENSHIFT_VERSION \
+    -e OPENSHIFT_CLI_URL \
     -e OPENSHIFT_URL \
     -e OPENSHIFT_REGISTRY_URL \
     -e OPENSHIFT_USERNAME \
