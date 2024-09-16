@@ -98,7 +98,7 @@ prepare_conjur_oss_cluster() {
 
   announce "Pulling and pushing postgres image"
   
-  postgres_src_image="postgres:10"
+  postgres_src_image="postgres:15"
   docker pull "$postgres_src_image"
   if [ "${DEV}" = "false" ]; then
     postgres_dest_image=$(platform_image "postgres")
