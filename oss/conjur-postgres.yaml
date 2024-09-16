@@ -33,7 +33,7 @@ spec:
       serviceAccountName: conjur-cluster
       containers:
         - name: postgres
-          image: postgres:10
+          image: postgres:15
           imagePullPolicy: {{ IMAGE_PULL_POLICY }}
           env:
             - name: POSTGRES_HOST_AUTH_METHOD
