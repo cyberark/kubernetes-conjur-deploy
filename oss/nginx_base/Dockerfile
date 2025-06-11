@@ -1,4 +1,4 @@
-FROM nginx:1.26
+FROM nginx:1.28
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
