@@ -33,9 +33,6 @@ prepare_conjur_appliance_image() {
   announce "Tagging and pushing Conjur appliance"
 
   conjur_appliance_image=$(platform_image conjur-appliance)
-
-  # Try to pull the image if we can
-  docker pull $CONJUR_APPLIANCE_IMAGE || true
   docker tag $CONJUR_APPLIANCE_IMAGE $conjur_appliance_image
 
   if [ ! is_minienv ] || [ "${DEV}" = "false" ] ; then
