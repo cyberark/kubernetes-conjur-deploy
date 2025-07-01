@@ -37,7 +37,7 @@ prepare_follower_seed() {
 
 configure_followers() {
   pod_list=$($cli get pods -l role=follower --no-headers | awk '{ print $1 }')
-
+  
   for pod_name in $pod_list; do
     configure_follower $pod_name &
   done
@@ -48,23 +48,15 @@ configure_followers() {
 configure_follower() {
   local pod_name=$1
 
-  KEYS_COMMAND=""
-
   printf "Configuring follower %s...\n" $pod_name
 
   copy_file_to_container $FOLLOWER_SEED "/tmp/follower-seed.tar" "$pod_name"
-
-  if [ -f "${CONJUR_DATA_KEY:-}" ]; then
-    copy_file_to_container $CONJUR_DATA_KEY "/opt/conjur/etc/conjur-data-key" "$pod_name"
-    KEYS_COMMAND="evoke keys exec -m /opt/conjur/etc/conjur-data-key --"
-  fi
 
   echo "Unpacking seed..."
   $cli exec $pod_name -- evoke unpack seed /tmp/follower-seed.tar
 
   echo "Configuring follower with evoke..."
-  $cli exec $pod_name -- $KEYS_COMMAND evoke configure follower
-
+  $cli exec $pod_name -- evoke configure follower
   set_conjur_pod_log_level $pod_name
 }
 

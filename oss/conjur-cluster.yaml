@@ -55,7 +55,10 @@ spec:
             periodSeconds: 10
           env:
             - name: CONJUR_DATA_KEY
-              value: "{{ CONJUR_DATA_KEY }}"
+              valueFrom:
+                secretKeyRef:
+                  name: conjur-data-key
+                  key: key
             - name: DATABASE_URL
               value: postgres://postgres:{{ POSTGRES_PASSWORD }}@conjur-postgres/postgres
             - name: CONJUR_AUTHENTICATORS
