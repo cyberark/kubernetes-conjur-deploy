@@ -209,9 +209,9 @@ Steps to startup Minishift:
 Ensure that `bootstrap.env` has the `FOLLOWER_SEED` variable set to the seed
 file created [here](#follower-seed) or a URL to the seed service.
 
-If master key encryption is used in the cluster, `CONJUR_DATA_KEY` must be set to
-the path to a file that contains the encryption key to use when configuring the
-follower.
+If master key encryption is used in the cluster, the master key file must be copied 
+to the standby and follower containers before the `evoke configure <standby/follower>` 
+step can be completed.
 
 By default, the follower will store all data within the container.  If
 `FOLLOWER_USE_VOLUMES` is set to `true`, the follower will use host volumes (not

@@ -64,7 +64,6 @@ deploy_conjur_master_cluster() {
     sed -e "s#{{ CONJUR_IMAGE }}#$conjur_image#g" "./oss/conjur-cluster.yaml" |
       sed -e "s#{{ CONJUR_AUTHENTICATORS }}#$conjur_authenticators#g" |
       sed -e "s#{{ CONJUR_ACCOUNT }}#$CONJUR_ACCOUNT#g" |
-      sed -e "s#{{ CONJUR_DATA_KEY }}#$(openssl rand -base64 32)#g" |
       sed -e "s#{{ CONJUR_LOG_LEVEL }}#$conjur_log_level#g" |
       sed -e "s#{{ CONJUR_NAMESPACE_NAME }}#$CONJUR_NAMESPACE_NAME#g" |
       sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
@@ -80,7 +79,6 @@ deploy_conjur_master_cluster() {
     conjur_appliance_image=$(platform_image "conjur-appliance" true)
     sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/conjur-cluster.yaml" |
       sed -e "s#{{ AUTHENTICATOR_ID }}#$AUTHENTICATOR_ID#g" |
-      sed -e "s#{{ CONJUR_DATA_KEY }}#$(openssl rand -base64 32)#g" |
       sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
       $cli create -f -
   fi
