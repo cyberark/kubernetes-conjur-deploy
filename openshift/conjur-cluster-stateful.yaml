@@ -53,6 +53,15 @@ spec:
           mountPath: /opt/conjur/dbdata
         - name: conjur-data
           mountPath: /opt/conjur/data
+        securityContext:
+          allowPrivilegeEscalation: false 
+        resources:
+          requests:
+            cpu: 1
+            memory: 1.5Gi
+          limits:
+            cpu: 2
+            memory: 4Gi
   volumeClaimTemplates:
   - metadata:
       name: conjur-dbdata

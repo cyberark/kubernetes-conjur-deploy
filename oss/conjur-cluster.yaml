@@ -67,6 +67,15 @@ spec:
               value: {{ CONJUR_ACCOUNT }}
             - name: CONJUR_LOG_LEVEL
               value: {{ CONJUR_LOG_LEVEL }}
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 1
+              memory: 1.5Gi
+            limits:
+              cpu: 2
+              memory: 4Gi
 
         - name: nginx
           image: {{ NGINX_IMAGE }}
@@ -90,6 +99,14 @@ spec:
               port: https
             initialDelaySeconds: 30
             periodSeconds: 10
-
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 1
+              memory: 128Mi
+            limits:
+              cpu: 2
+              memory: 1Gi
       imagePullSecrets:
         - name: dockerpullsecret

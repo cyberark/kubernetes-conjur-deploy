@@ -41,3 +41,11 @@ spec:
         securityContext:
           capabilities:
             add: ["AUDIT_WRITE"]
+          allowPrivilegeEscalation: false
+        resources:
+          requests:
+            cpu: 1
+            memory: 1.5Gi
+          limits:
+            cpu: 2
+            memory: 4Gi
