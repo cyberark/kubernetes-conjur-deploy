@@ -22,4 +22,12 @@ spec:
         image: {{ DOCKER_IMAGE }}
         imagePullPolicy: {{ IMAGE_PULL_POLICY }}
         command: ["/bin/sh", "-c", "apk --no-cache add curl; sleep infinity"]
-
+        securityContext:
+          allowPrivilegeEscalation: false
+        resources:
+          requests:
+            cpu: 1
+            memory: 1.5Gi
+          limits:
+            cpu: 2
+            memory: 4Gi

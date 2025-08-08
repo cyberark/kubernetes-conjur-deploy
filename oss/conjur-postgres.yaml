@@ -40,3 +40,12 @@ spec:
               value: password
             - name: POSTGRES_PASSWORD
               value: {{ POSTGRES_PASSWORD }}
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 1
+              memory: 1Gi
+            limits:
+              cpu: 2
+              memory: 4Gi

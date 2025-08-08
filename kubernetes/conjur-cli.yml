@@ -23,5 +23,14 @@ spec:
         imagePullPolicy: {{ IMAGE_PULL_POLICY }}
         command: ["sleep"]
         args: ["infinity"]
+        securityContext:
+          allowPrivilegeEscalation: false
+        resources:
+          requests:
+            cpu: 1
+            memory: 1.5Gi
+          limits:
+            cpu: 2
+            memory: 4Gi
       imagePullSecrets:
         - name: dockerpullsecret

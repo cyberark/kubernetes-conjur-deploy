@@ -2,7 +2,7 @@ FROM nginx:1.28
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
-    apt-get install -y iputils-ping procps openssl && \
+    apt-get install -y --no-install-recommends iputils-ping openssl procps && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /etc/nginx/
