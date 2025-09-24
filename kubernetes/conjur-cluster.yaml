@@ -15,7 +15,7 @@ spec:
       labels:
         app: conjur-node
         name: conjur-node
-        role: unset # set to master or standby when configured
+        role: unset # set to leader or standby when configured
     spec:
       serviceAccountName: conjur-cluster
       containers:

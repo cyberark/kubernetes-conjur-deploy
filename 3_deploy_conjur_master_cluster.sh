@@ -16,7 +16,7 @@ main() {
 
   wait_for_conjur
 
-  echo "Master cluster created."
+  echo "Leader cluster created."
 }
 
 docker_login() {
@@ -48,7 +48,7 @@ docker_login() {
 }
 
 deploy_conjur_master_cluster() {
-  announce "Deploying Conjur Master cluster pods."
+  announce "Deploying Conjur Leader cluster pods."
 
   if [[ $CONJUR_DEPLOYMENT == oss ]]; then
     postgres_password="postgres_secret"

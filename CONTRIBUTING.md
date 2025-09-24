@@ -15,11 +15,11 @@ From here your pull request will be reviewed and once you've responded to all
 feedback it will be merged into the project. Congratulations, you're a
 contributor!
 
-## Deploying Conjur Master and Followers (*Test and Demo Only*)
+## Deploying Secrets Manager, Self-Hosted Leaders and Followers (*Test and Demo Only*)
 
-### Master Cluster configuration
+### Leader Cluster configuration
 
-*Please note that running master cluster in OpenShift and Kubernetes environments
+*Please note that running leader cluster in OpenShift and Kubernetes environments
 is not recommended and should be only done for test and demo setups.*
 
 
@@ -31,19 +31,19 @@ export DEPLOY_MASTER_CLUSTER=true
 ```
 
 You will also need to set a few environment variable that are only used when
-configuring the Conjur master. You must provide an account name and password
-for the Conjur admin account:
+configuring the Secrets Manager leader. You must provide an account name and password
+for the Secrets Manager admin account:
 
 ```
 export CONJUR_ACCOUNT=<my_account_name>
 export CONJUR_ADMIN_PASSWORD=<my_admin_password>
 ```
 
-Finally, run `./start` to execute the scripts necessary for deploying Conjur.
+Finally, run `./start` to execute the scripts necessary for deploying Secrets Manager.
 
 ### Data persistence
 
-The Conjur master and standbys are deployed as a
+The Secrets Manager leader and standbys are deployed as a
 [Stateful Set](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/) on supported target platforms (Kubernetes 1.5+ / OpenShift 3.5+).
 Database and configuration data is symlinked and mounted to
 [persistent volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/).
@@ -56,7 +56,7 @@ Volumes:
 
 ### Setup
 
-To configure the Conjur master to persist data, run these commands in the Conjur master container before running `evoke configure master ...`.
+To configure the Secrets Manager leader to persist data, run these commands in the Secrets Manager leader container before running `evoke configure leader ...`.
 
 ```sh-session
 # mv /var/lib/postgresql/9.3 /opt/conjur/dbdata/
@@ -69,8 +69,8 @@ Note that setup is done as part of script [`6_configure_master.sh`](6_configure_
 
 ### Restore
 
-If the Conjur master pod is rescheduled the persistent volumes will be reattached.
-Once the pod is running again, run these commands to restore the master.
+If the Secrets Manager leader pod is rescheduled the persistent volumes will be reattached.
+Once the pod is running again, run these commands to restore the leader.
 
 ```
 # rm -rf /var/lib/postgresql/9.3
@@ -81,18 +81,18 @@ Once the pod is running again, run these commands to restore the master.
 # cp /opt/conjur/data/standby-seed.tar-bkup /opt/conjur/data/standby-seed.tar
 # rm /etc/chef/solo.json
 
-# evoke configure master ...  # using the same arguments as the first launch
+# evoke configure leader ...  # using the same arguments as the first launch
 ```
 
-Standbys must also be reconfigured since the Conjur master pod IP changes.
+Standbys must also be reconfigured since the Secrets Manager leader pod IP changes.
 
 Run [`relaunch_master.sh`](relaunch_master.sh) to try this out in your cluster, after running the deploy.
 Our plan is to automate this process with a Kubernetes operator.
 
-### Conjur CLI
+### Secrets Manager CLI
 
-The deploy scripts include a manifest for creating a Conjur CLI container within
-the Kubernetes environment that can then be used to interact with Conjur. Deploy
+The deploy scripts include a manifest for creating a Secrets Manager CLI container within
+the Kubernetes environment that can then be used to interact with Secrets Manager. Deploy
 the CLI pod and SSH into it:
 
 ```
@@ -105,21 +105,21 @@ oc create -f ./openshift/conjur-cli.yaml
 oc exec -it <cli-pod-name> -- sh
 ```
 
-Once inside the CLI container, use the admin credentials to connect to Conjur:
+Once inside the CLI container, use the admin credentials to connect to Secrets Manager:
 
 ```
 conjur init -h conjur-master
 ```
 
-Follow our [CLI usage instructions](https://developer.conjur.net/cli#quickstart)
-to get started with the Conjur CLI.
+Follow our [CLI usage instructions](https://docs.cyberark.com/conjur-enterprise/latest/en/content/developer/cli/cli-setup.htm?tocpath=Developer%7CConjur%20CLI%7C_____1)
+to get started with the Secrets Manager CLI.
 
-### Conjur UI
+### Secrets Manager UI
 
-Visit the Conjur UI URL in your browser and login with the admin credentials to
-access the Conjur UI.
+Visit the Secrets Manager UI URL in your browser and login with the admin credentials to
+access the Secrets Manager UI.
 
-## Deploying Conjur Master and Followers (*Local Environment*)
+## Deploying Secrets Manager Leader and Followers (*Local Environment*)
 
 You can now deploy a local development environment for Kubernetes using [Docker Desktop](https://www.docker.com/products/docker-desktop).
 Docker Desktop provides a convenient way to deploy and develop from your machine against a locally deployed cluster.
@@ -136,7 +136,7 @@ Docker Desktop provides a convenient way to deploy and develop from your machine
 
 1. By default, 2.0 Gib of memory is allocated to Docker on your computer. 
 
-   To successfully deploy a Conjur Enterprise cluster (Master + Followers + Standbys), you will need to increase the memory limit to 6 Gib. To do so, perform the following:
+   To successfully deploy a Secrets Manager, Self-Hosted cluster (Leader + Followers + Standbys), you will need to increase the memory limit to 6 Gib. To do so, perform the following:
    
    1. Navigate to Docker preferences
    

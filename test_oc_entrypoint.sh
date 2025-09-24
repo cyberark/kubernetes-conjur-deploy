@@ -69,7 +69,7 @@ function runScripts() {
 }
 
 function relaunchMaster() {
-  echo 'Relaunching master to test persistent volume restore'
+  echo 'Relaunching leader to test persistent volume restore'
 
   ./relaunch_master.sh
 }

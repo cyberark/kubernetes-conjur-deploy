@@ -18,7 +18,7 @@ configure_cli_pod() {
   wait_for_it 300 "$cli exec $conjur_cli_pod -- sh -c \"echo y | conjur init --self-signed --force -a $CONJUR_ACCOUNT -u $conjur_url\""
 
   if [[ $CONJUR_DEPLOYMENT == oss ]]; then
-    # Set admin password. In DAP this happens in `evoke configure master`
+    # Set admin password. In DAP this happens in `evoke configure leader`
     conjur_pod="$($cli get pods | grep conjur-oss | cut -f 1 -d ' ')"
     "$cli" exec "$conjur_pod" -c conjur -- conjurctl account create "$CONJUR_ACCOUNT" > /dev/null
     conjur_admin_api_key="$($cli exec $conjur_pod -c conjur -- conjurctl role retrieve-key $CONJUR_ACCOUNT:user:admin | cut -f 5 -d ' ')"
