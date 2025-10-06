@@ -11,7 +11,7 @@ main() {
 }
 
 deploy_load_balancer() {
-  announce "Creating load balancer for master and standbys."
+  announce "Creating load balancer for leader and standbys."
 
   set_namespace $CONJUR_NAMESPACE_NAME
 

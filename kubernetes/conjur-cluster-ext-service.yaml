@@ -7,7 +7,7 @@ metadata:
     app: conjur-cluster-svc-ext
 spec:
   # LoadBalancer is enabling our external-to-cluster ingress into
-  # the master. This allows it to be usable from the outside of K8s.
+  # the leader. This allows it to be usable from the outside of K8s.
   type: LoadBalancer
   selector:
     app: conjur-node

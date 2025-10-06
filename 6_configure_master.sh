@@ -14,22 +14,22 @@ main() {
 }
 
 configure_master_pod() {
-  announce "Configuring master pod."
+  announce "Configuring leader pod."
 
   local master_pod_name=$(get_master_pod_name)
   $cli label --overwrite pod $master_pod_name role=master
 
   MASTER_ALTNAMES="localhost,conjur-master"
 
-  # Configure Conjur master server using evoke.
-  $cli exec $master_pod_name -- evoke configure master \
+  # Configure Conjur leader server using evoke.
+  $cli exec $master_pod_name -- evoke configure leader \
      --accept-eula \
      -h conjur-master.$CONJUR_NAMESPACE_NAME.svc.cluster.local \
      --master-altnames "$MASTER_ALTNAMES" \
      --follower-altnames conjur-follower,conjur-follower.$CONJUR_NAMESPACE_NAME.svc.cluster.local \
      -p $CONJUR_ADMIN_PASSWORD \
      $CONJUR_ACCOUNT
-  echo "Master pod configured."
+  echo "Leader pod configured."
 
   set_conjur_pod_log_level $master_pod_name
 
@@ -44,7 +44,7 @@ wait_for_master() {
   local conjur_url="https://conjur-master.$CONJUR_NAMESPACE_NAME.svc.cluster.local"
   local test_curl_pod=$(get_test_curl_pod_name)
 
-  echo "Waiting for DAP Master to be ready..."
+  echo "Waiting for DAP Leader to be ready..."
 
   # Wait for 10 successful connections in a row
   local COUNTER=0

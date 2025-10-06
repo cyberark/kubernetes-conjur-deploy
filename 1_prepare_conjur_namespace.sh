@@ -15,7 +15,7 @@ main() {
   create_cluster_role
   create_role_binding
 
-  # Ensure conjur-data-key secret exists before deploying master cluster
+  # Ensure conjur-data-key secret exists before deploying leader cluster
   if ! $cli get secret conjur-data-key -n $CONJUR_NAMESPACE_NAME &>/dev/null; then
     echo "Creating conjur-data-key secret in namespace $CONJUR_NAMESPACE_NAME."
     $cli create secret generic conjur-data-key --from-literal=key="$(openssl rand -base64 32)" -n $CONJUR_NAMESPACE_NAME

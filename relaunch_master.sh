@@ -9,7 +9,7 @@ master_pod_name=$(get_master_pod_name)
 
 $cli delete pod $master_pod_name
 
-echo "Master pod deleted."
+echo "Leader pod deleted."
 
 wait_for_node $master_pod_name
 
@@ -17,14 +17,14 @@ $cli exec $master_pod_name -- rm -rf /var/lib/postgresql/9.3
 $cli exec $master_pod_name -- ln -sf /opt/conjur/dbdata/9.3 /var/lib/postgresql/9.3
 # $cli exec $master_pod_name -- chown -h postgres:postgres /var/lib/postgresql/9.3/main
 
-echo "Master database recovered."
+echo "Leader database recovered."
 
 $cli exec $master_pod_name -- cp /opt/conjur/data/standby-seed.tar /opt/conjur/data/standby-seed.tar-bkup
 $cli exec $master_pod_name -- evoke unpack seed /opt/conjur/data/standby-seed.tar
 $cli exec $master_pod_name -- cp /opt/conjur/data/standby-seed.tar-bkup /opt/conjur/data/standby-seed.tar
 $cli exec $master_pod_name -- rm /etc/chef/solo.json
 
-echo "Master configuration recovered."
+echo "Leader configuration recovered."
 
 $cli label --overwrite pod $master_pod_name role=master
 
@@ -34,7 +34,7 @@ if [ $PLATFORM = 'openshift' ]; then
   master_altnames="$master_altnames,$conjur_master_route"
 fi
 
-$cli exec $master_pod_name -- evoke configure master \
+$cli exec $master_pod_name -- evoke configure leader \
    --accept-eula \
    -h conjur-master \
    --master-altnames $master_altnames \
@@ -42,7 +42,7 @@ $cli exec $master_pod_name -- evoke configure master \
    -p $CONJUR_ADMIN_PASSWORD \
    $CONJUR_ACCOUNT
 
-echo "Master pod configured."
+echo "Leader pod configured."
 
 set_conjur_pod_log_level $master_pod_name
 

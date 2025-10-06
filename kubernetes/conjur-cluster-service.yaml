@@ -6,7 +6,7 @@ metadata:
   labels:
     app: conjur-cluster-svc
 spec:
-  # This service allows other in-cluster services to reach the master since
+  # This service allows other in-cluster services to reach the leader since
   # LoadBalancer doesn't expose internal routing.
   type: ClusterIP
   selector:

@@ -15,7 +15,7 @@ sed -e "s#{{ CONJUR_APPLIANCE_IMAGE }}#$conjur_appliance_image#g" "./$PLATFORM/c
   sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
   $cli delete --ignore-not-found -f -
 
-announce "Deleting Master cluster pods."
+announce "Deleting Leader cluster pods."
 if $cli get statefulset &>/dev/null && [[ $PLATFORM != openshift ]]; then  # this returns non-0 if platform doesn't support statefulset
   conjur_cluster_template="./$PLATFORM/conjur-cluster-stateful.yaml"
 else
@@ -41,7 +41,7 @@ sed -e "s#{{ DOCKER_IMAGE }}#$docker_image#g" "./$PLATFORM/haproxy-conjur-master
   sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
   $cli delete --ignore-not-found -f -
 
-announce "Deleting Master route."
+announce "Deleting Leader route."
 conjur_master_route=$($cli get routes | grep -s conjur-master | awk '{ print $3 }')
 $cli delete --ignore-not-found route $conjur_master_route
 
