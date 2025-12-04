@@ -27,10 +27,10 @@ spec:
           allowPrivilegeEscalation: false
         resources:
           requests:
-            cpu: 1
-            memory: 1.5Gi
+            cpu: 50m
+            memory: 100Mi
           limits:
-            cpu: 2
-            memory: 4Gi
+            cpu: 1
+            memory: 1Gi
       imagePullSecrets:
         - name: dockerpullsecret

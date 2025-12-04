@@ -57,8 +57,8 @@ spec:
           allowPrivilegeEscalation: false 
         resources:
           requests:
-            cpu: 1
-            memory: 1.5Gi
+            cpu: 0.1
+            memory: 0.5Gi
           limits:
             cpu: 2
             memory: 4Gi
@@ -69,11 +69,11 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 2Gi
+          storage: 0.5Gi
   - metadata:
       name: conjur-data
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 1Gi
+          storage: 0.5Gi

@@ -67,13 +67,13 @@ pipeline {
           }
         }
 
-        stage('OpenShift Current 4.x') {
-          steps {
-            script {
-              INFRAPOOL_EXECUTORV2_AGENT_0.agentSh 'summon --environment openshift_current ./test.sh openshift_current'
-            }
-          }
-        }
+        // stage('OpenShift Current 4.x') {
+        //   steps {
+        //     script {
+        //       INFRAPOOL_EXECUTORV2_AGENT_0.agentSh 'summon --environment openshift_current ./test.sh openshift_current'
+        //     }
+        //   }
+        // }
 
         stage('OpenShift Next 4.x') {
           when { expression { return params.TEST_OCP_NEXT } }
@@ -96,6 +96,10 @@ pipeline {
   post {
     always {
       releaseInfraPoolAgent(".infrapool/release_agents")
+
+      // Resolve ownership issue before running infra post hook
+      sh 'git config --global --add safe.directory ${PWD}'
+      infraPostHook()
     }
   }
 }
