@@ -8,7 +8,12 @@ MINI_ENV="${MINI_ENV:-false}"
 DEV="${DEV:-false}"
 KIND="${KIND:-false}"
 
-if [[ "$MINI_ENV" == "true" || "$DEV" == "true" ]]; then
+# For KIND, always use IfNotPresent to avoid pulling pre-loaded images from Docker Hub
+# For local dev/minienv, use Never to avoid any pulls
+# For CI/production, use Always to ensure latest images
+if [[ "$KIND" == "true" ]]; then
+  IMAGE_PULL_POLICY='IfNotPresent'
+elif [[ "$MINI_ENV" == "true" || "$DEV" == "true" ]]; then
   IMAGE_PULL_POLICY='Never'
 else
   IMAGE_PULL_POLICY='Always'
@@ -50,6 +55,9 @@ platform_image() {
     else
       echo "$DOCKER_REGISTRY_PATH/$CONJUR_NAMESPACE_NAME/$1:$CONJUR_NAMESPACE_NAME"
     fi
+  elif [ "${KIND}" = "true" ]; then
+    # KIND loads images directly - no registry prefix needed
+    echo "$1:$CONJUR_NAMESPACE_NAME"
   elif [ ! is_minienv ]  || [ "${DEV}" = "false" ]; then
     echo "$DOCKER_REGISTRY_PATH/$1:$CONJUR_NAMESPACE_NAME"
   else

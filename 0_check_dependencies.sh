@@ -7,12 +7,11 @@ check_env_var "CONJUR_APPLIANCE_IMAGE"
 check_env_var "CONJUR_NAMESPACE_NAME"
 check_env_var "AUTHENTICATOR_ID"
 
-if [ ! is_minienv ] || [ "${DEV}" = "false" ]; then
+# Docker registry is not required for local development environments
+if [[ "${KIND}" != "true" ]] && [[ ! is_minienv || "${DEV}" = "false" ]]; then
   check_env_var "DOCKER_REGISTRY_PATH"
-fi
-
-if [ "${PLATFORM}" = "kubernetes" ]; then
-  if [ ! is_minienv ] || [ "${DEV}" = "false" ]; then
+  
+  if [ "${PLATFORM}" = "kubernetes" ]; then
     check_env_var "DOCKER_REGISTRY_URL"
   fi
 fi

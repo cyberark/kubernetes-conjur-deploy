@@ -59,14 +59,16 @@ pipeline {
           }
         }
 
-        stage('OpenShift Oldest 4.x') {
-          steps {
-            script {
-              INFRAPOOL_EXECUTORV2_AGENT_0.agentSh 'summon --environment openshift_oldest ./test.sh openshift_oldest'
-            }
-          }
-        }
+        // TODO: Re-enable OpenShift tests once the registry issue is resolved
+        // stage('OpenShift Oldest 4.x') {
+        //   steps {
+        //     script {
+        //       INFRAPOOL_EXECUTORV2_AGENT_0.agentSh 'summon --environment openshift_oldest ./test.sh openshift_oldest'
+        //     }
+        //   }
+        // }
 
+        // TODO: Re-enable OpenShift tests once the registry issue is resolved
         // stage('OpenShift Current 4.x') {
         //   steps {
         //     script {

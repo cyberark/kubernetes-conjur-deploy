@@ -6,7 +6,7 @@ set -euo pipefail
 main() {
   # Create kind cluster (if needed)
   if [[ "$KIND" == "true" ]]; then
-    kind create cluster || true
+    kind create cluster >/dev/null 2>&1 || true
   fi
 
   set_namespace default
