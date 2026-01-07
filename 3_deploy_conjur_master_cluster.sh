@@ -54,8 +54,13 @@ deploy_conjur_master_cluster() {
     postgres_password="postgres_secret"
 
     # deploy conjur & nginx pod
-    conjur_image=$(platform_image "conjur")
-    nginx_image=$(platform_image "nginx")
+    if [ "${KIND}" = "true" ]; then
+      # For KIND, use original image names - Kind will pull them directly
+      conjur_image="cyberark/conjur:latest"
+    else
+      conjur_image=$(platform_image "conjur")
+    fi
+    nginx_image=$(platform_image "nginx")  # nginx is built locally, always use platform_image
     conjur_log_level=${CONJUR_LOG_LEVEL:-info}
     conjur_authenticators="${CONJUR_AUTHENTICATORS:-authn,authn-k8s/$AUTHENTICATOR_ID}"
     if [ "${DEV}" = "true" ]; then
@@ -87,7 +92,12 @@ deploy_conjur_master_cluster() {
 deploy_conjur_cli() {
   announce "Deploying Conjur CLI pod."
 
-  cli_app_image=$(platform_image conjur-cli true)
+  if [ "${KIND}" = "true" ]; then
+    # For KIND, use original image name - Kind will pull it directly
+    cli_app_image="cyberark/conjur-cli:8"
+  else
+    cli_app_image=$(platform_image conjur-cli true)
+  fi
   sed -e "s#{{ DOCKER_IMAGE }}#$cli_app_image#g" ./$PLATFORM/conjur-cli.yml |
     sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
     $cli create -f -
@@ -96,7 +106,12 @@ deploy_conjur_cli() {
 deploy_test_curl() {
   announce "Deploying Test curl pod."
 
-  alpine_image=$(platform_image alpine true)
+  if [ "${KIND}" = "true" ]; then
+    # For KIND, use original image name - Kind will pull it directly
+    alpine_image="alpine:latest"
+  else
+    alpine_image=$(platform_image alpine true)
+  fi
   sed -e "s#{{ DOCKER_IMAGE }}#$alpine_image#g" ./$PLATFORM/test-curl.yml |
     sed -e "s#{{ IMAGE_PULL_POLICY }}#$IMAGE_PULL_POLICY#g" |
     $cli create -f -

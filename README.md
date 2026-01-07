@@ -167,8 +167,8 @@ Please make sure that you are logged in to the registry before deploying.
 
 ### Running Kubernetes locally
 
-You can now deploy a local development environment for Kubernetes using [Docker Desktop](https://www.docker.com/products/docker-desktop).
-See our [contributing guide][CONTRIBUTING.md] to learn how!
+You can deploy a local development environment for Kubernetes using [Docker Desktop](https://www.docker.com/products/docker-desktop)
+or [KinD](https://kind.sigs.k8s.io/). See our [contributing guide](CONTRIBUTING.md) to learn how!
 
 #### OpenShift
 

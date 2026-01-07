@@ -7,12 +7,11 @@ check_env_var "CONJUR_APPLIANCE_IMAGE"
 check_env_var "CONJUR_NAMESPACE_NAME"
 check_env_var "AUTHENTICATOR_ID"
 
-if [ ! is_minienv ] || [ "${DEV}" = "false" ]; then
+# Docker registry is not required for local development environments
+if [[ "${KIND}" != "true" ]] && [[ ! is_minienv || "${DEV}" = "false" ]]; then
   check_env_var "DOCKER_REGISTRY_PATH"
-fi
-
-if [ "${PLATFORM}" = "kubernetes" ]; then
-  if [ ! is_minienv ] || [ "${DEV}" = "false" ]; then
+  
+  if [ "${PLATFORM}" = "kubernetes" ]; then
     check_env_var "DOCKER_REGISTRY_URL"
   fi
 fi
@@ -33,4 +32,9 @@ if [[ "${DEPLOY_MASTER_CLUSTER}" = "false" ]]; then
     echo "ERROR! Follower seed '${FOLLOWER_SEED}' does not point to a file or a seed service!"
     exit 1
   fi
+fi
+
+if [ "${KIND}" = "true" ] && [ ! $(command -v kind) ]; then
+    echo "Error: 'kind' is not installed. Please install 'kind' to proceed." >&2
+    exit 1
 fi
