@@ -79,10 +79,10 @@ prepare_conjur_cli_image() {
     return 0
   fi
 
-  docker pull cyberark/conjur-cli:8
+  docker pull cyberark/conjur-cli:9
   docker pull alpine:latest
   
-  docker tag cyberark/conjur-cli:8 conjur-cli:$CONJUR_NAMESPACE_NAME
+  docker tag cyberark/conjur-cli:9 conjur-cli:$CONJUR_NAMESPACE_NAME
   docker tag alpine:latest alpine:$CONJUR_NAMESPACE_NAME
 
   cli_app_image=$(platform_image conjur-cli)

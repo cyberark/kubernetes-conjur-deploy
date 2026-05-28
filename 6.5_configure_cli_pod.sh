@@ -15,7 +15,7 @@ configure_cli_pod() {
 
   conjur_cli_pod="$(get_conjur_cli_pod_name)"
   # We saw gke env take time to up.
-  wait_for_it 300 "$cli exec $conjur_cli_pod -- sh -c \"echo y | conjur init --self-signed --force -a $CONJUR_ACCOUNT -u $conjur_url\""
+  wait_for_it 300 "$cli exec $conjur_cli_pod -- sh -c \"echo y | conjur init self-hosted --self-signed --force -a $CONJUR_ACCOUNT -u $conjur_url\""
 
   if [[ $CONJUR_DEPLOYMENT == oss ]]; then
     # Set admin password. In DAP this happens in `evoke configure leader`

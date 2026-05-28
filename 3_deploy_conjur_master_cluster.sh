@@ -94,7 +94,7 @@ deploy_conjur_cli() {
 
   if [ "${KIND}" = "true" ]; then
     # For KIND, use original image name - Kind will pull it directly
-    cli_app_image="cyberark/conjur-cli:8"
+    cli_app_image="cyberark/conjur-cli:9"
   else
     cli_app_image=$(platform_image conjur-cli true)
   fi
