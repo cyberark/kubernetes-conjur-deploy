@@ -108,7 +108,7 @@ oc exec -it <cli-pod-name> -- sh
 Once inside the CLI container, use the admin credentials to connect to Secrets Manager:
 
 ```
-conjur init -h conjur-master
+conjur init self-hosted --url conjur-master
 ```
 
 Follow our [CLI usage instructions](https://docs.cyberark.com/conjur-enterprise/latest/en/content/developer/cli/cli-setup.htm?tocpath=Developer%7CConjur%20CLI%7C_____1)

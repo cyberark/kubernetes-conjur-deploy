@@ -68,7 +68,7 @@ configure_cli_pod() {
 
   local conjur_cli_pod=$(get_conjur_cli_pod_name)
 
-  $cli exec $conjur_cli_pod -- sh -c "echo y | conjur init -a $CONJUR_ACCOUNT -u $conjur_url --self-signed --force"
+  $cli exec $conjur_cli_pod -- sh -c "echo y | conjur init self-hosted -a $CONJUR_ACCOUNT -u $conjur_url --self-signed --force"
 
   $cli exec $conjur_cli_pod -- conjur login -i admin -p $CONJUR_ADMIN_PASSWORD
 }
